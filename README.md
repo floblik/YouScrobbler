@@ -1,5 +1,5 @@
 # YouScrobbler
-Userscript for Firefox and Chrome for scrobbling to last.fm on YouTube
+Userscript for Firefox and Chrome for scrobbling to last.fm on YouTube - <a href="http://www.lukash.de/youscrobbler">YouScrobbler Homepage</a>
 
 
 <h2>Key Features:</h2>
