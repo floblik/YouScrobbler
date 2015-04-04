@@ -4,24 +4,15 @@
 // @author        http://www.lukash.de
 // @description   Scrobbles the currently watching YouTube video to last.fm.
 // @identifier	  http://userscripts.org/scripts/source/119694.user.js
-// @include       http://*.youtube.com/watch?*v=*
-// @include       http://*.youtube.com/watch#!*v=*
-// @include       http://youtube.com/watch?*v=*
-// @include       http://youtube.com/watch?v=*
-// @include       http://youtube.com/watch#!*v=*
-// @include       http://www.youtube.com/user/*
-// @include       https://*.youtube.com/watch?*v=*
-// @include       https://*.youtube.com/watch#!*v=*
-// @include       https://youtube.com/watch?*v=*
-// @include       https://youtube.com/watch?v=*
-// @include       https://youtube.com/watch#!*v=*
-// @include       https://www.youtube.com/user/*
-// @include       http://*.youtube.com/watch%3F*v=*
+// @include       http://*.youtube.com/*
+// @include       https://*.youtube.com/*
+// @include       http://youtube.com/*
+// @include       https://youtube.com/*
 // @include       *//*.youtube.com/tv*
 // @grant	      GM_getValue
 // @grant	      GM_setValue
 // @grant	      GM_xmlhttpRequest
-// @version       1.2.6
+// @version       1.2.7
 // ==/UserScript==
 
 /**
@@ -31,7 +22,7 @@
 *	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
 */
 
-const VERSION = "1.2.6";
+const VERSION = "1.2.7";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -445,7 +436,7 @@ function us_addButton() {
 	
 }
 
-function us_buttonStatus () {	
+function us_buttonStatus () {
     if (secs > 30) {
 		document.getElementById('us_scrobblebutton').addEventListener('click', function () {us_showBox(false, true)}, true);
 		us_changeOpac(100,"us_start_scrobblebutton");
@@ -453,7 +444,11 @@ function us_buttonStatus () {
 		tryAutoScrobble();
     } else {
 		us_changeOpac(50,"us_start_scrobblebutton");
-		document.getElementById('us_scrobblebutton').title = "Video is too short to be scrobbled.";
+		if(secs == 0) {
+			document.getElementById('us_scrobblebutton').title = "There is no video to scrobble.";
+		} else {
+			document.getElementById('us_scrobblebutton').title = "Video is too short to be scrobbled.";
+		}
     }
 	if (secs == 0) {
 		setTimeout(function () {getVideoSecs();us_buttonStatus();}, 2000);
