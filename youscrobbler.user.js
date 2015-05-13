@@ -9,10 +9,10 @@
 // @include       http://youtube.com/*
 // @include       https://youtube.com/*
 // @include       *//*.youtube.com/tv*
-// @grant	      GM_getValue
-// @grant	      GM_setValue
-// @grant	      GM_xmlhttpRequest
-// @version       1.2.7
+// @grant	  GM_getValue
+// @grant	  GM_setValue
+// @grant	  GM_xmlhttpRequest
+// @version       1.2.8
 // ==/UserScript==
 
 /**
@@ -22,13 +22,13 @@
 *	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
 */
 
-const VERSION = "1.2.7";
+const VERSION = "1.2.8";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
 var youtubeApiUrl = "http://gdata.youtube.com/feeds/api/videos/";
 var authenticationSessionUrl = "http://youscrobbler.lukash.de/auth";
-var scrobbleSongUrl = "http://youscrobbler.lukash.de/scrobblesong/test2.php";
+var scrobbleSongUrl = "http://youscrobbler.lukash.de/scrobblesong/";
 
 var currentURL = document.URL;
 var loadgif = '<div class="us_loadgif"><img alt="loading" src="data:image/gif;base64,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" /></div>';
@@ -200,9 +200,7 @@ function us_moveboxu(e) {
 
 
 function GM_main () {
-	//document.getElementById("eow-title").addEventListener("DOMSubtreeModified", this.us_reset);
     window.stateChanged = function (state) {
-        //console.debug ("State: "+state);
 		var playerNode  = document.getElementById ("movie_player");
 		//get video ID
 		var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
@@ -214,18 +212,14 @@ function GM_main () {
 		}
 		if (state==1 && vidId != document.getElementById("us_temp_info").getAttribute("us_video_id")) { //||((state==1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != -1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != playlistIndex))
 			TO5 = setTimeout(function () {document.getElementById("us_temp_info").setAttribute("us_reset_now", "1");}, 1000);
-			//us_reset();
 		}
-		
 		switch (state) {
 			case 1:
 			document.getElementById("us_temp_info").setAttribute("video_is_playing", "1");
 			//document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
 			break;
-			case false:
-			alert("ended");
-			//document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
-			break;
+			case 0:
+			document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
 			default:	document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");	
 		}
 		/*if (!document.getElementById("us_temp_info").getAttribute("video_playlist_index", playlistIndex)) {
@@ -237,9 +231,7 @@ function GM_main () {
 			document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
 		} */
 		 
-		
     }
-	
     window.onYouTubePlayerReady = function (playerId) {
         var playerNode  = document.getElementById ("movie_player");
         if (playerNode) {
@@ -437,7 +429,7 @@ function us_addButton() {
 	us_buttonStatus();
 	document.getElementById("us_temp_info").setAttribute("us_video_id", getYouTubeVideoId());
 	addJS_Node (null, null, GM_main);
-	TO3 = setInterval(function () {us_ajax_scanner()}, 1000);
+	TO3 = setInterval(function () {us_ajax_scanner()}, 5000);
 	
 }
 
@@ -515,7 +507,6 @@ function us_showBox(loggedIn, forced) {
 *	inserts the scrobbleform into the window
 */
 function us_scrobbleform(loggedIn) {
-	//alert("window.yt.VIDEO_TITLE");//postxanadus
     var loginbox = document.getElementById('us_loginbox');
 	
 	var messageText = "";
@@ -918,9 +909,6 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
 	
     if (time_left_to_scrobble > 0) {
 		TO1Helper = true;
-		/* try { clearTimeout(TO1); } catch (err) {console.log(err);}
-		
-		TO1 = setTimeout(function() {us_scrobble(artist,track,album,mbid,1,1,auto)}, ((time_left_to_scrobble + 5) * 1000)); */
 		if (retry==0) {
 			if (auto==1 && us_getValue("scrobblingNotification")) {
 				us_infoBox('<div><span class="us_trackinfo"><span id="us_artist_display">'+artist+ '</span> <span class="sep">-</span> <span id="us_track_display">' +track+'</span></span> scrobbling in '+time_left_to_scrobble+' seconds. <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAAGnRFWHRTb2Z0d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAAG4SURBVDhPdVNNS0JREL19mAV9LSRo4zqEfoK0FCKiKCyqRQuhFK2HEBRSEPmkTBCjRdHGZRD9idb2uRBavMC30EJwlW4iXnN0roxFA4d7OXPO3LlfSsbnd91z9p4xlq3Zu8Cr35EAhxw0LO+Ml8aTf9WaL0BMYzFZ3jfjdsQ07E0Tc3CcK0DLtlaAWLSmsVLVcZw9QjdhKW6HCwDNw8zloYG2XaT2VfOsWHNYGeYsoYugYBAF+pnrIWShhQdela4kDbRGcU7QZmBUFJgUPHACD7xq296orr8Fi0QOcxKrYHSLAmhfFnDBA69qVTrCvkcIsoPoPwXchBx5THibBShcnAS0OB0thXQBnA06G+Ic4JMFBkUCcOWrl80VKFKEPuYDPALedgG0Q4TeO7aRAL9mLYD3MO8jeHm+SwfY2sJWKaQPcYyTA0hkKim0fk3QV6gPGZiAB155jTeEXkJkx47d0iivVe4dXIA7N34/pEMCbgOt6i39xhS07YeEeG48yKecYKG8GayKrVxBAy08TbOOx/q9/EwXZvkAB3hMGKd5TH4maNnWGfiquY9TI2jN/PnO4JDr/M5K/QDEQYmHdixexAAAAABJRU5ErkJggg==" alt="queued" /></div>');
@@ -1085,9 +1073,6 @@ function getYouTubeVideoId () {
 	}
 	var removeRegex = /(\?|%3F|&|%26)v=/gi;
 	var vidId = matches[0].replace(removeRegex, "");
-	if(vidId == null) {
-		return;
-	}
 	return vidId;
 }
 
@@ -1099,11 +1084,12 @@ function getTrackInfo(){
 	if ((us_getTempData("artist")!=0) || (us_getTempData("track")!=0)) {
 		feedback = "found";
 	} else {
+		var titleContentOriginal;
 		if (location.href.indexOf("youtube.com/user/") != -1) {
 			if (document.getElementById("playnav-curvideo-title")) {
-				var titleContentOriginal = document.getElementById("playnav-curvideo-title").getElementsByTagName("a")[0].textContent;
+				titleContentOriginal = document.getElementById("playnav-curvideo-title").getElementsByTagName("a")[0].textContent;
 			} else if (document.getElementsByClassName("channels-featured-video-details tile")[0]) {
-				var titleContentOriginal = document.getElementsByClassName("channels-featured-video-details tile")[0].getElementsByTagName("a")[0].textContent;
+				titleContentOriginal = document.getElementsByClassName("channels-featured-video-details tile")[0].getElementsByTagName("a")[0].textContent;
 			}
 		} /* else if (location.href.indexOf("youtube.com/tv") != -1) {
 			//Feather check
@@ -1211,45 +1197,42 @@ function getTrackInfo(){
 		}
 		//Full Album Video
 		/* if (titleContentOriginal.match(/Full Album/i)) {
-			alert("found full album");
-			var json = getAlbumInfo();
-			album = JSON.parse(json);
-			alert(" ");
+			var album = getAlbumInfo();
+			//album = JSON.parse(json);
+			console.debug(album);
 			alert(" "+album.name);
 			if (us_getTempData("full_album_track_nr", 0) == 0 && album.name == decodeURIComponent(us_getTempData("track"))) {
 				us_saveTempData("full_album_track_nr", 1);
 			}
 			us_saveTempData("artist", album.track[us_getTempData("full_album_track_nr")].artist.name);
 			us_saveTempData("track", album.track[us_getTempData("full_album_track_nr")].name);			
-		} */
+		}  */
 	}
 	return feedback;
 }
 
 /**
-* 	Detects the trackinformation from the video title and temporarily saves it
+* 	fetchs full ablum info from last.fm api
 */
-function getAlbumInfo(){
+/* function getAlbumInfo(){
 	alert("getAlbumInfo");
 	var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
 	var albumName = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
 	var url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist + "&album=" + albumName + "&format=json";
-	alert("failed");
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: url,
 		onload: function(response) {
-			alert("failed");
 		  if(response.responseText){
-			var json = JSON.parse(response.responseText);
-			//var json = response.responseText;
-			return json;
-			//var json = eval('(' + response.responseText + ')');
-			/* 
+			//var json = JSON.parse(response.responseText);
+			var response = response.responseText;
+			//return response;
+			var json = eval('(' + response.responseText + ')');
+			console.debug(json);
 			//album = json.album;
 			album = json;
 			//tracks = album.tracks;
-			if(json && album){
+			if(json){
 				alert(tracks.track[0].name);
 				console.debug(tracks);
 				console.debug(tracks.track[0].name);
@@ -1257,7 +1240,7 @@ function getAlbumInfo(){
 				//alert(); 
 			
 				return album;
-			} */
+			} 
 		  }
 		},
 		onerror: function(){
@@ -1267,7 +1250,7 @@ function getAlbumInfo(){
 		  tryAutoScrobbleCallback(infoResult, false);
 		}
 	});
-}
+} */
 
 
 /**
@@ -1371,7 +1354,6 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 	
 	//Save additional information about the track (Albumtitle)
 	if (album!=0) {
-		console.log("saving Album");
 		if ((us_getValue("database_additional.id", 0)!=0) && (us_getValue("database_additional.id", 0).search(id) != -1)) {
 			var Aids = us_getValue("database_additional.id", 0).split(" ");
 			var albumtitles = us_getValue("database_additional.albumtitle", 0).split(" ");
@@ -1386,8 +1368,6 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 			Aids.splice(index,1);
 			albumtitles.splice(albumtitles.length,0,encodeURIComponent(album));
 			albumtitles.splice(index,1);
-			console.log("Aids: "+Aids.join(" "));
-			console.log("albumtitles: "+albumtitles.join(" "));
 			us_saveValue("database_additional.id", Aids.join(" "));
 			us_saveValue("database_additional.albumtitle", albumtitles.join(" "));
 		} else {
@@ -1444,18 +1424,25 @@ function us_ajax_scanner (currentAlbumTrack) {
 	//increase played time by 1 second
 	var leftToPlay = us_getTempData("us_leftToPlay");
 	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1) {
-		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
+		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-5));
 		if (document.getElementById("scrobbleStatus")) {
-			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-1;
+			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-5;
 		}
 		
 		if (TO1Helper) {
 			scrobble_statusbar("scrobble");
 			document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*(leftToPlay/(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01)))+"%";
-		} /* else {
-			document.getElementById("us_scrobble_statusbar").style.width = 0;
-		} */
+		} 
 	}
+	
+	if (us_getTempData("video_end_reached") == "yes" && us_getTempData("video_is_playing", 0) == 1) {
+		us_saveTempData("us_reset_now", "1");
+		us_saveTempData("video_end_reached", 0);
+	}
+	if (!getYouTubeVideoId()) {
+		us_saveTempData("us_reset_now", "1");
+	}
+	leftToPlay = us_getTempData("us_leftToPlay");
 	if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper) {
 		
 		if (document.getElementById("scrobbleStatus")) {
@@ -1471,7 +1458,6 @@ function us_ajax_scanner (currentAlbumTrack) {
 	if (us_getTempData("us_reset_now")=="1") {
 		us_saveTempData("us_reset_now", "0");
 		us_reset();
-		
 	}
 }
 
