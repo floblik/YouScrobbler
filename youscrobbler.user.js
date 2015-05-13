@@ -9,9 +9,11 @@
 // @include       http://youtube.com/*
 // @include       https://youtube.com/*
 // @include       *//*.youtube.com/tv*
-// @grant	  GM_getValue
-// @grant	  GM_setValue
-// @grant	  GM_xmlhttpRequest
+// @grant	      GM_getValue
+// @grant	      GM_setValue
+// @grant	      GM_xmlhttpRequest
+// @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
+// @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
 // @version       1.2.8
 // ==/UserScript==
 
@@ -21,6 +23,10 @@
 *	*YouScrobbler is build on the code of youscrobble (http://userscripts.org/scripts/show/71606) but its an new script with many new features
 *	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
 */
+
+if (window.top !== window.self) {
+  return;
+}
 
 const VERSION = "1.2.8";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
@@ -1598,8 +1604,10 @@ function updateCheck(forced)
 							}
 						}
 						var cont =  '<div id="us_loginbox_form"><span>YouScrobbler '+ String(remote_version) +' is available.</span><br/>'+
-									'<br/>'+
 									'<span>Changes are applied after new page load.</span><br/>'+
+									'<br/>'+
+									'Problem updating?<br/>'+									
+									'Try via Greasemonkey (Addons/UserScripts)'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>';
 						us_showBox();
 						us_boxcontent('Update available',cont);
