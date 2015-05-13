@@ -37,9 +37,6 @@ Database saving
 Whenever you edit the automatic detected trackinfromation or enter ones by yourself, this changes are saved in your personal database. This database is located on your computer and saves the right artist- and trackname of the corresponding youtube videos.
 
 
-<h2>Changelog</h2>
 
-    1.2.6 settings redone; notifications; albumtitle saving
-    1.2.4 fixed scrobbling in chrome
-    1.2.3 tweaked trackinformation algorithm, option to join beta-channel
-    0.9.0 - initial release – 11/2011
+
+initial release – 11/2011
