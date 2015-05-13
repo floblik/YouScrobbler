@@ -42,6 +42,7 @@ var functionsLoaded = false;
 
 var trackInfoFromDB = false;
 var secs = 0;
+var album;
 
 /**
 *	--- Content ---
@@ -55,8 +56,7 @@ var secs = 0;
 *	8. Update
 */
 
-try
-{   
+
 /**
 *	--- 1. Initializing ---
 */
@@ -65,7 +65,6 @@ function init() {
 	if (!isLoggedIn()) {
 		tryGetAuthToken();
 	}
-	initPreferences();
 	us_addButton();
 	checkFirstRun();
 	
@@ -92,6 +91,7 @@ function us_reset () {
 	document.getElementById("us_temp_info").setAttribute("us_leftToPlay", -1);
 	document.getElementById("us_temp_info").removeAttribute("us_playstart");
 	document.getElementById("us_temp_info").removeAttribute("us_playstart_s");
+	us_saveValue("is_full_album", 0);
 	
 	//save time page was loaded aka playstart time in ctime and gay format
 	var time = new Date();
@@ -119,7 +119,7 @@ function us_reset () {
 */
 function initPreferences () {
 	if (!us_getValue('us_boxpos')) {
-		us_saveValue('us_boxpos',(screen.availWidth)/2-150+"px-"+100+"px");
+		us_saveValue('us_boxpos',(screen.availWidth)/1.3+"px-"+70+"px");
 	}
 	if ((!us_getValue('us_color')) || (us_getValue('us_color')=="r")) {
 		us_saveValue('us_color','red');
@@ -138,7 +138,7 @@ function initPreferences () {
 		us_saveValue("database.maxEntries", 5000);
 	}
 	if (!us_getValue("scrobble_at")) {
-		us_saveValue("scrobble_at", 75);
+		us_saveValue("scrobble_at", 95);
 	}
 	if (us_getValue("us_autoscrobble_active", "nf") == "nf") {
 		us_saveValue("us_autoscrobble_active", 1);
@@ -220,6 +220,10 @@ function GM_main () {
 		switch (state) {
 			case 1:
 			document.getElementById("us_temp_info").setAttribute("video_is_playing", "1");
+			//document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
+			break;
+			case false:
+			alert("ended");
 			//document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
 			break;
 			default:	document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");	
@@ -341,7 +345,7 @@ function us_addButton() {
     head.appendChild(el);
     el.innerHTML =	'.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;'+
 					// by AshKyd
-					'z-index:1000000; position: absolute; left: 50%; top: 100px; width: 300px; margin-left: -150px; }'+
+					'z-index:1000000; position: absolute; top: 70px; width: 300px; margin-left: -150px; }'+
 					'.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }'+
 					'.us_box h4 { margin-left: 5px; margin-bottom:0px}'+
 					'#us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }'+
@@ -353,6 +357,7 @@ function us_addButton() {
 					'.us_settings_grp_right { width:135px}'+
 					'.us_settings_grp span { vertical-align:middle}'+
 					'.us_settings_grp_heading { color:#777;font-size:100%;font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:4px;}'+
+					'.us_settings_grp_database { cursor: help;}'+
 					'#databaseMaxLength {width: 55px; }'+
 					'#scrobble_at {width: 45px; }'+
 					'#us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }'+
@@ -592,7 +597,9 @@ function us_scrobbleform(loggedIn) {
 	if (document.getElementById("us_abortScrobbling")) {
 		document.getElementById("us_abortScrobbling").addEventListener('click', us_abortScrobbling, false);
 	}
-	
+	if (us_getValue("us_more_options_show_or_hide") == "show") {
+		us_showmoreform();
+	} 	
 }
 
 //little box show info-messages
@@ -617,7 +624,7 @@ function us_infoBox(cont) {
 		inbox.style.opacity = "100";
 		opacity(inbox.id, 0, 100, 500);
 	}
-	inbox.addEventListener("click", us_showBox, false);
+	inbox.addEventListener("click", us_closeinfobox, false);
 	inbox.style.cursor = "pointer";
 	inbox.title = "Click to Close";
 	inbox.innerHTML = cont;
@@ -644,12 +651,14 @@ function us_showmoreform() {
     var a = document.getElementById('us_more');
     
     if (i1.getAttribute('class')) {
-       i1.setAttribute('class','');
+	   i1.setAttribute('class','');
        a.innerHTML = '&#8722;';
+	   us_saveValue("us_more_options_show_or_hide", "show");
     }
     else {
        i1.setAttribute('class','us_hidden');
        a.innerHTML = '+';
+	   us_saveValue("us_more_options_show_or_hide", "hide");
     }
 }
 
@@ -695,9 +704,9 @@ function us_settings() {
 					'<div class="us_settings_grp_heading">General</div><div><input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label><input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>'+ 
 					'<br/><hr/><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
 					'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobbling notification</label>'+
-					'<br/><hr/><label for="scrobble_at">Scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at99" value="99">100</option></select><span>&#37;</span></div>'+
+					'<br/><hr/><label for="scrobble_at">Scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span></div>'+
 					'</td>'+
-					'<td class="us_settings_grp us_settings_grp_right"><div class="us_settings_grp_heading">Database</div><span>Size: '+((us_getValue("database.id").split(" ").length) -1)+' / <select name="databaseMaxLength" id="databaseMaxLength"><option id="databaseMaxLength500" value="500">500</option><option id="databaseMaxLength5000" value="5000">5000</option><option id="databaseMaxLength-1" value="-1">unlimited</option></select></span>'+
+					'<td class="us_settings_grp us_settings_grp_right"><div class="us_settings_grp_heading us_settings_grp_database" title="Your custom edited track information">Database</div><span>Size: '+((us_getValue("database.id").split(" ").length) -1)+' / <select name="databaseMaxLength" id="databaseMaxLength"><option id="databaseMaxLength500" value="500">500</option><option id="databaseMaxLength5000" value="5000">5000</option><option id="databaseMaxLength-1" value="-1">unlimited</option></select></span>'+
 					'<br/><br/><div class="us_settings_grp_heading">About</div>'+
 					'<span>Version: '+VERSION+'</span><br/><span id="us_manualupdate"><a href="javascript:;" id="us_manualupdate_link">Check for Update</a></span></td></tr></table> '+
 					'</form></div><div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>';
@@ -708,7 +717,11 @@ function us_settings() {
 		if (us_getValue("asFailNotification") || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
 		if (us_getValue("scrobblingNotification")){document.getElementById('us_settings_scrobblingNotification').setAttribute("checked", 'checked');}
 		document.getElementById("databaseMaxLength"+us_getValue("database.maxEntries", 5000).toString()).selected = true;
-		document.getElementById(("scrobble_at"+us_getValue("scrobble_at", 75).toString())).selected = true;
+		if (document.getElementById("scrobble_at"+us_getValue("scrobble_at", 75).toString())) {
+			document.getElementById(("scrobble_at"+us_getValue("scrobble_at", 75).toString())).selected = true;
+		} else {
+			document.getElementById("scrobble_at75").selected = true;
+		}
 		document.getElementById('us_resetlogin').addEventListener('click', us_resetlogin, false);
 		document.getElementById('us_manualupdate_link').addEventListener('click', function(){document.getElementById("us_manualupdate").innerHTML='<span class="us_status_small">checking</span>';updateCheck(true); }, false);		
 		
@@ -718,7 +731,7 @@ function us_settings() {
 		document.getElementById('us_settings_color_red').addEventListener('change', function(){
 			us_saveValue("us_color", "red");
 			document.getElementById('us_icon_small').src = us_icon();
-		}, false);	
+		});	
 		document.getElementById('us_settings_color_black').addEventListener('change', function(){
 			us_saveValue("us_color", "black");
 			document.getElementById('us_icon_small').src = us_icon();
@@ -739,7 +752,7 @@ function us_settings() {
 			var el = document.getElementById('scrobble_at');
 			var text = el.options[el.selectedIndex].value;
 			us_saveValue("scrobble_at", text);
-		}, false);	
+		});	
 }
 
 
@@ -1086,34 +1099,34 @@ function getTrackInfo(){
 	if ((us_getTempData("artist")!=0) || (us_getTempData("track")!=0)) {
 		feedback = "found";
 	} else {
+		if (location.href.indexOf("youtube.com/user/") != -1) {
+			if (document.getElementById("playnav-curvideo-title")) {
+				var titleContentOriginal = document.getElementById("playnav-curvideo-title").getElementsByTagName("a")[0].textContent;
+			} else if (document.getElementsByClassName("channels-featured-video-details tile")[0]) {
+				var titleContentOriginal = document.getElementsByClassName("channels-featured-video-details tile")[0].getElementsByTagName("a")[0].textContent;
+			}
+		} /* else if (location.href.indexOf("youtube.com/tv") != -1) {
+			//Feather check
+			if (document.getElementById("player-video-title")) {
+				var titleContentOriginal = document.getElementById("player-video-title").textContent;
+			} 
+		} */ else {
+			//Feather check
+			if (document.getElementById("eow-title")) {
+				var titleContentOriginal = document.getElementById("eow-title").textContent;
+			} else if (document.getElementById("watch-headline-title")) {
+				var titleContentOriginal = document.getElementById("watch-headline-title").textContent;
+			} else if (document.getElementById("vt")) {
+				var titleContentOriginal = document.getElementById("vt").textContent;
+			}
+		}
 		//Retrive trackinformation from database
 		if (getDatabaseData()==true) {
 			feedback = "found";
 			trackInfoFromDB = true;
 		} else {
 			//New detection of trackinformation
-			if (location.href.indexOf("youtube.com/user/") != -1) {
-				if (document.getElementById("playnav-curvideo-title")) {
-					var titleContent = document.getElementById("playnav-curvideo-title").getElementsByTagName("a")[0].textContent;
-				} else if (document.getElementsByClassName("channels-featured-video-details tile")[0]) {
-					var titleContent = document.getElementsByClassName("channels-featured-video-details tile")[0].getElementsByTagName("a")[0].textContent;
-				}
-			} /* else if (location.href.indexOf("youtube.com/tv") != -1) {
-				//Feather check
-				if (document.getElementById("player-video-title")) {
-					var titleContentOriginal = document.getElementById("player-video-title").textContent;
-				} 
-			} */ else {
-				//Feather check
-				if (document.getElementById("eow-title")) {
-					var titleContentOriginal = document.getElementById("eow-title").textContent;
-				} else if (document.getElementById("watch-headline-title")) {
-					var titleContentOriginal = document.getElementById("watch-headline-title").textContent;
-				} else if (document.getElementById("vt")) {
-					var titleContentOriginal = document.getElementById("vt").textContent;
-				}
-			}
-			
+						
 			//remove (*) and/or [*] to remove unimportant data
 			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, '');
 			titleContent = titleContent.replace(/ *\[[^)]*\] */g, '');
@@ -1196,9 +1209,66 @@ function getTrackInfo(){
 				us_saveTempData("track", encodeURIComponent(musicInfo[1]));
 			}
 		}
+		//Full Album Video
+		/* if (titleContentOriginal.match(/Full Album/i)) {
+			alert("found full album");
+			var json = getAlbumInfo();
+			album = JSON.parse(json);
+			alert(" ");
+			alert(" "+album.name);
+			if (us_getTempData("full_album_track_nr", 0) == 0 && album.name == decodeURIComponent(us_getTempData("track"))) {
+				us_saveTempData("full_album_track_nr", 1);
+			}
+			us_saveTempData("artist", album.track[us_getTempData("full_album_track_nr")].artist.name);
+			us_saveTempData("track", album.track[us_getTempData("full_album_track_nr")].name);			
+		} */
 	}
 	return feedback;
 }
+
+/**
+* 	Detects the trackinformation from the video title and temporarily saves it
+*/
+function getAlbumInfo(){
+	alert("getAlbumInfo");
+	var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
+	var albumName = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
+	var url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist + "&album=" + albumName + "&format=json";
+	alert("failed");
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: url,
+		onload: function(response) {
+			alert("failed");
+		  if(response.responseText){
+			var json = JSON.parse(response.responseText);
+			//var json = response.responseText;
+			return json;
+			//var json = eval('(' + response.responseText + ')');
+			/* 
+			//album = json.album;
+			album = json;
+			//tracks = album.tracks;
+			if(json && album){
+				alert(tracks.track[0].name);
+				console.debug(tracks);
+				console.debug(tracks.track[0].name);
+				console.debug(tracks.track.length); 
+				//alert(); 
+			
+				return album;
+			} */
+		  }
+		},
+		onerror: function(){
+			alert("failed");
+		},
+		ontimeout: function(){
+		  tryAutoScrobbleCallback(infoResult, false);
+		}
+	});
+}
+
 
 /**
 *	database trackinformation
@@ -1370,7 +1440,7 @@ function getVideoSecs () {
 *	
 *
 */
-function us_ajax_scanner () {
+function us_ajax_scanner (currentAlbumTrack) {
 	//increase played time by 1 second
 	var leftToPlay = us_getTempData("us_leftToPlay");
 	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1) {
@@ -1387,10 +1457,15 @@ function us_ajax_scanner () {
 		} */
 	}
 	if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper) {
+		
 		if (document.getElementById("scrobbleStatus")) {
 			document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
 		}
 		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
+		if (is_full_album = "yes") {
+			//TODO us_getTempData("artist");us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
+			us_saveTempData("full_album_track_nr", us_getTempData("full_album_track_nr")+1);
+		}
 	}
 	//check for reset -> ajax youtube change
 	if (us_getTempData("us_reset_now")=="1") {
@@ -1425,6 +1500,7 @@ function us_fillSelection (object, content) {
 function checkFirstRun () {
 	var localVersion = us_getValue("us_local_version", 0);
 	if (localVersion == 0) {
+		initPreferences();
 		us_showBox();
 		var cont = '<div id="us_loginbox_form">'+
 		'<h4>Welcome to YouScrobbler!</h4><br/>'+
@@ -1504,13 +1580,6 @@ String.prototype.rtrim = function() {
 	return this.replace(/\s+$/,"");
 }
 
-functionsLoaded = true;
-}
-catch(err)
-{
-	console.log(err);
-}  
-
 
 /**
 *	--- 8. Update ---
@@ -1556,7 +1625,7 @@ function updateCheck(forced)
 				},
 				onerror: function () {
 					if ((forced)) {
-						var cont =  '<div id="us_loginbox_form"><div class="us_error">Checking for an Updated has failed. Try again later.</div><br/>'+
+						var cont =  '<div id="us_loginbox_form"><div class="us_error">Checking for an update has failed. Try again later.</div><br/>'+
 									'<br/>'+
 									'<br/>'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
@@ -1593,6 +1662,9 @@ function updateCheck(forced)
 		}
 	}
 }
+
+functionsLoaded = true;
+
 try {
 	init(); //run YouScrobbler
 	
