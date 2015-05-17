@@ -1565,12 +1565,13 @@ function updateCheck(forced)
 					response=resp.responseText;
 					us_saveValue('us_last_update', new Date().getTime()+'');
 					remote_version=response.split(" ")[0];
-					local_version=VERSION;						
+					local_version=VERSION;
+					var scriptDownloadUrl = "http://youscrobbler.lukash.de/youscrobbler_"+remote_version.replace(".", "")+".user.js";
 					if (remote_version > local_version)
 					{
 						if (functionsLoaded!=true) {
 							if (confirm("Error occured. Install Update?")) {
-								window.location = scriptDownloadUrl();
+								window.location = scriptDownloadUrl;
 							}
 						}
 						var cont =  '<div id="us_loginbox_form"><span>YouScrobbler '+ String(remote_version) +' is available.</span><br/>'+
@@ -1581,7 +1582,7 @@ function updateCheck(forced)
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>';
 						us_showBox();
 						us_boxcontent('Update available',cont);
-						document.getElementById('us_submit').addEventListener('click', function(){window.open(scriptDownloadUrl(), "_blank");}, false);
+						document.getElementById('us_submit').addEventListener('click', function(){window.open(scriptDownloadUrl, "_blank");}, false);
 					}
 					else if (forced) {
 						document.getElementById("us_manualupdate").firstChild.innerHTML = "No Update available";
