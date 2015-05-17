@@ -9,12 +9,12 @@
 // @include       http://youtube.com/*
 // @include       https://youtube.com/*
 // @include       *//*.youtube.com/tv*
-// @grant	      GM_getValue
-// @grant	      GM_setValue
-// @grant	      GM_xmlhttpRequest
+// @grant         GM_getValue
+// @grant         GM_setValue
+// @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.2.8
+// @version       1.2.9
 // ==/UserScript==
 
 /**
@@ -28,7 +28,7 @@ if (window.top !== window.self) {
   return;
 }
 
-const VERSION = "1.2.8";
+const VERSION = "1.2.9";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -47,7 +47,6 @@ var isGM;
 var functionsLoaded = false;
 
 var trackInfoFromDB = false;
-var secs = 0;
 var album;
 
 /**
@@ -86,10 +85,8 @@ function scriptDownloadUrl () {
 function us_reset () {
 	setTimeout(function () {us_closebox();},0);
 	trackInfoFromDB = false;
-	secs = 0;
 	currentURL = document.URL;
 	document.getElementById("us_temp_info").setAttribute("us_video_id", getYouTubeVideoId());
-	document.getElementById("us_temp_info").setAttribute("us_secs", secs);
 	document.getElementById("us_temp_info").removeAttribute("artist");
 	document.getElementById("us_temp_info").removeAttribute("track");
 	document.getElementById("us_temp_info").removeAttribute("autoscrobbleerror");
@@ -115,7 +112,6 @@ function us_reset () {
 	us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
 	
 	us_abortScrobbling();
-	getVideoSecs();
 	getTrackInfo();
 	us_buttonStatus();
 }
@@ -227,6 +223,7 @@ function GM_main () {
 			case 0:
 			document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
 			default:	document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");	
+						document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
 		}
 		/*if (!document.getElementById("us_temp_info").getAttribute("video_playlist_index", playlistIndex)) {
 			document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
@@ -246,7 +243,7 @@ function GM_main () {
                 //parameters.
             
             playerNode.addEventListener ('onStateChange', 'stateChanged');
-			
+			document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
 			//Playlist     console.log(playerNode.getPlaylistIndex());
 			
             //console.log ('GM: Listener installed just fine.');
@@ -325,7 +322,7 @@ function us_getTempData(name) {
 */
 function us_addButton() {
     us_saveValue('us_drag',false);
-	
+	var secs = 0;
 	var time = new Date();
 	var t = Math.round(time.getTime()/1000);
 	var m = time.getUTCMonth()+1;
@@ -431,19 +428,25 @@ function us_addButton() {
 		button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>';
 		BFather.insertBefore(button, document.getElementById("button-list").firstChild);
 	} */ else { return; }
-	getVideoSecs();
 	us_buttonStatus();
 	document.getElementById("us_temp_info").setAttribute("us_video_id", getYouTubeVideoId());
 	addJS_Node (null, null, GM_main);
-	TO3 = setInterval(function () {us_ajax_scanner()}, 5000);
+	TO3 = setInterval(function () {us_ajax_scanner()}, 1000);
 	
 }
 
 function us_buttonStatus () {
+	var secs = us_getTempData("us_secs");
     if (secs > 30) {
 		document.getElementById('us_scrobblebutton').addEventListener('click', function () {us_showBox(false, true)}, true);
 		us_changeOpac(100,"us_start_scrobblebutton");
 		document.getElementById('us_scrobblebutton').title = "";
+		//watched seconds till scrobbling
+		var time_left_to_scrobble;
+		if (us_getTempData("us_leftToPlay", false)==false || us_getTempData("us_leftToPlay") < 0){
+			time_left_to_scrobble = parseInt(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01);
+			us_saveTempData("us_leftToPlay", parseInt(time_left_to_scrobble));
+		}
 		tryAutoScrobble();
     } else {
 		us_changeOpac(50,"us_start_scrobblebutton");
@@ -454,7 +457,7 @@ function us_buttonStatus () {
 		}
     }
 	if (secs == 0) {
-		setTimeout(function () {getVideoSecs();us_buttonStatus();}, 2000);
+		setTimeout(function () {us_buttonStatus();}, 1000);
 	}
 }
 
@@ -897,6 +900,7 @@ function tryGetAuthToken() {
  * Srobbles a song using the saved track information
  */
 function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
+	var secs = us_getTempData("us_secs");
 	if ((us_getTempData("scrobbled"))==1 && !queued) {
 		us_saveTempData("us_leftToPlay", parseInt(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01));
 		us_saveTempData("scrobbled", 0);
@@ -1383,40 +1387,6 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 	}
 }
 
-/**
-*	Gets the Video-Length in seconds 1. from the video and if failed 2. from the YouTube-Api
-*/
-function getVideoSecs () {
-	//var metaDur = document.querySelectorAll("div#watch7-content meta[itemprop=duration]")[0].content;
-	
-		var vidId = getYouTubeVideoId();
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: youtubeApiUrl + vidId + "?v=2&alt=jsonc",
-			headers: {
-				"Accept": "application/json"
-			},
-			onload: function(response) {
-				var jsonObject = eval("(" + response.responseText + ")");
-				secs = Math.round(jsonObject.data.duration);
-				us_saveTempData("us_secs", secs);
-				//watched seconds till scrobbling
-				var time_left_to_scrobble;
-				if (us_getTempData("us_leftToPlay", false)==false || us_getTempData("us_leftToPlay") < 0){
-					time_left_to_scrobble = parseInt(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01);
-					us_saveTempData("us_leftToPlay", parseInt(time_left_to_scrobble));
-				}
-				
-			},
-			onerror: function() {
-				console.log("Could not connect to YouTube-API");
-			}
-		});
-	
-	
-	return secs;
-}
-
 
 
 /**
@@ -1430,14 +1400,14 @@ function us_ajax_scanner (currentAlbumTrack) {
 	//increase played time by 1 second
 	var leftToPlay = us_getTempData("us_leftToPlay");
 	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1) {
-		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-5));
+		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
 		if (document.getElementById("scrobbleStatus")) {
-			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-5;
+			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-1;
 		}
 		
 		if (TO1Helper) {
 			scrobble_statusbar("scrobble");
-			document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*(leftToPlay/(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01)))+"%";
+			document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01)))+"%";
 		} 
 	}
 	
@@ -1450,15 +1420,15 @@ function us_ajax_scanner (currentAlbumTrack) {
 	}
 	leftToPlay = us_getTempData("us_leftToPlay");
 	if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper) {
-		
+		leftToPlay = 0;
 		if (document.getElementById("scrobbleStatus")) {
 			document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
 		}
 		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
-		if (is_full_album = "yes") {
-			//TODO us_getTempData("artist");us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
+		/* if (is_full_album = "yes") {
+			//TODO 
 			us_saveTempData("full_album_track_nr", us_getTempData("full_album_track_nr")+1);
-		}
+		} */
 	}
 	//check for reset -> ajax youtube change
 	if (us_getTempData("us_reset_now")=="1") {
