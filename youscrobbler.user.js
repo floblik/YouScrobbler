@@ -1566,7 +1566,8 @@ function updateCheck(forced)
 					us_saveValue('us_last_update', new Date().getTime()+'');
 					remote_version=response.split(" ")[0];
 					local_version=VERSION;
-					var scriptDownloadUrl = "http://youscrobbler.lukash.de/youscrobbler_"+remote_version.replace(".", "")+".user.js";
+					var scriptDownloadUrl = "http://youscrobbler.lukash.de/youscrobbler_"+remote_version.replace(/\./g, "")+".user.js";
+					alert(scriptDownloadUrl);
 					if (remote_version > local_version)
 					{
 						if (functionsLoaded!=true) {
