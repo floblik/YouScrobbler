@@ -126,21 +126,21 @@ function initPreferences () {
 	if ((!us_getValue('us_color')) || (us_getValue('us_color')=="r")) {
 		us_saveValue('us_color','red');
 	}
-	if (!us_getValue('database.id')) {
+	if (!us_getValue('database.id', 0)) {
 		us_saveValue('database.id', "");
 		us_saveValue('database.artist', "");
 		us_saveValue('database.track', "");
 	}
-	if (!us_getValue('database_additional.id')) {
+	if (!us_getValue('database_additional.id', 0)) {
 		us_saveValue('database_additional.id', "");
 		us_saveValue('database_additional.albumtitle', "");
 		us_saveValue('database_additional.mbid', "");
 	}
-	if (!us_getValue("database.maxEntries")) {
+	if (!us_getValue("database.maxEntries"), 0) {
 		us_saveValue("database.maxEntries", 5000);
 	}
-	if (!us_getValue("scrobble_at")) {
-		us_saveValue("scrobble_at", 95);
+	if (!us_getValue("scrobble_at"), 0) {
+		us_saveValue("scrobble_at", 75);
 	}
 	if (us_getValue("us_autoscrobble_active", "nf") == "nf") {
 		us_saveValue("us_autoscrobble_active", 1);
@@ -150,6 +150,9 @@ function initPreferences () {
 	}
 	if (us_getValue('scrobblingNotification', "nf") == "nf") {
 		us_saveValue('scrobblingNotification', true);
+	}
+	if (us_getValue('us_autocorrect_tracks', "nf") == "nf") {
+		us_saveValue('us_autocorrect_tracks', true);
 	}
 	if (us_getValue('us_color') == 'red') {
 		icon = "data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D";
@@ -375,7 +378,7 @@ function us_addButton() {
 					'#scrobbleStatus_parent {float: left; height: 18px; margin-left: 15px; padding-left: 5px; padding-top: 2px; color:#888}'+
 					'#us_autoscrobble {vertical-align:middle;}'+
 					'.us_submitbuttons_box_left {float: left;}'+
-					'.us_error { background-color: #F6D8D8; border: 1px solid #f28494; padding: 5px 3px 5px 3px; width: 90%; margin: 5px auto; }'+
+					'.us_error { background-color: #F6D8D8; border: 1px solid #f28494; padding: 5px 3px 5px 3px; width: 90%; margin: 6px auto 10px; }'+
 					'.us_done { background-color: #CCFF99; border: 1px solid #99CC00; padding: 5px 3px 5px 3px; width: 90%; margin: 5px auto; }'+
 					'.us_infobox { z-index:1000000; background-color: #E8E8E8; border-radius: 5px; padding: 10px; position: fixed; right: 16px; bottom: 9px; border: 1px solid #000000; font-size: 11pt; }'+
 					'.us_infobox div { color: #AAAAAA; margin: 1px 5px 0 0; float: left; }'+
@@ -393,7 +396,7 @@ function us_addButton() {
 					'#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}'+
 					'#us_scrobble_on {font-weight:bold; color: #66CC00;} '+
 					'#us_scrobble_failed {font-weight:bold; color: #D10404;} '+
-					'#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.85; margin: -1px 0px 0px 1px} '+
+					'#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: -1px 0px 0px 0px;padding-right: 1px;} '+
 					'#us_loginbox .us_status_small {color: #999; font-size:80%}';
 		   //us_start_scrobblebutton
     var button = createIdElement("span","us_scrobblebutton");
@@ -519,7 +522,6 @@ function us_scrobbleform(loggedIn) {
     var loginbox = document.getElementById('us_loginbox');
 	
 	var messageText = "";
-	var notFoundText = "";
 	var checkedText = "";
 	var databaseFoundText = "";
 	var scrobbleStatus = "";
@@ -551,20 +553,17 @@ function us_scrobbleform(loggedIn) {
 	var asE = us_getTempData("autoscrobbleError");
 	if (asE) {
 		if (asE == "failed") {
-			messageText += '<div class="us_error">AutoScrobble failed. Please scrobble manually.</div>';
+			messageText += '<div class="us_error">AutoScrobble failed. Please edit info.</div>';
 		}
 		if (asE == "noMusic") {
-			messageText += '<div class="us_error">There was an error looking up this track on <span style="font-style:italic">Last.fm</span></div>';
+			messageText += '<div class="us_error">Track not found on <span style="font-style:italic">Last.fm</span></div>';
 		}
 		if (asE == "bad") {
-			messageText += '<div class="us_error">Videotitle is not in the optimal format to be scrobbled: <span style="font-style:italic">Artist - Track</span></div>';
+			messageText += '<div class="us_error">Videotitle is not in a valid format to be scrobbled.</div>';
 		}
 	}
 	if (us_getValue("us_autoscrobble_active", 0) == 1) {
 		checkedText = " checked";
-	}
-	if (feedback == "notFound") {
-		notFoundText = '<div class="us_error">Trackinformation could not be found</div>';
 	}
 	if (((feedback == "found")&&(trackInfoFromDB))) {
 		databaseFoundText = '<div id="foundInDBIcon" title="Trackinformation retrived from personal database"></div>';
@@ -574,22 +573,11 @@ function us_scrobbleform(loggedIn) {
                          ' false">Artist: <input type="text" name="artist" value="'+artist+'" /><br />' +
                          'Track: <input type="text" name="track" value="'+track+'" /><br/><a id="us_quickchange" title="Artist <-> Track" href="#"></a><a href="javascript:;" id="us_more" title="more options">+</a>'+
                          '<p id="us_hiddenform" class="us_hidden">Albumtitle: <input type="text" name="album" value="'+album+'" /><br />'+
-                         '</p>'+notFoundText+
+                         '</p>'+
                          '</form></div><div class="us_submitbuttons"><div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"'+checkedText+'><label for="us_autoscrobble" style="vertical-align:middle;">Auto</label></div>'+scrobbleStatus+'<input id="us_submit" value="Scrobble" type="submit" />'+
                          '</div>';
     us_boxcontent('Scrobble to last.fm - '+us_getValue('us_username'),cont);
-	
-	//mark & paste functionality
-	if (notFoundText != "") {
-		document.forms[0].elements[0].setAttribute("class", "us_clickable_formdesc"); 
-		document.forms[0].elements[0].addEventListener('mousedown', function(){this.setAttribute("selecttext", window.getSelection().toString())}, false);
-		document.forms[0].elements[0].addEventListener('click', function(){us_fillSelection(0, this.getAttribute("selecttext"))}, false);
 		
-		document.forms[0].elements[1].setAttribute("class", "us_clickable_formdesc"); 
-		document.forms[0].elements[1].addEventListener('mousedown', function(){this.setAttribute("selecttext", window.getSelection().toString())}, false);
-		document.forms[0].elements[1].addEventListener('click', function(){us_fillSelection(1, this.getAttribute("selecttext"))}, false);
-	}
-	
 	document.getElementById('us_quickchange').addEventListener('click', us_quickchange, false);
     document.getElementById('us_submit').addEventListener('click', us_scrobblenp, false);
 	document.getElementById('us_autoscrobble').addEventListener('click', function(){if (this.checked){us_saveValue("us_autoscrobble_active", 1)} else {us_saveValue("us_autoscrobble_active", 0)}}, false);
@@ -667,12 +655,12 @@ function us_showmoreform() {
 */
 function us_boxcontent(title,content) {
 	var loginbox = document.getElementById('us_loginbox');
+	if (!loginbox) { return false; }
 	if (loginbox.style.display == 'none') {
 		loginbox.style.display = "block";
 		opacity(loginbox.id, 0, 100, 500);
 	}
-	var loginbox = document.getElementById('us_loginbox');
-	if (!loginbox) { return false; }
+	
 	loginbox.innerHTML = '<h3 id="us_box_head">'+title+'<ul><li><a href="javascript:;" title="Close" id="us_box_close"></a></li><li><a href="javascript:;" title="Settings" id="us_box_settings"></a></li><li><a href="javascript:;" title="Help" id="us_box_help"></a></li></ul></h3>'+
 	'<div>'+content+'</div>';
 	document.getElementById('us_box_close').addEventListener('click', us_closebox, false);
@@ -698,61 +686,66 @@ function us_help() {
 *	Show the settings-window
 */
 function us_settings() {
-		var cmodeStatus = "";
-		var maxEntries = us_getValue("database.maxEntries", 5000);
-		var cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
-					'<div class="us_settings_grp_heading">General</div><div><input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label><input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>'+ 
-					'<br/><hr/><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
-					'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobbling notification</label>'+
-					'<br/><hr/><label for="scrobble_at">Scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span></div>'+
-					'</td>'+
-					'<td class="us_settings_grp us_settings_grp_right"><div class="us_settings_grp_heading us_settings_grp_database" title="Your custom edited track information">Database</div><span>Size: '+((us_getValue("database.id").split(" ").length) -1)+' / <select name="databaseMaxLength" id="databaseMaxLength"><option id="databaseMaxLength500" value="500">500</option><option id="databaseMaxLength5000" value="5000">5000</option><option id="databaseMaxLength-1" value="-1">unlimited</option></select></span>'+
-					'<br/><br/><div class="us_settings_grp_heading">About</div>'+
-					'<span>Version: '+VERSION+'</span><br/><span id="us_manualupdate"><a href="javascript:;" id="us_manualupdate_link">Check for Update</a></span></td></tr></table> '+
-					'</form></div><div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>';
-        
-		us_boxcontent('Settings',cont);
-		var us_settings_color = 'us_settings_color_' + us_getValue('us_color');
-		document.getElementById(us_settings_color).setAttribute("checked", 'checked');
-		if (us_getValue("asFailNotification") || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
-		if (us_getValue("scrobblingNotification")){document.getElementById('us_settings_scrobblingNotification').setAttribute("checked", 'checked');}
-		document.getElementById("databaseMaxLength"+us_getValue("database.maxEntries", 5000).toString()).selected = true;
-		if (document.getElementById("scrobble_at"+us_getValue("scrobble_at", 75).toString())) {
-			document.getElementById(("scrobble_at"+us_getValue("scrobble_at", 75).toString())).selected = true;
-		} else {
-			document.getElementById("scrobble_at75").selected = true;
-		}
-		document.getElementById('us_resetlogin').addEventListener('click', us_resetlogin, false);
-		document.getElementById('us_manualupdate_link').addEventListener('click', function(){document.getElementById("us_manualupdate").innerHTML='<span class="us_status_small">checking</span>';updateCheck(true); }, false);		
-		
-		/**
-			Save settings
-		*/
-		document.getElementById('us_settings_color_red').addEventListener('change', function(){
-			us_saveValue("us_color", "red");
-			document.getElementById('us_icon_small').src = us_icon();
-		});	
-		document.getElementById('us_settings_color_black').addEventListener('change', function(){
-			us_saveValue("us_color", "black");
-			document.getElementById('us_icon_small').src = us_icon();
-		}, false);	
-		document.getElementById('us_settings_asFailNotification').addEventListener('change', function(){
-			us_saveValue("asFailNotification", document.getElementById("us_settings_asFailNotification").checked);
-		}, false);	
-		document.getElementById('us_settings_scrobblingNotification').addEventListener('change', function(){
-			us_saveValue("scrobblingNotification", document.getElementById("us_settings_scrobblingNotification").checked);
-		}, false);
-		document.getElementById('databaseMaxLength').addEventListener('change', function(){
-			var el = document.getElementById('databaseMaxLength');
-			var text = el.options[el.selectedIndex].value;
-			us_saveValue("database.maxEntries", text);
-		}, false);	
+	var cmodeStatus = "";
+	var maxEntries = us_getValue("database.maxEntries", 5000);
+	var cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
+				'<div class="us_settings_grp_heading">General</div><div><input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label><input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>'+ 
+				'<br/><hr/><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
+				'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobbling notification</label>'+
+				'<br/><hr/><label for="scrobble_at">Scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span>'+
+				'<br/><input type="checkbox" id="us_settings_autoCorrect" name="us_settings_autoCorrect"/><label for="us_settings_autoCorrect">latfm auto correct</label></div>'+
+				'</td>'+
+				'<td class="us_settings_grp us_settings_grp_right"><div class="us_settings_grp_heading us_settings_grp_database" title="Your custom edited track information">Database</div><span>Size: '+((us_getValue("database.id").split(" ").length) -1)+' / <select name="databaseMaxLength" id="databaseMaxLength"><option id="databaseMaxLength500" value="500">500</option><option id="databaseMaxLength5000" value="5000">5000</option><option id="databaseMaxLength-1" value="-1">unlimited</option></select></span>'+
+				'<br/><br/><div class="us_settings_grp_heading">About</div>'+
+				'<span>Version: '+VERSION+'</span><br/><span id="us_manualupdate"><a href="javascript:;" id="us_manualupdate_link">Check for Update</a></span></td></tr></table> '+
+				'</form></div><div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>';
 	
-		document.getElementById('scrobble_at').addEventListener('change', function(){
-			var el = document.getElementById('scrobble_at');
-			var text = el.options[el.selectedIndex].value;
-			us_saveValue("scrobble_at", text);
-		});	
+	us_boxcontent('Settings',cont);
+	var us_settings_color = 'us_settings_color_' + us_getValue('us_color');
+	document.getElementById(us_settings_color).setAttribute("checked", 'checked');
+	if (us_getValue("asFailNotification") || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
+	if (us_getValue("scrobblingNotification")){document.getElementById('us_settings_scrobblingNotification').setAttribute("checked", 'checked');}
+	if (us_getValue("us_autocorrect_track")){document.getElementById('us_settings_autoCorrect').setAttribute("checked", 'checked');}
+	document.getElementById("databaseMaxLength"+us_getValue("database.maxEntries", 5000).toString()).selected = true;
+	if (document.getElementById("scrobble_at"+us_getValue("scrobble_at", 75).toString())) {
+		document.getElementById(("scrobble_at"+us_getValue("scrobble_at", 75).toString())).selected = true;
+	} else {
+		document.getElementById("scrobble_at75").selected = true;
+	}
+	document.getElementById('us_resetlogin').addEventListener('click', us_resetlogin, false);
+	document.getElementById('us_manualupdate_link').addEventListener('click', function(){document.getElementById("us_manualupdate").innerHTML='<span class="us_status_small">checking</span>';updateCheck(true); }, false);		
+	
+	/**
+		Save settings
+	*/
+	document.getElementById('us_settings_color_red').addEventListener('change', function(){
+		us_saveValue("us_color", "red");
+		document.getElementById('us_icon_small').src = us_icon();
+	});	
+	document.getElementById('us_settings_color_black').addEventListener('change', function(){
+		us_saveValue("us_color", "black");
+		document.getElementById('us_icon_small').src = us_icon();
+	}, false);	
+	document.getElementById('us_settings_asFailNotification').addEventListener('change', function(){
+		us_saveValue("asFailNotification", document.getElementById("us_settings_asFailNotification").checked);
+	}, false);	
+	document.getElementById('us_settings_autoCorrect').addEventListener('change', function(){
+		us_saveValue("us_autocorrect_track", document.getElementById("us_settings_autoCorrect").checked);
+	}, false);
+	document.getElementById('us_settings_scrobblingNotification').addEventListener('change', function(){
+		us_saveValue("scrobblingNotification", document.getElementById("us_settings_scrobblingNotification").checked);
+	}, false);
+	document.getElementById('databaseMaxLength').addEventListener('change', function(){
+		var el = document.getElementById('databaseMaxLength');
+		var text = el.options[el.selectedIndex].value;
+		us_saveValue("database.maxEntries", text);
+	}, false);	
+
+	document.getElementById('scrobble_at').addEventListener('change', function(){
+		var el = document.getElementById('scrobble_at');
+		var text = el.options[el.selectedIndex].value;
+		us_saveValue("scrobble_at", text);
+	});	
 }
 
 
@@ -764,25 +757,36 @@ function us_settings() {
 function isMusicVideo(infoResult, callback){
   var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
   var track = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
-  var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&format=json";
+  var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
   GM_xmlhttpRequest({
     method: "GET",
     url: url,
     onload: function(response) {
       if(response.responseText){
         json = JSON.parse(response.responseText);
-        if(json && json["track"]){
+		if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
+			us_saveTempData("track", json["track"]["name"]);
+			us_saveTempData("artist", json["track"]["artist"]["name"]);
+		}
+        if(json && json["track"] || trackInfoFromDB){
           tryAutoScrobbleCallback(infoResult, true);
-          return;
-        }
+          return true;
+        } else
+		if (json["error"]) {
+			tryAutoScrobbleCallback("noMusic", false);
+			return false;
+		}
       }
       tryAutoScrobbleCallback(infoResult, false);
+	  return false;
     },
     onerror: function(){
       tryAutoScrobbleCallback(infoResult, false);
+	  return false;
     },
     ontimeout: function(){
       tryAutoScrobbleCallback(infoResult, false);
+	  return false;
     }
   });
 }
@@ -810,6 +814,7 @@ function tryAutoScrobbleCallback(response, musicVideo){
 		if (d.toString().length == 1) {
 		   d='0'+d;
 		}
+				
 		var t2 = time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds();
 		us_saveTempData("us_playstart", time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds());
 		us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
@@ -906,7 +911,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
 		us_saveTempData("scrobbled", 0);
 	}
 	var args = "?artist=" + encodeURIComponent(artist) + "&sk=" + us_getValue("us_sessionKey") + 
-	"&timestamp=" + us_getTempData("us_playstart_s") + "&track=" + encodeURIComponent(track) + "&duration=" + secs;
+	"&timestamp=" + us_getTempData("us_playstart_s") + "&track=" + encodeURIComponent(track) + "&duration=" + secs + "&yt_vid_id=" + getYouTubeVideoId();
 	if (album != 0 && album != "") {
 		album==false;
 		args += "&album=" + encodeURIComponent(album);
@@ -1182,7 +1187,7 @@ function getTrackInfo(){
 			musicInfo[1] = musicInfo[1].replace(/(\.flv)$/gi, '');
 			musicInfo[1] = musicInfo[1].replace(/(\.webm)$/gi, '');
 			
-			//move feat. info
+			//move feat. info from artist to track
 			if (musicInfo[0].match(/ feat.* .*/)) {
 				musicInfo[1] = musicInfo[1] + musicInfo[0].match(/ feat.* .*/);
 				musicInfo[0] = musicInfo[0].replace(/ feat.* .*/, '');
@@ -1198,10 +1203,10 @@ function getTrackInfo(){
 			}
 			
 			
-			if (!us_getTempData("artist")) {
+			if (!us_getTempData("artist") && musicInfo[1] != 0) {
 				us_saveTempData("artist", encodeURIComponent(musicInfo[0]));
 			}
-			if (!us_getTempData("track")) {
+			if (!us_getTempData("track") && musicInfo[0] != 0) {
 				us_saveTempData("track", encodeURIComponent(musicInfo[1]));
 			}
 		}
@@ -1399,7 +1404,8 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 function us_ajax_scanner (currentAlbumTrack) {
 	//increase played time by 1 second
 	var leftToPlay = us_getTempData("us_leftToPlay");
-	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1) {
+	var secs = us_getTempData("us_secs");
+	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1 && !us_getTempData("autoscrobleerror")) {
 		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
 		if (document.getElementById("scrobbleStatus")) {
 			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-1;
@@ -1419,7 +1425,7 @@ function us_ajax_scanner (currentAlbumTrack) {
 		us_saveTempData("us_reset_now", "1");
 	}
 	leftToPlay = us_getTempData("us_leftToPlay");
-	if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper) {
+	if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper && secs > 30) {
 		leftToPlay = 0;
 		if (document.getElementById("scrobbleStatus")) {
 			document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
@@ -1473,6 +1479,7 @@ function checkFirstRun () {
 		document.getElementById('us_submit').addEventListener('click', us_showBox, false);
 		us_saveValue("us_local_version", VERSION);
 	} else if (localVersion < VERSION) {
+		initPreferences();
 		us_showBox();
 		var cont = '<div id="us_loginbox_form">'+
 		'<div class="us_done">Welcome to YouScrobbler  '+VERSION+'.</div><br/>'+
@@ -1580,7 +1587,6 @@ function updateCheck(forced)
 									'Problem updating?<br/>'+									
 									'Try via Greasemonkey (Addons/UserScripts)'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>';
-						us_showBox();
 						us_boxcontent('Update available',cont);
 						document.getElementById('us_submit').addEventListener('click', function(){window.open(scriptDownloadUrl, "_blank");}, false);
 					}
