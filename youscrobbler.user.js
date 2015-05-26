@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.2.9
+// @version       1.3.0
 // ==/UserScript==
 
 /**
@@ -24,15 +24,12 @@
 *	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
 */
 
-if (window.top !== window.self) {
-  return;
-}
 
-const VERSION = "1.2.9";
+
+const VERSION = "1.3.0";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
-var youtubeApiUrl = "http://gdata.youtube.com/feeds/api/videos/";
 var authenticationSessionUrl = "http://youscrobbler.lukash.de/auth";
 var scrobbleSongUrl = "http://youscrobbler.lukash.de/scrobblesong/";
 
@@ -205,7 +202,7 @@ function us_moveboxu(e) {
 
 
 function GM_main () {
-    window.stateChanged = function (state) {
+    window.us_stateChanged = function (state) {
 		var playerNode  = document.getElementById ("movie_player");
 		//get video ID
 		var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
@@ -245,7 +242,7 @@ function GM_main () {
                 //seems to override addEventListener. Hence the nonstandard
                 //parameters.
             
-            playerNode.addEventListener ('onStateChange', 'stateChanged');
+            playerNode.addEventListener ('onStateChange', 'us_stateChanged');
 			document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
 			//Playlist     console.log(playerNode.getPlaylistIndex());
 			
@@ -1196,12 +1193,12 @@ function getTrackInfo(){
 			if(remixInfo && remixInfo.length == 1){
 			  musicInfo[1] += " " + remixInfo[0];
 			}			
+			
 			if (us_getValue("us_autoscrobble_active", 0) == 1) {
 				if ((musicInfo.length != 2)) {
 					feedback = "bad";
 				}
 			}
-			
 			
 			if (!us_getTempData("artist") && musicInfo[1] != 0) {
 				us_saveTempData("artist", encodeURIComponent(musicInfo[0]));
@@ -1636,12 +1633,13 @@ function updateCheck(forced)
 
 functionsLoaded = true;
 
-try {
-	init(); //run YouScrobbler
-	
-} 
-catch (err)
-{
-	console.log(err);
-} 
-updateCheck(false);
+document.addEventListener("DOMContentLoaded", function(event) { 
+  	try {
+		init(); //run YouScrobbler
+	} 
+	catch (err)
+	{
+		console.log(err);
+	} 
+	updateCheck(false);
+});
