@@ -4,10 +4,9 @@ Userscript for Firefox and Chrome for scrobbling to last.fm on YouTube - <a href
 
 <h2>Key Features:</h2>
 
-   -Track information is retrived from the video title and is checked against the Last.fm database
-   -Scrobbling is automatic but can be turned to manual
-   -Trackinformation can always be edited manually
-   -Edits of track information are saved in the browser storage
+   track information detection,
+   automatic or manual scrobbling,
+   saving of manual trackinfo edits
 
 <h2>Installation</h2>
 Mozilla Firefox:
