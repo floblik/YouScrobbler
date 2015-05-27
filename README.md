@@ -4,29 +4,32 @@ Userscript for Firefox and Chrome for scrobbling to last.fm on YouTube - <a href
 
 <h2>Key Features:</h2>
 
-   Track information is retrived from the video title and must match the Last.fm database
-   Manual and automatic scrobbling
-   Edits of track information are saved in your browser storage
+   -Track information is retrived from the video title and is checked against the Last.fm database
+   -Scrobbling is automatic but can be turned to manual
+   -Trackinformation can always be edited manually 
+   -Edits of track information are saved in the browser storage
 
 <h2>Installation</h2>
 Mozilla Firefox:
 
-   Install the addon Greasemonkey (& restart Firefox for the addon to work)
-   Download YouScrobbler by clicking on the download-button. A little Greasemonkey-window opens where you can install    YouScrobbler.
+   Install the addon Greasemonkey (& restart Firefox for the addon to work).
+   Download YouScrobbler on the website or via GitHub and install in Greasemonkey.
     
 
 Google Chrome:
 
   Install the addon Tampermonkey
-  Download YouScrobbler by clicking on the download-button. A Tampermonkey-window opens where you can install         YouScrobbler.
+  Download YouScrobbler on the website or via GitHub and install in Tampermonkey.
 
 <h2>Features</h2>
 Scrobbling
-Videos get scrobbled at the point, you watched 50% of the video and automaticly only if the track is registered in the Last.fm database.
+YouScrobbler starts scrobbling automatically if track couold be found on Last.fm. By default, Last.fm corrections are accepted. The time point on which the track is scrobbled can be customized.
+
 Automatic Scrobbling
 
-Videos only get automaticly scrobbled if the video is in the category music and a/the Trackinformation could be found (of course).
-If not a warning window will open so you have to edit the data manually. This behaviour can be changed in the YouScrobbler settings.
+Videos only get automatically scrobbled if the trackinformation could be retrived.
+If not a warning window will open so you have to edit the data manually. The behaviour can be changed in the YouScrobbler settings.
+
 Automatic identification of trackinformation (Artist, Track)
 
 YouScrobbler will try to analyze Artist and Track from the YouTube Video-Title.
@@ -34,7 +37,7 @@ So this must be in the format artist – track. The format artist-track is also 
 The following characters get deleted: “ and ‘. Brackets(( & [) and their content get deleted, too.
 Database saving
 
-Whenever you edit the automatic detected trackinfromation or enter ones by yourself, this changes are saved in your personal database. This database is located on your computer and saves the right artist- and trackname of the corresponding youtube videos.
+Whenever you edit the automatic detected trackinfromation or enter ones by yourself, this changes are saved in your personal database. This database is located on your computer and saves the right artist- and trackname of the corresponding YouTube videos.
 
 
 
