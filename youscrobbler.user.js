@@ -474,6 +474,8 @@ function us_icon() {
 // Show dialog window
 // Contains either login form, or scrobble form
 function us_showBox(loggedIn, forced) {
+	//check if scrobblerbox was dropped out of possible screen width and if reset
+	if (us_getValue("us_boxpos").split('-')[0].split('px')[0] > screen.availWidth) us_saveValue('us_boxpos',(screen.availWidth)/1.3+"px-"+75+"px");
 	//either create loginbox
 	if (!document.getElementById('us_loginbox')) {
 		var loginbox = createIdElement("div","us_loginbox");
@@ -492,6 +494,8 @@ function us_showBox(loggedIn, forced) {
 	} //or show it
 	else if (document.getElementById('us_loginbox').style.display == 'none') {
 		var loginbox = document.getElementById('us_loginbox');
+		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
+		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
 		loginbox.style.display = "block";
 		opacity(loginbox.id, 0, 100, 500);
 	} else if (forced && document.getElementById('us_loginbox').style.opacity == 1) {
@@ -1128,7 +1132,7 @@ function getTrackInfo(){
 			//remove (*) and/or [*] to remove unimportant data
 			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, '');
 			titleContent = titleContent.replace(/ *\[[^)]*\] */g, '');
-			
+						
 			//remove HD info
 			titleContent = titleContent.replace(/\W* HD( \W*)?/, '');
 			titleContent = titleContent.replace(/\W* HQ( \W*)?/, '');
