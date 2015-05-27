@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.3.0
+// @version       1.3.1
 // ==/UserScript==
 
 /**
@@ -26,7 +26,7 @@
 
 
 
-const VERSION = "1.3.0";
+const VERSION = "1.3.1";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
