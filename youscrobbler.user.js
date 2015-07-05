@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.3.1
+// @version       1.3.2
 // ==/UserScript==
 
 /**
@@ -26,7 +26,7 @@
 
 
 
-const VERSION = "1.3.1";
+const VERSION = "1.3.2";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -1130,8 +1130,8 @@ function getTrackInfo(){
 			//New detection of trackinformation
 						
 			//remove (*) and/or [*] to remove unimportant data
-			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, '');
-			titleContent = titleContent.replace(/ *\[[^)]*\] */g, '');
+			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, ' ');
+			titleContent = titleContent.replace(/ *\[[^)]*\] */g, ' ');
 						
 			//remove HD info
 			titleContent = titleContent.replace(/\W* HD( \W*)?/, '');
@@ -1637,13 +1637,12 @@ function updateCheck(forced)
 
 functionsLoaded = true;
 
-document.addEventListener("DOMContentLoaded", function(event) { 
-  	try {
-		init(); //run YouScrobbler
-	} 
-	catch (err)
-	{
-		console.log(err);
-	} 
-	updateCheck(false);
-});
+try {
+	window.addEventListener ("load", init, false);
+} 
+catch (err)
+{
+	console.log(err);
+} 
+updateCheck(false);
+
