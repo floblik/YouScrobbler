@@ -475,7 +475,9 @@ function us_icon() {
 // Contains either login form, or scrobble form
 function us_showBox(loggedIn, forced) {
 	//check if scrobblerbox was dropped out of possible screen width and if reset
-	if (us_getValue("us_boxpos").split('-')[0].split('px')[0] > screen.availWidth) us_saveValue('us_boxpos',(screen.availWidth)/1.3+"px-"+75+"px");
+	if (us_getValue("us_boxpos").split('-')[0].split('px')[0] > screen.availWidth || us_getValue("us_boxpos").split('-')[0].split('px')[0] < 130 ) {
+		us_saveValue('us_boxpos',(screen.availWidth)/1.3+"px-"+75+"px");
+	}
 	//either create loginbox
 	if (!document.getElementById('us_loginbox')) {
 		var loginbox = createIdElement("div","us_loginbox");
