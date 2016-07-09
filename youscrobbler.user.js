@@ -15,6 +15,8 @@
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
 // @version       1.3.2
+// @noframes
+// @run-at 		  document-idle
 // ==/UserScript==
 
 /**
@@ -24,7 +26,10 @@
 *	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
 */
 
-
+if (window.top != window.self)  //dont run on frames or iframes
+{
+    return;
+}
 
 const VERSION = "1.3.2";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
@@ -36,15 +41,13 @@ var scrobbleSongUrl = "http://youscrobbler.lukash.de/scrobblesong/";
 var currentURL = document.URL;
 var loadgif = '<div class="us_loadgif"><img alt="loading" src="data:image/gif;base64,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" /></div>';
 var icon;
-var BFather,TO3,TO1,TO5,TO6;
+var BFather,TO3,TO5;
 var TO2 = 0;
 var TO1Helper = false;
 var creload = 0;
 var isGM;
-var functionsLoaded = false;
 
 var trackInfoFromDB = false;
-var album;
 
 /**
 *	--- Content ---
@@ -68,8 +71,7 @@ function init() {
 		tryGetAuthToken();
 	}
 	us_addButton();
-	checkFirstRun();
-	
+	checkFirstRun();	
 }
 
 function updateUrl () {
@@ -133,10 +135,10 @@ function initPreferences () {
 		us_saveValue('database_additional.albumtitle', "");
 		us_saveValue('database_additional.mbid', "");
 	}
-	if (!us_getValue("database.maxEntries"), 0) {
+	if (!us_getValue("database.maxEntries", 0)) {
 		us_saveValue("database.maxEntries", 5000);
 	}
-	if (!us_getValue("scrobble_at"), 0) {
+	if (!us_getValue("scrobble_at", 0)) {
 		us_saveValue("scrobble_at", 75);
 	}
 	if (us_getValue("us_autoscrobble_active", "nf") == "nf") {
@@ -203,13 +205,22 @@ function us_moveboxu(e) {
 
 function GM_main () {
     window.us_stateChanged = function (state) {
-		var playerNode  = document.getElementById ("movie_player");
+		if (document.getElementById("c4-player")) {
+			var playerNode  = document.getElementById ("c4-player");
+		} else {
+			var playerNode  = document.getElementById ("movie_player");
+		}
+		console.log(playerNode);
+		console.log(playerNode.getVideoUrl());
 		//get video ID
 		var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
+		var removeRegex = /(\?|%3F|&|%26)v=/gi;
 		var matches = document.URL.match(regex);
 		var vidId;
 		if(matches != null) {
-			var removeRegex = /(\?|%3F|&|%26)v=/gi;
+			vidId = matches[0].replace(removeRegex, "");
+		} else {
+			matches = playerNode.getVideoUrl().match(regex);
 			vidId = matches[0].replace(removeRegex, "");
 		}
 		if (state==1 && vidId != document.getElementById("us_temp_info").getAttribute("us_video_id")) { //||((state==1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != -1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != playlistIndex))
@@ -222,8 +233,11 @@ function GM_main () {
 			break;
 			case 0:
 			document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
-			default:	document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");	
-						document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
+			default:	
+				document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");	
+				if (document.getElementById("us_temp_info").getAttribute("is_full_album") != "yes") {
+					document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
+				}
 		}
 		/*if (!document.getElementById("us_temp_info").getAttribute("video_playlist_index", playlistIndex)) {
 			document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
@@ -236,7 +250,11 @@ function GM_main () {
 		 
     }
     window.onYouTubePlayerReady = function (playerId) {
-        var playerNode  = document.getElementById ("movie_player");
+        if (document.getElementById("c4-player")) {
+			var playerNode  = document.getElementById ("c4-player");
+		} else {
+			var playerNode  = document.getElementById ("movie_player");
+		}
         if (playerNode) {
 				//Note, inside onYouTubePlayerReady ONLY, the YouTube API
                 //seems to override addEventListener. Hence the nonstandard
@@ -377,11 +395,11 @@ function us_addButton() {
 					'.us_submitbuttons_box_left {float: left;}'+
 					'.us_error { background-color: #F6D8D8; border: 1px solid #f28494; padding: 5px 3px 5px 3px; width: 90%; margin: 6px auto 10px; }'+
 					'.us_done { background-color: #CCFF99; border: 1px solid #99CC00; padding: 5px 3px 5px 3px; width: 90%; margin: 5px auto; }'+
-					'.us_infobox { z-index:1000000; background-color: #E8E8E8; border-radius: 5px; padding: 10px; position: fixed; right: 16px; bottom: 9px; border: 1px solid #000000; font-size: 11pt; }'+
+					'.us_infobox { z-index:1000000; background-color: #E8E8E8; border-radius: 5px; padding: 10px; position: fixed; right: 16px; bottom: 9px; border: 1px solid #000000; font-size: 10pt; }'+
 					'.us_infobox div { color: #AAAAAA; margin: 1px 5px 0 0; float: left; }'+
-					'.us_infobox div img { float: right; margin: -1px -6px 1px 8px; }'+
+					'.us_infobox div img { float: right; margin: -1px -6px 1px 8px; vertical-align: middle;}'+
 					'.us_infobox .sep { color:#AAA; }'+
-					'.us_trackinfo { color: #47D93D; font-weight: bold; padding-right: 5px; }'+
+					'.us_trackinfo { color: #47D93D; font-weight: bold; padding-right: 8px; font-size: 11pt; vertical-align: middle;}'+
 					'.us_box .us_center { padding: 10px; text-align: center; }'+
 					'.us_box .us_left { padding: 10px; text-align: left; }'+
 					'#us_submit { float: right; margin-bottom:5px;}'+
@@ -679,10 +697,9 @@ function us_boxcontent(title,content) {
 *	Show the help-window
 */
 function us_help() {
-        var cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Projectpage</a>.</p>'+
+        var cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler">YouScrobbler Website</a>.</p>'+
 					'<h4>Bugs</h4><p class="us_left">Bugs, Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>'+
-					'<h4>Links</h4><p class="us_left"><a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbles Projectpage</a><br/><a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/><a target="_blank" href="http://userscripts.org/scripts/show/119694" title="userscripts page">Page on Userscripts.org</a><br/></p>'+
-					'<h4>Info</h4><p class="us_left">powered by: <a target="_blank" href="http://www.last.fm">Last.fm</a><br/>Thanks to xanadus for the <a target="_blank" href="http://userscripts.org/scripts/show/71606" title="userscripts page">old script</a> YouScrobbler is based on.</p>';
+					'<h4>Links</h4><p class="us_left"><a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler">YouScrobbler Website</a><br/><a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/><a target="_blank" href="https://github.com/floblik/YouScrobbler" title="GitHub">GitHub Repository</a><br/></p>'+
         us_boxcontent('About - YouScrobbler '+VERSION,cont);
 }
 /**
@@ -692,11 +709,11 @@ function us_settings() {
 	var cmodeStatus = "";
 	var maxEntries = us_getValue("database.maxEntries", 5000);
 	var cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
-				'<div class="us_settings_grp_heading">General</div><div><input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label><input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>'+ 
-				'<br/><hr/><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
-				'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobbling notification</label>'+
-				'<br/><hr/><label for="scrobble_at">Scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span>'+
-				'<br/><input type="checkbox" id="us_settings_autoCorrect" name="us_settings_autoCorrect"/><label for="us_settings_autoCorrect">latfm auto correct</label></div>'+
+				'<div class="us_settings_grp_heading">General</div><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
+				'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobble notification</label>'+
+				'<br/><hr/><label for="scrobble_at">scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span>'+
+				'<br/><input type="checkbox" id="us_settings_autoCorrect" name="us_settings_autoCorrect"/><label for="us_settings_autoCorrect">last.fm auto correct</label></div><br/><hr/>'+
+				'<div><input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label><input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>'+ 
 				'</td>'+
 				'<td class="us_settings_grp us_settings_grp_right"><div class="us_settings_grp_heading us_settings_grp_database" title="Your custom edited track information">Database</div><span>Size: '+((us_getValue("database.id").split(" ").length) -1)+' / <select name="databaseMaxLength" id="databaseMaxLength"><option id="databaseMaxLength500" value="500">500</option><option id="databaseMaxLength5000" value="5000">5000</option><option id="databaseMaxLength-1" value="-1">unlimited</option></select></span>'+
 				'<br/><br/><div class="us_settings_grp_heading">About</div>'+
@@ -706,9 +723,9 @@ function us_settings() {
 	us_boxcontent('Settings',cont);
 	var us_settings_color = 'us_settings_color_' + us_getValue('us_color');
 	document.getElementById(us_settings_color).setAttribute("checked", 'checked');
-	if (us_getValue("asFailNotification") || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
+	if (us_getValue("asFailNotification", 0) || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
 	if (us_getValue("scrobblingNotification")){document.getElementById('us_settings_scrobblingNotification').setAttribute("checked", 'checked');}
-	if (us_getValue("us_autocorrect_track")){document.getElementById('us_settings_autoCorrect').setAttribute("checked", 'checked');}
+	if (us_getValue("us_autocorrect_tracks")){document.getElementById('us_settings_autoCorrect').setAttribute("checked", 'checked');}
 	document.getElementById("databaseMaxLength"+us_getValue("database.maxEntries", 5000).toString()).selected = true;
 	if (document.getElementById("scrobble_at"+us_getValue("scrobble_at", 75).toString())) {
 		document.getElementById(("scrobble_at"+us_getValue("scrobble_at", 75).toString())).selected = true;
@@ -733,7 +750,7 @@ function us_settings() {
 		us_saveValue("asFailNotification", document.getElementById("us_settings_asFailNotification").checked);
 	}, false);	
 	document.getElementById('us_settings_autoCorrect').addEventListener('change', function(){
-		us_saveValue("us_autocorrect_track", document.getElementById("us_settings_autoCorrect").checked);
+		us_saveValue("us_autocorrect_tracks", document.getElementById("us_settings_autoCorrect").checked);
 	}, false);
 	document.getElementById('us_settings_scrobblingNotification').addEventListener('change', function(){
 		us_saveValue("scrobblingNotification", document.getElementById("us_settings_scrobblingNotification").checked);
@@ -758,40 +775,42 @@ function us_settings() {
 */
 
 function isMusicVideo(infoResult, callback){
-  var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
-  var track = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
-  var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
-  GM_xmlhttpRequest({
-    method: "GET",
-    url: url,
-    onload: function(response) {
-      if(response.responseText){
-        json = JSON.parse(response.responseText);
-		if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
-			us_saveTempData("track", json["track"]["name"]);
-			us_saveTempData("artist", json["track"]["artist"]["name"]);
+	//if (us_getTempData("is_full_album", 0) != "yes") {
+		var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
+		var track = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
+		var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
+		GM_xmlhttpRequest({
+		method: "GET",
+		url: url,
+		onload: function(response) {
+		  if(response.responseText){
+			json = JSON.parse(response.responseText);
+			if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
+				us_saveTempData("track", json["track"]["name"]);
+				us_saveTempData("artist", json["track"]["artist"]["name"]);
+			}
+			if(json && json["track"] || trackInfoFromDB){
+			  tryAutoScrobbleCallback(infoResult, true);
+			  return true;
+			} else
+			if (json["error"]) {
+				tryAutoScrobbleCallback("noMusic", false);
+				return false;
+			}
+		  }
+		  tryAutoScrobbleCallback(infoResult, false);
+		  return false;
+		},
+		onerror: function(){
+		  tryAutoScrobbleCallback(infoResult, false);
+		  return false;
+		},
+		ontimeout: function(){
+		  tryAutoScrobbleCallback(infoResult, false);
+		  return false;
 		}
-        if(json && json["track"] || trackInfoFromDB){
-          tryAutoScrobbleCallback(infoResult, true);
-          return true;
-        } else
-		if (json["error"]) {
-			tryAutoScrobbleCallback("noMusic", false);
-			return false;
-		}
-      }
-      tryAutoScrobbleCallback(infoResult, false);
-	  return false;
-    },
-    onerror: function(){
-      tryAutoScrobbleCallback(infoResult, false);
-	  return false;
-    },
-    ontimeout: function(){
-      tryAutoScrobbleCallback(infoResult, false);
-	  return false;
-    }
-  });
+		});
+	//}
 }
 
 /**
@@ -800,7 +819,9 @@ function isMusicVideo(infoResult, callback){
 function tryAutoScrobble () {
 	if (us_getValue("us_autoscrobble_active", 0) == 1) {
 		var response = getTrackInfo();
-		isMusicVideo(response);
+		if (us_getTempData("is_full_album") != "yes") {
+			isMusicVideo(response);		
+		}
 	}
 }
 
@@ -849,7 +870,7 @@ function scrobble_statusbar(status) {
 		document.getElementById("us_scrobble_statusbar").style.backgroundColor = "#CC181E";
 	} else if (status=="hide") {
 		document.getElementById("us_scrobble_statusbar").style.display = "none";
-		
+		document.getElementById("us_scrobble_statusbar").style.width = "0";
 	}
 	
 }
@@ -907,7 +928,7 @@ function tryGetAuthToken() {
 /**
  * Srobbles a song using the saved track information
  */
-function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
+function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobble) {
 	var secs = us_getTempData("us_secs");
 	if ((us_getTempData("scrobbled"))==1 && !queued) {
 		us_saveTempData("us_leftToPlay", parseInt(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01));
@@ -916,7 +937,6 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
 	var args = "?artist=" + encodeURIComponent(artist) + "&sk=" + us_getValue("us_sessionKey") + 
 	"&timestamp=" + us_getTempData("us_playstart_s") + "&track=" + encodeURIComponent(track) + "&duration=" + secs + "&yt_vid_id=" + getYouTubeVideoId();
 	if (album != 0 && album != "") {
-		album==false;
 		args += "&album=" + encodeURIComponent(album);
 	}
 	if (mbid != 0 && mbid != "") {
@@ -929,11 +949,11 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
 		TO1Helper = true;
 		if (retry==0) {
 			if (auto==1 && us_getValue("scrobblingNotification")) {
-				us_infoBox('<div><span class="us_trackinfo"><span id="us_artist_display">'+artist+ '</span> <span class="sep">-</span> <span id="us_track_display">' +track+'</span></span> scrobbling in '+time_left_to_scrobble+' seconds. <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAAGnRFWHRTb2Z0d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAAG4SURBVDhPdVNNS0JREL19mAV9LSRo4zqEfoK0FCKiKCyqRQuhFK2HEBRSEPmkTBCjRdHGZRD9idb2uRBavMC30EJwlW4iXnN0roxFA4d7OXPO3LlfSsbnd91z9p4xlq3Zu8Cr35EAhxw0LO+Ml8aTf9WaL0BMYzFZ3jfjdsQ07E0Tc3CcK0DLtlaAWLSmsVLVcZw9QjdhKW6HCwDNw8zloYG2XaT2VfOsWHNYGeYsoYugYBAF+pnrIWShhQdela4kDbRGcU7QZmBUFJgUPHACD7xq296orr8Fi0QOcxKrYHSLAmhfFnDBA69qVTrCvkcIsoPoPwXchBx5THibBShcnAS0OB0thXQBnA06G+Ic4JMFBkUCcOWrl80VKFKEPuYDPALedgG0Q4TeO7aRAL9mLYD3MO8jeHm+SwfY2sJWKaQPcYyTA0hkKim0fk3QV6gPGZiAB155jTeEXkJkx47d0iivVe4dXIA7N34/pEMCbgOt6i39xhS07YeEeG48yKecYKG8GayKrVxBAy08TbOOx/q9/EwXZvkAB3hMGKd5TH4maNnWGfiquY9TI2jN/PnO4JDr/M5K/QDEQYmHdixexAAAAABJRU5ErkJggg==" alt="queued" /></div>');
+				us_infoBox('<div><span class="us_trackinfo"><span id="us_artist_display">'+artist+ '</span> <span class="sep"> - </span> <span id="us_track_display">' +track+'</span></span> '+time_left_to_scrobble+' s <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAAGnRFWHRTb2Z0d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAAG4SURBVDhPdVNNS0JREL19mAV9LSRo4zqEfoK0FCKiKCyqRQuhFK2HEBRSEPmkTBCjRdHGZRD9idb2uRBavMC30EJwlW4iXnN0roxFA4d7OXPO3LlfSsbnd91z9p4xlq3Zu8Cr35EAhxw0LO+Ml8aTf9WaL0BMYzFZ3jfjdsQ07E0Tc3CcK0DLtlaAWLSmsVLVcZw9QjdhKW6HCwDNw8zloYG2XaT2VfOsWHNYGeYsoYugYBAF+pnrIWShhQdela4kDbRGcU7QZmBUFJgUPHACD7xq296orr8Fi0QOcxKrYHSLAmhfFnDBA69qVTrCvkcIsoPoPwXchBx5THibBShcnAS0OB0thXQBnA06G+Ic4JMFBkUCcOWrl80VKFKEPuYDPALedgG0Q4TeO7aRAL9mLYD3MO8jeHm+SwfY2sJWKaQPcYyTA0hkKim0fk3QV6gPGZiAB155jTeEXkJkx47d0iivVe4dXIA7N34/pEMCbgOt6i39xhS07YeEeG48yKecYKG8GayKrVxBAy08TbOOx/q9/EwXZvkAB3hMGKd5TH4maNnWGfiquY9TI2jN/PnO4JDr/M5K/QDEQYmHdixexAAAAABJRU5ErkJggg==" alt="queued" /></div>');
 				window.setTimeout(function() { us_closeinfobox();}, 5000);
 			} else if (us_getValue("scrobblingNotification")){
 				us_boxcontent('Queued...','<div class="us_done">This will be scrobbled in '+time_left_to_scrobble+' seconds. </div>');
-				window.setTimeout(function() { us_closebox(); }, 2000);
+				window.setTimeout(function() { us_closebox(); }, 3000);
 			}
 		}
 	}
@@ -942,16 +962,15 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
         if (queued != 1) {
 			us_boxcontent('Scrobbling...',loadgif);
         }
-        clearTimeout(TO1);
 		GM_xmlhttpRequest({
 			method: "GET",
 			url: scrobbleSongUrl + args,
-			onload: function(responseDetails) { scrobbleFeedback (responseDetails, artist, track, queued) },
+			onload: function(responseDetails) { scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) },
 			onerror: 	
 				function() {GM_xmlhttpRequest({
 					method: "GET",
 					url: altScrobbleSongUrl + args,
-					onload: function(responseDetails) { scrobbleFeedback (responseDetails, artist, track, queued) },
+					onload: function(responseDetails) { scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) },
 					onerror: function() {
 						us_infoBox('<div class="us_error">Servererror</div>');
 						window.setTimeout(function() { us_closeinfobox(); }, 10000);
@@ -966,7 +985,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto) {
 /**	
 *	Feedback of scrobbleing
 */
-function scrobbleFeedback (responseDetails, artist, track, queued) {
+function scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) {
 	var feedback = responseDetails.responseText;
 	var loginbox = document.getElementById('us_loginbox');
 	if ((feedback.indexOf('<lfm status="ok"'))!=-1) {
@@ -990,7 +1009,28 @@ function scrobbleFeedback (responseDetails, artist, track, queued) {
 			else {
 				us_infoBox('<div class="us_error">Error: '+feedback+'</div>');
 			}
-	}           		
+	}
+
+	if (full_album_scrobble || us_getTempData("is_full_album") == "yes") {
+		TO1Helper=true;
+		us_saveTempData("scrobbled", 0);
+		scrobble_statusbar("hide");
+		var global_album = JSON.parse(us_getTempData("global_album"));
+		console.log(global_album);
+		var track_num = parseInt(us_getTempData("full_album_track_nr"));
+		
+		us_saveTempData("artist", global_album.tracks.track[track_num].artist.name);
+		us_saveTempData("track", global_album.tracks.track[track_num].name);
+		us_saveTempData("us_secs", global_album.tracks.track[track_num].duration);
+		
+		var album_left_to_play = global_album.tracks.track[track_num].duration - 1;
+		us_saveTempData("us_leftToPlay", album_left_to_play);
+		
+		track_num++;
+		us_saveTempData("full_album_track_nr", track_num);	
+		
+		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
+	}
 }
 
 /**
@@ -1017,7 +1057,6 @@ function us_scrobblenp(retry) {
 */
 function us_abortScrobbling () {
 	if (TO1Helper) {
-		try { clearTimeout(TO1); } catch (e) {console.log(e);} 
 		TO1Helper = false;
 		if (document.getElementById("scrobbleStatus_parent")) {
 			var element = document.getElementById("scrobbleStatus_parent");
@@ -1058,7 +1097,7 @@ function us_resetlogin(error) {
  * Check whether user credentials are stored or not.
  */
 function isLoggedIn() {
-	if((us_getValue("us_username") == "") || (!us_getValue("us_username")) || (us_getValue("us_sessionKey") == "") || (!us_getValue("us_sessionKey"))) {
+	if((!us_getValue("us_username", 0)) || (!us_getValue("us_sessionKey", 0))) {
 		return false;
 	}
 	return true;
@@ -1085,11 +1124,18 @@ function isMusicCategory () {
 */
 function getYouTubeVideoId () {
 	var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
-	var matches = document.URL.match(regex);
+	var removeRegex = /(\?|%3F|&|%26)v=/gi;
+	var matches = document.URL.match(regex);	
+
 	if(matches == null) {
+		if (document.getElementById("c4-player")) {
+			var playerNode  = document.getElementById("c4-player");
+			console.log(playerNode);
+			console.log(playerNode.getVideoUrl());
+			matches = playerNode.getVideoUrl().match(regex);
+		}
 		return null;
 	}
-	var removeRegex = /(\?|%3F|&|%26)v=/gi;
 	var vidId = matches[0].replace(removeRegex, "");
 	return vidId;
 }
@@ -1099,6 +1145,8 @@ function getYouTubeVideoId () {
 */
 function getTrackInfo(){
 	var feedback;
+	
+	
 	if ((us_getTempData("artist")!=0) || (us_getTempData("track")!=0)) {
 		feedback = "found";
 	} else {
@@ -1213,18 +1261,15 @@ function getTrackInfo(){
 				us_saveTempData("track", encodeURIComponent(musicInfo[1]));
 			}
 		}
+		
 		//Full Album Video
-		/* if (titleContentOriginal.match(/Full Album/i)) {
-			var album = getAlbumInfo();
-			//album = JSON.parse(json);
-			console.debug(album);
-			alert(" "+album.name);
-			if (us_getTempData("full_album_track_nr", 0) == 0 && album.name == decodeURIComponent(us_getTempData("track"))) {
-				us_saveTempData("full_album_track_nr", 1);
-			}
-			us_saveTempData("artist", album.track[us_getTempData("full_album_track_nr")].artist.name);
-			us_saveTempData("track", album.track[us_getTempData("full_album_track_nr")].name);			
-		}  */
+		if (titleContentOriginal.match(/Full Album/i)) {
+			//console.log(global_album);
+			us_saveTempData("is_full_album", "yes");
+			getAlbumInfo();
+			//console.log(global_album);
+			//album = JSON.parse(json);	
+		}  
 	}
 	return feedback;
 }
@@ -1232,43 +1277,63 @@ function getTrackInfo(){
 /**
 * 	fetchs full ablum info from last.fm api
 */
-/* function getAlbumInfo(){
-	alert("getAlbumInfo");
-	var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
-	var albumName = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
-	var url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist + "&album=" + albumName + "&format=json";
+function getAlbumInfo(){
+	//alert("getAlbumInfo");
+	var artist = decodeURIComponent(us_getTempData("artist"));
+	var albumName = decodeURIComponent(us_getTempData("track"));
+	var url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist.replace(' ', '+') + "&album=" + albumName.replace(' ', '+') + "&format=json";
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: url,
 		onload: function(response) {
 		  if(response.responseText){
-			//var json = JSON.parse(response.responseText);
+			var json = JSON.parse(response.responseText);
 			var response = response.responseText;
 			//return response;
-			var json = eval('(' + response.responseText + ')');
+			//var json = eval('(' + response.responseText + ')');
 			console.debug(json);
-			//album = json.album;
-			album = json;
-			//tracks = album.tracks;
-			if(json){
-				alert(tracks.track[0].name);
-				console.debug(tracks);
+			album = json.album;
+			/* console.log(album);
+			console.log(album.artist);
+			console.log(artist);
+			console.log(album.name);
+			console.log(albumName);*/
+			console.log(album.artist == artist && album.name == albumName); 
+			if(album.artist == artist && album.name == albumName){
+				//alert(tracks.track[0].name);
+				/* console.debug(tracks);
 				console.debug(tracks.track[0].name);
-				console.debug(tracks.track.length); 
+				console.debug(tracks.track[0].duration); */
+				
 				//alert(); 
+				us_saveTempData("is_full_album", "yes");
+				
+				us_saveTempData("global_album", JSON.stringify(album));
+				
+				us_saveTempData("full_album_track_nr", 1);
+				var track_num = us_getTempData("full_album_track_nr") - 1;
+				
+				us_saveTempData("us_secs", album.tracks.track[track_num].duration);
+				
+				var album_left_to_play = album.tracks.track[track_num].duration - 1;
+				us_saveTempData("us_leftToPlay", album_left_to_play);
 			
-				return album;
+				us_saveTempData("artist", album.tracks.track[track_num].artist.name);
+				us_saveTempData("track", album.tracks.track[track_num].name);	
+				
+				var response = getTrackInfo();		
+				isMusicVideo(response);	
 			} 
 		  }
 		},
 		onerror: function(){
-			alert("failed");
+			//alert("failed");
 		},
 		ontimeout: function(){
-		  tryAutoScrobbleCallback(infoResult, false);
+		  //tryAutoScrobbleCallback(infoResult, false);
 		}
 	});
-} */
+} 
 
 
 /**
@@ -1406,20 +1471,26 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 */
 function us_ajax_scanner (currentAlbumTrack) {
 	//increase played time by 1 second
-	var leftToPlay = us_getTempData("us_leftToPlay");
-	var secs = us_getTempData("us_secs");
+	var leftToPlay = parseInt(us_getTempData("us_leftToPlay"));
+	var secs = parseInt(us_getTempData("us_secs"));
+	var scrobble_at = parseInt(us_getValue("scrobble_at"));
+	
 	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1 && !us_getTempData("autoscrobleerror")) {
 		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
 		if (document.getElementById("scrobbleStatus")) {
 			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-1;
 		}
-		
+
 		if (TO1Helper) {
 			scrobble_statusbar("scrobble");
-			document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01)))+"%";
-		} 
+			if (us_getTempData("is_full_album") == "yes") {
+				document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(secs*(100)*0.01)))+"%";
+			} else {
+				document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(secs*((scrobble_at)*0.01))))+"%";
+			}
+		}
 	}
-	
+
 	if (us_getTempData("video_end_reached") == "yes" && us_getTempData("video_is_playing", 0) == 1) {
 		us_saveTempData("us_reset_now", "1");
 		us_saveTempData("video_end_reached", 0);
@@ -1434,10 +1505,7 @@ function us_ajax_scanner (currentAlbumTrack) {
 			document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
 		}
 		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
-		/* if (is_full_album = "yes") {
-			//TODO 
-			us_saveTempData("full_album_track_nr", us_getTempData("full_album_track_nr")+1);
-		} */
+		
 	}
 	//check for reset -> ajax youtube change
 	if (us_getTempData("us_reset_now")=="1") {
@@ -1453,7 +1521,7 @@ function us_quickchange() {
 	var artist = document.forms[0].elements[0].value;
 	document.forms[0].elements[0].value = document.forms[0].elements[1].value;
 	document.forms[0].elements[1].value = artist;
-} 
+}
 
 /**
 *	temporary saves data in forms attributes
@@ -1537,7 +1605,7 @@ function opacity(id, opacStart, opacEnd, millisec) {
 			window.setTimeout(function(b) { return function() { us_changeOpac(b, id); } }(i),speed*timer);
 			timer++;
 		}
-	}	
+	}
 }
 //
 // http://www.somacon.com/p355.php
@@ -1579,15 +1647,10 @@ function updateCheck(forced)
 					var scriptDownloadUrl = "http://youscrobbler.lukash.de/youscrobbler_"+remote_version.replace(/\./g, "")+".user.js";
 					if (remote_version > local_version)
 					{
-						if (functionsLoaded!=true) {
-							if (confirm("Error occured. Install Update?")) {
-								window.location = scriptDownloadUrl;
-							}
-						}
 						var cont =  '<div id="us_loginbox_form"><span>YouScrobbler '+ String(remote_version) +' is available.</span><br/>'+
 									'<span>Changes are applied after new page load.</span><br/>'+
 									'<br/>'+
-									'Problem updating?<br/>'+									
+									'Problem updating?<br/>'+
 									'Try via Greasemonkey (Addons/UserScripts)'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>';
 						us_boxcontent('Update available',cont);
@@ -1609,7 +1672,7 @@ function updateCheck(forced)
 					} else {
 						us_infoBox('<div class="us_error">Updatecheck failed</div>');
 						window.setTimeout(function() { us_closeinfobox(); }, 5000);
-					}						
+					}
 				}
 			});
 		}
@@ -1630,21 +1693,9 @@ function updateCheck(forced)
 			}
 		}
 	}
-	if (functionsLoaded!=true) {
-		if (confirm("Error occured. Install newest Version?")) {
-			window.location = scriptDownloadUrl();
-		}
-	}
 }
 
-functionsLoaded = true;
+init();
 
-try {
-	window.addEventListener ("load", init, false);
-} 
-catch (err)
-{
-	console.log(err);
-} 
 updateCheck(false);
 
