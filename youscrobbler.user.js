@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.3.2
+// @version       1.3.3
 // @noframes
 // @run-at 		  document-idle
 // ==/UserScript==
@@ -91,7 +91,6 @@ function us_reset () {
 	document.getElementById("us_temp_info").removeAttribute("autoscrobbleerror");
 	document.getElementById("us_temp_info").removeAttribute("scrobbled");
 	document.getElementById("us_temp_info").setAttribute("us_leftToPlay", -1);
-	document.getElementById("us_temp_info").removeAttribute("us_secs");
 	document.getElementById("us_temp_info").removeAttribute("us_playstart");
 	document.getElementById("us_temp_info").removeAttribute("us_playstart_s");
 	us_saveValue("is_full_album", 0);
@@ -190,7 +189,7 @@ function us_movebox(e) {
 	if (us_getValue('us_drag')) {
 		var el = document.getElementById('us_loginbox');
 		el.style.left = (150+e.clientX-us_getValue('us_drag').split('-')[0])+"px";
-		el.style.top = (e.clientY-us_getValue('us_drag').split('-')[1])+"px";
+		el.style.top = e.clientY-us_getValue('us_drag').split('-')[1]+"px";
 	}
 } 
 function us_moveboxd(e) {
@@ -691,16 +690,16 @@ function us_boxcontent(title,content) {
 
 	document.addEventListener('mousemove', us_movebox, false);
 	document.getElementById('us_box_head').addEventListener('mousedown', us_moveboxd, false);
-	document.addEventListener('mouseup', us_moveboxu, false);
+	document.getElementById('us_box_head').addEventListener('mouseup', us_moveboxu, false);
 }
 
 /**
 *	Show the help-window
 */
 function us_help() {
-        var cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Website</a>.</p>'+
-					'<h4>Feedback</h4><p class="us_left">Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>'+
-					'<h4>Links</h4><p class="us_left"><a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbles Website</a><br/><a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/><a target="_blank" href="https://github.com/floblik/YouScrobbler" title="GitHub">GitHub repo</a><br/></p>';
+        var cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Projectpage</a>.</p>'+
+					'<h4>Bugs</h4><p class="us_left">Bugs, Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>'+
+					'<h4>Links</h4><p class="us_left"><a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbles Projectpage</a><br/><a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/><a target="_blank" href="http://userscripts.org/scripts/show/119694" title="userscripts page">Page on Userscripts.org</a><br/></p>'+
         us_boxcontent('About - YouScrobbler '+VERSION,cont);
 }
 /**
