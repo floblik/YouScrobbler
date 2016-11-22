@@ -31,7 +31,7 @@ if (window.top != window.self)  //dont run on frames or iframes
     return;
 }
 
-const VERSION = "1.3.2";
+const VERSION = "1.3.3";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
