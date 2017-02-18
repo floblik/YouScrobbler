@@ -16,7 +16,7 @@
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
 // @version       1.4
 // @noframes
-// @run-at	  document-idle
+// @run-at	  	  document-idle
 // ==/UserScript==
 
 /**
@@ -26,7 +26,7 @@
 *	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
 */
 
-if (window.top != window.self)  //dont run on frames or iframes
+if (window.top != window.self)
 {
     return;
 }
@@ -227,7 +227,6 @@ function GM_main () {
 		switch (state) {
 			case 1:
 			document.getElementById("us_temp_info").setAttribute("video_is_playing", "1");
-			//document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
 			break;
 			case 0:
 			document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
@@ -236,16 +235,7 @@ function GM_main () {
 				if (document.getElementById("us_temp_info").getAttribute("is_full_album") != "yes") {
 					document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
 				}
-		}
-		/*if (!document.getElementById("us_temp_info").getAttribute("video_playlist_index", playlistIndex)) {
-			document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
-		}
-		console.debug("Attribute: "+document.getElementById("us_temp_info").getAttribute("video_playlist_index"));
-		console.debug("PL I: " + playlistIndex);*/
-		/* if (document.getElementById("us_temp_info").getAttribute("video_playlist_index") != null) {
-			document.getElementById("us_temp_info").setAttribute("video_playlist_index", playlistIndex);
-		} */
-		 
+		}		 
     }
     window.onYouTubePlayerReady = function (playerId) {
         if (document.getElementById("c4-player")) {
@@ -405,7 +395,7 @@ function us_addButton() {
 					'#us_scrobblebutton { float:right; cursor: pointer; margin-left:16px;}'+
 					'#us_start_scrobblebutton {padding-left:3px!important}'+ //Feather check
 					'#us_icon_small, #us_start_scrobblebutton_text { vertical-align: middle;}}'+ 
-					'#foundInDBIcon { }'+
+					'#fullAlbumIcon { float: left; height: 16px; width: 16px; cursor: help;}'+
 					'#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}'+
 					'#us_scrobble_on {font-weight:bold; color: #66CC00;} '+
 					'#us_scrobble_failed {font-weight:bold; color: #D10404;} '+
@@ -453,6 +443,8 @@ function us_addButton() {
 
 function us_buttonStatus () {
 	var secs = us_getTempData("us_secs");
+	document.getElementById("us_start_scrobblebutton").style.opacity = 1;
+	
     if (secs > 30) {
 		document.getElementById('us_scrobblebutton').addEventListener('click', us_toggleBox, true);
 		document.getElementById('us_scrobblebutton').title = "";
@@ -472,6 +464,7 @@ function us_buttonStatus () {
 			document.getElementById('us_scrobblebutton').title = "Video is too short to be scrobbled.";
 		}
     }
+
 	if (secs == 0) {
 		setTimeout(function () {us_buttonStatus();}, 1000);
 	}
@@ -582,6 +575,9 @@ function us_scrobbleform(justLoggedIn) {
 	}
 	if (((feedback == "found")&&(trackInfoFromDB))) {
 		databaseFoundText = '<div id="foundInDBIcon" title="Trackinformation retrived from personal database"></div>';
+	}
+	if (us_getTempData("is_full_album") == "yes") {
+		databaseFoundText = '<div id="fullAlbumIcon" title="Video was recognized as a full album">Full Album: Track '+us_getTempData("full_album_track_nr")+' of '+us_getTempData("full_album_track_count")+'</div>';
 	}
 		
     var cont = '<div id="us_loginbox_form">'+databaseFoundText+messageText+'<form name="us_scrobbleform" onSubmit="return'+
@@ -755,42 +751,41 @@ function us_settings() {
 */
 
 function isMusicVideo(infoResult, callback){
-	//if (us_getTempData("is_full_album", 0) != "yes") {
-		var artist = decodeURIComponent(us_getTempData("artist")).replace(' ', '+');
-		var track = decodeURIComponent(us_getTempData("track")).replace(' ', '+');
-		var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
-		GM_xmlhttpRequest({
-		method: "GET",
-		url: url,
-		onload: function(response) {
-		  if(response.responseText){
-			json = JSON.parse(response.responseText);
-			if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
-				us_saveTempData("track", json["track"]["name"]);
-				us_saveTempData("artist", json["track"]["artist"]["name"]);
-			}
-			if(json && json["track"] || trackInfoFromDB){
-			  tryAutoScrobbleCallback(infoResult, true);
-			  return true;
-			} else
-			if (json["error"]) {
-				tryAutoScrobbleCallback("noMusic", false);
-				return false;
-			}
-		  }
-		  tryAutoScrobbleCallback(infoResult, false);
-		  return false;
-		},
-		onerror: function(){
-		  tryAutoScrobbleCallback(infoResult, false);
-		  return false;
-		},
-		ontimeout: function(){
-		  tryAutoScrobbleCallback(infoResult, false);
-		  return false;
+	var artist = encodeURIComponent(us_getTempData("artist")).replace(' ', '+');
+	var track = encodeURIComponent(us_getTempData("track")).replace(' ', '+');
+	var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
+
+	GM_xmlhttpRequest({
+	method: "GET",
+	url: url,
+	onload: function(response) {
+	  if(response.responseText){
+		json = JSON.parse(response.responseText);
+		if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
+			us_saveTempData("track", json["track"]["name"]);
+			us_saveTempData("artist", json["track"]["artist"]["name"]);
 		}
-		});
-	//}
+		if(json && json["track"] || trackInfoFromDB){
+		  tryAutoScrobbleCallback(infoResult, true);
+		  return true;
+		} else
+		if (json["error"]) {
+			tryAutoScrobbleCallback("noMusic", false);
+			return false;
+		}
+	  }
+	  tryAutoScrobbleCallback(infoResult, false);
+	  return false;
+	},
+	onerror: function(){
+	  tryAutoScrobbleCallback(infoResult, false);
+	  return false;
+	},
+	ontimeout: function(){
+	  tryAutoScrobbleCallback(infoResult, false);
+	  return false;
+	}
+	});
 }
 
 /**
@@ -997,6 +992,9 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 		TO1Helper=true;
 		us_saveTempData("scrobbled", 0);
 		scrobble_statusbar("hide");
+		
+		us_closebox();
+		
 		var global_album = JSON.parse(us_getTempData("global_album"));
 		var track_num = parseInt(us_getTempData("full_album_track_nr"));
 		
@@ -1006,11 +1004,13 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 		
 		var album_left_to_play = global_album.tracks.track[track_num].duration - 1;
 		us_saveTempData("us_leftToPlay", album_left_to_play);
+		us_saveTempData("us_playstart", time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds());
+		us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
 		
 		track_num++;
 		us_saveTempData("full_album_track_nr", track_num);	
 		
-		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
+		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1, 1);
 	}
 }
 
@@ -1111,8 +1111,6 @@ function getYouTubeVideoId () {
 	if(matches == null) {
 		if (document.getElementById("c4-player")) {
 			var playerNode  = document.getElementById("c4-player");
-			console.log(playerNode);
-			console.log(playerNode.getVideoUrl());
 			matches = playerNode.getVideoUrl().match(regex);
 		}
 		return null;
@@ -1125,8 +1123,7 @@ function getYouTubeVideoId () {
 * 	Detects the trackinformation from the video title and temporarily saves it
 */
 function getTrackInfo(){
-	var feedback;
-	
+	var feedback;	
 	
 	if ((us_getTempData("artist")!=0) || (us_getTempData("track")!=0)) {
 		feedback = "found";
@@ -1159,18 +1156,18 @@ function getTrackInfo(){
 			trackInfoFromDB = true;
 		} else {
 			//New detection of trackinformation
-						
+
 			//remove (*) and/or [*] to remove unimportant data
 			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, ' ');
 			titleContent = titleContent.replace(/ *\[[^)]*\] */g, ' ');
-						
+
 			//remove HD info
 			titleContent = titleContent.replace(/\W* HD( \W*)?/, '');
 			titleContent = titleContent.replace(/\W* HQ( \W*)?/, '');
 			
 			//get remix info
 			var remixInfo = titleContentOriginal.match(/\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\)/i);
-					
+
 			var musicInfo = titleContent.split(" - ");
 			if (musicInfo.length == 1) {
 				musicInfo = titleContent.split("-");
@@ -1196,7 +1193,7 @@ function getTrackInfo(){
 				musicInfo[i] = musicInfo[i].replace(/^\s*"|"\s*$/g, '');
 				musicInfo[i] = musicInfo[i].replace(/^\s*'|'\s*$/g, '');
 			}
-						
+
 			if ((musicInfo.length == 1)||(musicInfo[0] == false) || (musicInfo[1] == false)) {
 				musicInfo[0] = "";
 				musicInfo[1] = "";
@@ -1224,6 +1221,7 @@ function getTrackInfo(){
 				musicInfo[1] = musicInfo[1] + musicInfo[0].match(/ feat.* .*/);
 				musicInfo[0] = musicInfo[0].replace(/ feat.* .*/, '');
 			}
+			
 			//add remix info
 			if(remixInfo && remixInfo.length == 1){
 			  musicInfo[1] += " " + remixInfo[0];
@@ -1238,6 +1236,7 @@ function getTrackInfo(){
 			if (!us_getTempData("artist") && musicInfo[1] != 0) {
 				us_saveTempData("artist", encodeURIComponent(musicInfo[0]));
 			}
+			
 			if (!us_getTempData("track") && musicInfo[0] != 0) {
 				us_saveTempData("track", encodeURIComponent(musicInfo[1]));
 			}
@@ -1245,11 +1244,8 @@ function getTrackInfo(){
 		
 		//Full Album Video
 		if (titleContentOriginal.match(/Full Album/i)) {
-			//console.log(global_album);
 			us_saveTempData("is_full_album", "yes");
 			getAlbumInfo();
-			//console.log(global_album);
-			//album = JSON.parse(json);	
 		}  
 	}
 	return feedback;
@@ -1259,7 +1255,6 @@ function getTrackInfo(){
 * 	fetchs full ablum info from last.fm api
 */
 function getAlbumInfo(){
-	//alert("getAlbumInfo");
 	var artist = decodeURIComponent(us_getTempData("artist"));
 	var albumName = decodeURIComponent(us_getTempData("track"));
 	var url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist.replace(' ', '+') + "&album=" + albumName.replace(' ', '+') + "&format=json";
@@ -1270,29 +1265,18 @@ function getAlbumInfo(){
 		  if(response.responseText){
 			var json = JSON.parse(response.responseText);
 			var response = response.responseText;
-			//return response;
-			//var json = eval('(' + response.responseText + ')');
-			console.debug(json);
+			
 			album = json.album;
-			/* console.log(album);
-			console.log(album.artist);
-			console.log(artist);
-			console.log(album.name);
-			console.log(albumName);*/
-			console.log(album.artist == artist && album.name == albumName); 
-			if(album.artist == artist && album.name == albumName){
-				//alert(tracks.track[0].name);
-				/* console.debug(tracks);
-				console.debug(tracks.track[0].name);
-				console.debug(tracks.track[0].duration); */
-				
-				//alert(); 
+			
+			if(album.artist == artist && album.name == albumName && album.tracks.track.length > 1){
 				us_saveTempData("is_full_album", "yes");
 				
 				us_saveTempData("global_album", JSON.stringify(album));
 				
 				us_saveTempData("full_album_track_nr", 1);
 				var track_num = us_getTempData("full_album_track_nr") - 1;
+
+				us_saveTempData("full_album_track_count", album.tracks.track.length);
 				
 				us_saveTempData("us_secs", album.tracks.track[track_num].duration);
 				
@@ -1304,7 +1288,9 @@ function getAlbumInfo(){
 				
 				var response = getTrackInfo();		
 				isMusicVideo(response);	
-			} 
+			} else {
+				us_saveTempData("is_full_album", 0);
+			}
 		  }
 		},
 		onerror: function(){
@@ -1450,7 +1436,7 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 *	
 *
 */
-function us_ajax_scanner (currentAlbumTrack) {
+function us_ajax_scanner () {
 	//increase played time by 1 second
 	var leftToPlay = parseInt(us_getTempData("us_leftToPlay"));
 	var secs = parseInt(us_getTempData("us_secs"));
@@ -1486,7 +1472,6 @@ function us_ajax_scanner (currentAlbumTrack) {
 			document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
 		}
 		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
-		
 	}
 	//check for reset -> ajax youtube change
 	if (us_getTempData("us_reset_now")=="1") {
