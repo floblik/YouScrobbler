@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.3.3
+// @version       1.4
 // @noframes
 // @run-at	  document-idle
 // ==/UserScript==
@@ -31,7 +31,7 @@ if (window.top != window.self)  //dont run on frames or iframes
     return;
 }
 
-const VERSION = "1.3.3";
+const VERSION = "1.4";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -67,8 +67,9 @@ var trackInfoFromDB = false;
 */
 function init() {	
 	isGM = typeof GM_getValue != 'undefined' && typeof GM_getValue('a', 'b') != 'undefined';
+
 	if (!isLoggedIn()) {
-		tryGetAuthToken();
+		tryGetAuthToken();		
 	}
 	us_addButton();
 	checkFirstRun();	
@@ -209,8 +210,6 @@ function GM_main () {
 		} else {
 			var playerNode  = document.getElementById ("movie_player");
 		}
-		console.log(playerNode);
-		console.log(playerNode.getVideoUrl());
 		//get video ID
 		var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
 		var removeRegex = /(\?|%3F|&|%26)v=/gi;
@@ -878,13 +877,15 @@ function us_authenticate() {
  */
 function tryGetAuthToken() {
 	var url = currentURL;
-	var tokenRegex = /(\?|&)token=[0-9a-fA-F]{32}/gi;
+	var tokenRegex = /(\?|&)token=[^]{32}/gi;
 	var matches = url.match(tokenRegex);
+
 	if(matches == null) {
 		return;
 	}
 	var rawToken = matches[0];
 	var token = rawToken.substring(7); //7, based on '?' or '&' and 'token='.
+
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: authenticationSessionUrl + "?token=" + token,
@@ -997,7 +998,6 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 		us_saveTempData("scrobbled", 0);
 		scrobble_statusbar("hide");
 		var global_album = JSON.parse(us_getTempData("global_album"));
-		console.log(global_album);
 		var track_num = parseInt(us_getTempData("full_album_track_nr"));
 		
 		us_saveTempData("artist", global_album.tracks.track[track_num].artist.name);
@@ -1656,4 +1656,3 @@ function updateCheck(forced)
 init();
 
 updateCheck(false);
-
