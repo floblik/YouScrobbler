@@ -179,9 +179,7 @@ function getAttributeLocation(attribute,element)  {
 // Creates a <type id="id">
 function createIdElement(type, id) {
 	var el = document.createElement(type);
-	var idatr = document.createAttribute("id");
-	idatr.nodeValue = id;
-	el.setAttributeNode(idatr);
+	el.setAttribute('id', id);
 	return el;
 }
 
@@ -413,11 +411,11 @@ function us_addButton() {
 					'#us_scrobble_on {font-weight:bold; color: #66CC00;} '+
 					'#us_scrobble_failed {font-weight:bold; color: #D10404;} '+
 					'#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: -1px 0px 0px 0px;padding-right: 1px;} '+
-					'#us_loginbox .us_status_small {color: #999; font-size:80%}';
+					'#us_loginbox .us_status_small {color: #999; font-size:80%}'+
+					'.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}'+
+					'.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}';
 		   //us_start_scrobblebutton
     var button = createIdElement("span","us_scrobblebutton");
-		
-    var classatr = document.createAttribute("class");
 
 	button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>';//postxanadus
 	
@@ -457,9 +455,9 @@ function us_addButton() {
 function us_buttonStatus () {
 	var secs = us_getTempData("us_secs");
     if (secs > 30) {
-		document.getElementById('us_scrobblebutton').addEventListener('click', function () {us_showBox(false, true)}, true);
-		us_changeOpac(100,"us_start_scrobblebutton");
+		document.getElementById('us_scrobblebutton').addEventListener('click', us_toggleBox, true);
 		document.getElementById('us_scrobblebutton').title = "";
+		document.getElementById("us_start_scrobblebutton").style.opacity = 1;
 		//watched seconds till scrobbling
 		var time_left_to_scrobble;
 		if (us_getTempData("us_leftToPlay", false)==false || us_getTempData("us_leftToPlay") < 0){
@@ -468,7 +466,7 @@ function us_buttonStatus () {
 		}
 		tryAutoScrobble();
     } else {
-		us_changeOpac(50,"us_start_scrobblebutton");
+		document.getElementById("us_start_scrobblebutton").style.opacity = 0.5;
 		if(secs == 0) {
 			document.getElementById('us_scrobblebutton').title = "There is no video to scrobble.";
 		} else {
@@ -489,10 +487,17 @@ function us_icon() {
 		return "data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D";
 	} 
 }
+function us_toggleBox() {
+	if (!document.getElementById('us_loginbox') || document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
+		us_showBox(false);
+	} else {
+		us_closebox();
+	}
+}
 
 // Show dialog window
 // Contains either login form, or scrobble form
-function us_showBox(loggedIn, forced) {
+function us_showBox(justLoggedIn) {
 	//check if scrobblerbox was dropped out of possible screen width and if reset
 	if (us_getValue("us_boxpos").split('-')[0].split('px')[0] > screen.availWidth || us_getValue("us_boxpos").split('-')[0].split('px')[0] < 130 ) {
 		us_saveValue('us_boxpos',(screen.availWidth)/1.3+"px-"+75+"px");
@@ -500,28 +505,17 @@ function us_showBox(loggedIn, forced) {
 	//either create loginbox
 	if (!document.getElementById('us_loginbox')) {
 		var loginbox = createIdElement("div","us_loginbox");
-		var classatr = document.createAttribute("class");
-		classatr.nodeValue = 'us_box';
-		loginbox.setAttributeNode(classatr);
-		loginbox.style.opacity = 0;
-		loginbox.style.MozOpacity = 0;
-		loginbox.style.KhtmlOpacity = 0;
-		loginbox.style.filter = "alpha(opacity=0)";
+		loginbox.classList.add('us_box');
 		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
 		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
 		document.body.insertBefore(loginbox, document.body.firstChild);
-		opacity(loginbox.id, 0, 100, 500);		
-      
 	} //or show it
-	else if (document.getElementById('us_loginbox').style.display == 'none') {
+	else if (document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
 		var loginbox = document.getElementById('us_loginbox');
 		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
 		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
-		loginbox.style.display = "block";
-		opacity(loginbox.id, 0, 100, 500);
-	} else if (forced && document.getElementById('us_loginbox').style.opacity == 1) {
-		us_closebox();
-	}  
+		loginbox.classList.remove('us_box_hidden');
+	}
 	if (!isLoggedIn()) {
 		var cont = '<div id="us_loginbox_form">'+
 		'<div class="us_error">You are currently not logged in!</div><br />'+
@@ -532,7 +526,7 @@ function us_showBox(loggedIn, forced) {
 		
 		document.getElementById('us_submit').addEventListener('click', us_authenticate, false);
 	} else {
-		us_scrobbleform(loggedIn);
+		us_scrobbleform(justLoggedIn);
 	}
 	
 }
@@ -540,7 +534,7 @@ function us_showBox(loggedIn, forced) {
 /**
 *	inserts the scrobbleform into the window
 */
-function us_scrobbleform(loggedIn) {
+function us_scrobbleform(justLoggedIn) {
     var loginbox = document.getElementById('us_loginbox');
 	
 	var messageText = "";
@@ -569,7 +563,7 @@ function us_scrobbleform(loggedIn) {
 	if (us_getTempData("scrobbled")==1) {
 		scrobbleStatus = '<div id="scrobbleStatus_parent">scrobbled</div>';
 	}
-	if (loggedIn == true) {
+	if (justLoggedIn) {
 		messageText = '<div class="us_done">Succesfully logged in</div>';
 	}
 	var asE = us_getTempData("autoscrobbleError");
@@ -617,22 +611,12 @@ function us_infoBox(cont) {
     var inbox;
 	if (!document.getElementById('us_infobox')) {
 		inbox = createIdElement("div","us_infobox");
-		var classatr = document.createAttribute("class");
-		classatr.nodeValue = 'us_infobox';
-		inbox.setAttributeNode(classatr);
-		inbox.style.opacity = 0;
-		inbox.style.MozOpacity = 0;
-		inbox.style.KhtmlOpacity = 0;
-		inbox.style.filter = "alpha(opacity=0)";
+		inbox.classList.add('us_infobox');
 		document.body.appendChild(inbox);
-        inbox = document.getElementById('us_infobox');
-		opacity(inbox.id, 0, 100, 500);
 	}
 	else {
 		inbox = document.getElementById('us_infobox');
-		inbox.style.display = "block";
-		inbox.style.opacity = "100";
-		opacity(inbox.id, 0, 100, 500);
+		inbox.classList.remove('us_box_hidden');
 	}
 	inbox.addEventListener("click", us_closeinfobox, false);
 	inbox.style.cursor = "pointer";
@@ -643,33 +627,31 @@ function us_infoBox(cont) {
 
 //closes the box with fadeout effect
 function us_closebox() {
-	
-	opacity('us_loginbox', 100, 0, 500);
-	window.setTimeout(function() { document.getElementById('us_loginbox').style.display = "none"; }, 500);
-	//document.getElementById('us_scrobblebutton').addEventListener('click', us_showBox, false);
+	var object = document.getElementById('us_loginbox');
+	object.classList.add('us_box_hidden');
 }
 
 //closes the info-box with fadeout effect
 function us_closeinfobox() {
-	opacity('us_infobox', 100, 0, 500);
-	window.setTimeout(function() { document.getElementById('us_infobox').style.display = "none";}, 500);
+	var object = document.getElementById('us_infobox');
+	object.classList.add('us_box_hidden');
 }
 
 //shows the optional datafiels
 function us_showmoreform() {
     var i1 = document.getElementById('us_hiddenform');
     var a = document.getElementById('us_more');
-    
-    if (i1.getAttribute('class')) {
-	   i1.setAttribute('class','');
-       a.innerHTML = '&#8722;';
-	   us_saveValue("us_more_options_show_or_hide", "show");
-    }
-    else {
-       i1.setAttribute('class','us_hidden');
-       a.innerHTML = '+';
-	   us_saveValue("us_more_options_show_or_hide", "hide");
-    }
+
+	if (i1.classList.contains('us_hidden')) {
+		i1.classList.remove('us_hidden');
+		a.innerHTML = '&#8722;';
+		us_saveValue("us_more_options_show_or_hide", "show");
+	}
+	else {
+		i1.classList.add('us_hidden');
+		a.innerHTML = '+';
+		us_saveValue("us_more_options_show_or_hide", "hide");
+	}
 }
 
 /**
@@ -678,11 +660,9 @@ function us_showmoreform() {
 function us_boxcontent(title,content) {
 	var loginbox = document.getElementById('us_loginbox');
 	if (!loginbox) { return false; }
-	if (loginbox.style.display == 'none') {
-		loginbox.style.display = "block";
-		opacity(loginbox.id, 0, 100, 500);
+	if (loginbox.classList.contains('us_box_hidden')) {
+		loginbox.style.classList.remove('us_box_hidden');
 	}
-	
 	loginbox.innerHTML = '<h3 id="us_box_head">'+title+'<ul><li><a href="javascript:;" title="Close" id="us_box_close"></a></li><li><a href="javascript:;" title="Settings" id="us_box_settings"></a></li><li><a href="javascript:;" title="Help" id="us_box_help"></a></li></ul></h3>'+
 	'<div>'+content+'</div>';
 	document.getElementById('us_box_close').addEventListener('click', us_closebox, false);
@@ -1585,29 +1565,6 @@ function stringContainsChar(text, charac) {
 	return false;
 }
 
-//change the opacity for different browsers
-function us_changeOpac(opacity, id) {
-    var object = document.getElementById(id).style;
-    object.opacity = (opacity / 100);
-}
-
-function opacity(id, opacStart, opacEnd, millisec) {
-	//speed for each frame
-	var speed = Math.round(millisec / 250); //100
-	var timer = 1;
-	//determine the direction for the blending, if start and end are the same nothing happens
-	if(opacStart > opacEnd) {
-		for(var i = opacStart; i >= opacEnd; i--) {
-			window.setTimeout(function(b) { return function() { us_changeOpac(b, id); } }(i),(timer * speed));
-			timer++;
-		}
-	} else if(opacStart < opacEnd) {
-		for(var i = opacStart; i <= opacEnd; i++) {
-			window.setTimeout(function(b) { return function() { us_changeOpac(b, id); } }(i),speed*timer);
-			timer++;
-		}
-	}
-}
 //
 // http://www.somacon.com/p355.php
 //
