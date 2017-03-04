@@ -14,16 +14,13 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.4
+// @version       1.4.1
 // @noframes
-// @run-at	  	  document-idle
+// @run-at	  document-idle
 // ==/UserScript==
 
 /**
-*	You can contact me on http://www.lukash.de/youscrobbler or on http://userscripts.org/scripts/show/119694 if you have got suggestions, bugs or oter questions
-*
-*	*YouScrobbler is build on the code of youscrobble (http://userscripts.org/scripts/show/71606) but its an new script with many new features
-*	*Authentication-Function is adapted from ScrobbleSmurf (http://daan.hostei.com/lastfm/)
+*	You can contact me on http://www.lukash.de/youscrobbler or on https://github.com/floblik/YouScrobbler if you have got suggestions, bugs or oter questions
 */
 
 if (window.top != window.self)
@@ -31,7 +28,7 @@ if (window.top != window.self)
     return;
 }
 
-const VERSION = "1.4";
+const VERSION = "1.4.1";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
