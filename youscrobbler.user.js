@@ -14,9 +14,9 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.4.1
+// @version       1.4.2
 // @noframes
-// @run-at	  document-idle
+// @run-at	  	  document-idle
 // ==/UserScript==
 
 /**
@@ -28,7 +28,7 @@ if (window.top != window.self)
     return;
 }
 
-const VERSION = "1.4.1";
+const VERSION = "1.4.2";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -89,10 +89,9 @@ function us_reset () {
 	document.getElementById("us_temp_info").removeAttribute("autoscrobbleerror");
 	document.getElementById("us_temp_info").removeAttribute("scrobbled");
 	document.getElementById("us_temp_info").setAttribute("us_leftToPlay", -1);
-	document.getElementById("us_temp_info").removeAttribute("us_secs");
 	document.getElementById("us_temp_info").removeAttribute("us_playstart");
+	document.getElementById("us_temp_info").removeAttribute("is_full_album");
 	document.getElementById("us_temp_info").removeAttribute("us_playstart_s");
-	us_saveValue("is_full_album", 0);
 	
 	//save time page was loaded aka playstart time in ctime and gay format
 	var time = new Date();
@@ -219,19 +218,20 @@ function GM_main () {
 			vidId = matches[0].replace(removeRegex, "");
 		}
 		if (state==1 && vidId != document.getElementById("us_temp_info").getAttribute("us_video_id")) { //||((state==1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != -1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != playlistIndex))
-			TO5 = setTimeout(function () {document.getElementById("us_temp_info").setAttribute("us_reset_now", "1");}, 1000);
+			TO5 = setTimeout(function () {document.getElementById("us_temp_info").setAttribute("us_reset_now", "1");}, 1);
 		}
 		switch (state) {
 			case 1:
-			document.getElementById("us_temp_info").setAttribute("video_is_playing", "1");
+				document.getElementById("us_temp_info").setAttribute("video_is_playing", "1");
 			break;
 			case 0:
-			document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
+				document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
+				document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");
 			default:	
-				document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");	
-				if (document.getElementById("us_temp_info").getAttribute("is_full_album") != "yes") {
-					document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
-				}
+				document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");
+		}
+		if (document.getElementById("us_temp_info").getAttribute("is_full_album") != "yes") {
+			document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
 		}
     }
     window.onYouTubePlayerReady = function (playerId) {
@@ -455,6 +455,7 @@ function us_buttonStatus () {
 		tryAutoScrobble();
     } else {
 		document.getElementById("us_start_scrobblebutton").style.opacity = 0.5;
+		document.getElementById('us_scrobblebutton').removeEventListener('click', us_toggleBox);
 		if(secs == 0) {
 			document.getElementById('us_scrobblebutton').title = "There is no video to scrobble.";
 		} else {
