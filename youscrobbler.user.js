@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.4.2
+// @version       1.4.3
 // @noframes
 // @run-at	  	  document-idle
 // ==/UserScript==
@@ -28,7 +28,7 @@ if (window.top != window.self)
     return;
 }
 
-const VERSION = "1.4.2";
+const VERSION = "1.4.3";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -975,8 +975,10 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 		   window.setTimeout(function() { us_closebox(); }, 2000);
 		}
 		else {
-		   /* TODO us_infoBox('<div><span class="us_trackinfo">'+artist+' <span class="sep">-</span> '+track+'</span> scrobbled. <img src="data:image/gif;base64,R0lGODlhEAAQAKIAAO7w7qrZnHXGZnC6WJLJhE%2BpODGCLbrfsyH5BAAAAAAALAAAAAAQABAAAANhCLrcHmKUEZw6g4YtT8PEERBEcBCFtwyh4L5nsQTD8cLCURCKducKkgxQgACBAIIgYFAUXQ3CYNkkjgS8YIZUpdlYyQxlt9jRxBla9WLIKVlq1eJgMI8KBnnUwDdkLYAMCQA7" alt="done" /></div>');
-		   window.setTimeout(function() { us_closeinfobox(); }, 3000); */
+			if (us_getValue('scrobblingNotification', 0)) {
+			   us_infoBox('<div><span class="us_trackinfo">'+artist+' <span class="sep">-</span> '+track+'</span> scrobbled. <img src="data:image/gif;base64,R0lGODlhEAAQAKIAAO7w7qrZnHXGZnC6WJLJhE%2BpODGCLbrfsyH5BAAAAAAALAAAAAAQABAAAANhCLrcHmKUEZw6g4YtT8PEERBEcBCFtwyh4L5nsQTD8cLCURCKducKkgxQgACBAIIgYFAUXQ3CYNkkjgS8YIZUpdlYyQxlt9jRxBla9WLIKVlq1eJgMI8KBnnUwDdkLYAMCQA7" alt="done" /></div>');
+			   window.setTimeout(function() { us_closeinfobox(); }, 3000);
+			}
 		}
 	} else {	
 			if (queued != 1) {
@@ -1577,7 +1579,7 @@ String.prototype.rtrim = function() {
 */
 function updateCheck(forced)
 {
-	var update_interval = 154200000;
+	var update_interval = 86400000;
 	if ((forced) || ((parseInt(us_getValue('us_last_update', '0')) + update_interval) <= parseInt(((new Date()).getTime())))) // Checks every day (24 h * 60 m * 60 s * 1000 ms)
 	{
 		try
