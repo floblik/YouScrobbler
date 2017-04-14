@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.4.4
+// @version       1.4.5
 // @noframes
 // @run-at	  	  document-idle
 // ==/UserScript==
@@ -28,7 +28,7 @@ if (window.top != window.self)
     return;
 }
 
-const VERSION = "1.4.4";
+const VERSION = "1.4.5";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -434,8 +434,7 @@ function us_addButton() {
 	us_buttonStatus();
 	document.getElementById("us_temp_info").setAttribute("us_video_id", getYouTubeVideoId());
 	addJS_Node (null, null, GM_main);
-	TO3 = setInterval(function () {us_ajax_scanner()}, 1000);
-	
+	TO3 = setTimeout(function () {us_ajax_scanner()}, 1000);
 }
 
 function us_buttonStatus () {
@@ -464,7 +463,11 @@ function us_buttonStatus () {
     }
 
 	if (secs == 0) {
-		setTimeout(function () {us_buttonStatus();}, 1000);
+		if (!getYouTubeVideoId()) {
+			setTimeout(function () {us_buttonStatus();}, 5000);
+		} else {
+			setTimeout(function () {us_buttonStatus();}, 1000);
+		}
 	}
 }
 
@@ -945,7 +948,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 			onerror: 	
 				function() {GM_xmlhttpRequest({
 					method: "GET",
-					url: altScrobbleSongUrl + args,
+					url: scrobbleSongUrl + args,
 					onload: function(responseDetails) { scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) },
 					onerror: function() {
 						us_infoBox('<div class="us_error">Servererror</div>');
@@ -964,8 +967,9 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 function scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) {
 	var feedback = responseDetails.responseText;
 	var loginbox = document.getElementById('us_loginbox');
+	us_saveTempData("scrobbled", 1);
+	
 	if ((feedback.indexOf('<lfm status="ok"'))!=-1) {
-		us_saveTempData("scrobbled", 1);
 		TO1Helper=false;
 		if (document.getElementById("scrobbleStatus_parent")) {
 			document.getElementById("scrobbleStatus_parent").innerHTML = "scrobbled";
@@ -986,6 +990,7 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 			}
 			else {
 				us_infoBox('<div class="us_error">Error: '+feedback+'</div>');
+				window.setTimeout(function() { us_closeinfobox(); }, 10000);
 			}
 	}
 
@@ -1009,7 +1014,7 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 		us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
 		
 		track_num++;
-		us_saveTempData("full_album_track_nr", track_num);	
+		us_saveTempData("full_album_track_nr", track_num);
 		
 		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1, 1);
 	}
@@ -1445,46 +1450,52 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 *
 */
 function us_ajax_scanner () {
-	//increase played time by 1 second
 	var leftToPlay = parseInt(us_getTempData("us_leftToPlay"));
 	var secs = parseInt(us_getTempData("us_secs"));
 	var scrobble_at = parseInt(us_getValue("scrobble_at"));
 	
-	if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1 && !us_getTempData("autoscrobleerror")) {
-		us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
-		if (document.getElementById("scrobbleStatus")) {
-			document.getElementById("scrobbleStatus").innerHTML = leftToPlay-1;
-		}
-
-		if (TO1Helper) {
-			scrobble_statusbar("scrobble");
-			if (us_getTempData("is_full_album") == "yes") {
-				document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(secs*(100)*0.01)))+"%";
-			} else {
-				document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(secs*((scrobble_at)*0.01))))+"%";
-			}
-		}
-	}
-
-	if (us_getTempData("video_end_reached") == "yes" && us_getTempData("video_is_playing", 0) == 1) {
-		us_saveTempData("us_reset_now", "1");
-		us_saveTempData("video_end_reached", 0);
-	}
 	if (!getYouTubeVideoId()) {
 		us_saveTempData("us_reset_now", "1");
-	}
-	leftToPlay = us_getTempData("us_leftToPlay");
-	if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper && secs > 30) {
-		leftToPlay = 0;
-		if (document.getElementById("scrobbleStatus")) {
-			document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
+		
+		TO3 = setTimeout(function () {us_ajax_scanner()}, 5000);
+	} else {
+		TO3 = setTimeout(function () {us_ajax_scanner()}, 1000);
+		
+		if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1 && !us_getTempData("autoscrobleerror")) {
+			us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
+			if (document.getElementById("scrobbleStatus")) {
+				document.getElementById("scrobbleStatus").innerHTML = leftToPlay-1;
+			}
+
+			if (TO1Helper) {
+				scrobble_statusbar("scrobble");
+				if (us_getTempData("is_full_album") == "yes") {
+					document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(secs*(100)*0.01)))+"%";
+				} else {
+					document.getElementById("us_scrobble_statusbar").style.width = Math.round(100-100*((leftToPlay-1)/(secs*((scrobble_at)*0.01))))+"%";
+				}
+			}
 		}
-		us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
-	}
-	//check for reset -> ajax youtube change
-	if (us_getTempData("us_reset_now")=="1") {
-		us_saveTempData("us_reset_now", "0");
-		us_reset();
+
+		if (us_getTempData("video_end_reached") == "yes" && us_getTempData("video_is_playing", 0) == 1) {
+			us_saveTempData("us_reset_now", "1");
+			us_saveTempData("video_end_reached", 0);
+		}
+		
+		leftToPlay = us_getTempData("us_leftToPlay");
+		if (leftToPlay <= 0 && us_getTempData("scrobbled") != 1 && TO1Helper && secs > 30) {
+			leftToPlay = 0;
+			TO1Helper=false;
+			if (document.getElementById("scrobbleStatus")) {
+				document.getElementById("scrobbleStatus_parent").innerHTML = "submitting...";
+			}
+			us_scrobble(decodeURIComponent(us_getTempData("artist")), decodeURIComponent(us_getTempData("track")), decodeURIComponent(us_getTempData("album")), decodeURIComponent(us_getTempData("mbid")), 0, 1, 1);
+		}
+		//check for reset -> ajax youtube change
+		if (us_getTempData("us_reset_now")=="1") {
+			us_saveTempData("us_reset_now", "0");
+			us_reset();
+		}
 	}
 }
 
