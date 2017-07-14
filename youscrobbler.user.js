@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
-// @version       1.4.5
+// @version       1.4.6
 // @noframes
 // @run-at	  	  document-idle
 // ==/UserScript==
@@ -28,7 +28,7 @@ if (window.top != window.self)
     return;
 }
 
-const VERSION = "1.4.5";
+const VERSION = "1.4.6";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
 var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
@@ -66,10 +66,10 @@ function init() {
 	isGM = typeof GM_getValue != 'undefined' && typeof GM_getValue('a', 'b') != 'undefined';
 
 	if (!isLoggedIn()) {
-		tryGetAuthToken();		
+		tryGetAuthToken();
 	}
+	
 	us_addButton();
-	checkFirstRun();	
 }
 
 function updateUrl () {
@@ -234,6 +234,7 @@ function GM_main () {
 			document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
 		}
     }
+	
     window.onYouTubePlayerReady = function (playerId) {
         if (document.getElementById("c4-player")) {
 			var playerNode  = document.getElementById ("c4-player");
@@ -254,6 +255,10 @@ function GM_main () {
         else
             console.error ("GM: Player node not found!");
     }
+	
+	if (document.getElementById("us_temp_info").getAttribute("us_secs") == 0) {
+		window.onYouTubePlayerReady()
+	}
 }
 
 function addJS_Node (text, s_URL, funcToRun, runOnLoad) {
@@ -338,10 +343,10 @@ function us_addButton() {
     }
 	var t2 = time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds();
 	
-    var el = document.createElement("style");
+    var style_el = document.createElement("style");
     var head = document.getElementsByTagName('head')[0];
-    head.appendChild(el);
-    el.innerHTML =	'.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;'+
+
+    style_el.innerHTML =	'.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;'+
 					// by AshKyd
 					'z-index:1000000; position: absolute; top: 70px; width: 300px; margin-left: -150px; }'+
 					'.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }'+
@@ -349,6 +354,7 @@ function us_addButton() {
 					'#us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }'+
 					'#us_box_settings { background-image: url(data:image/gif;base64,R0lGODlhDQANAPcAAAAAAHt7e4CAgIGBgYWFhYaGhoqKiouLi4yMjI2NjZOTk5mZmZqampubm5ycnJ6enp+fn6GhoaWlpaampqenp6ioqKmpqaqqqqurq6ysrK2trbCwsLKysrOzs7S0tLa2tre3t76+vr+/v8DAwMXFxcbGxsfHx8jIyMrKysvLy83NzdDQ0NTU1NXV1dfX19nZ2dzc3N3d3d7e3uDg4Ojo6Ovr6+zs7O3t7e/v7/7+/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA0AAAicAP8JtIEihIcQKGwIFJjDhYeHED24yCHQBYYMGDJy8KABg4t/NjKK/ACDRYcNGAhKuCBSBY4XJ1JIQIFhgkgPMXDcqGHiAYYFDyJgECGDRgsTIxwsAPqAgogXM1ZkYBlBwQMPBhKQcFHCQgcIEQ4Y8GCDAAEEICowaPCggFmFHgTIZTBArlwPDEME2Ms3QAiKC21IIBCAgASFAgMCADs=); width: 13px; height: 13px; float: right; margin:1px 3px 0 0; }'+
 					'#us_box_head > ul, #us_box_head li { float:right}'+
+					'#us_box_head ul { list-style-type:none}'+
 					'.us_settings_grp { height:50px; vertical-align:middle; padding-right:3px;padding-left:5px}'+
 					'.us_settings_grp hr { background-color: #EEE; margin: 5px 8px; height: 1px;}'+
 					'.us_settings_grp_left { width:155px}'+
@@ -396,7 +402,7 @@ function us_addButton() {
 					'#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}'+
 					'#us_scrobble_on {font-weight:bold; color: #66CC00;} '+
 					'#us_scrobble_failed {font-weight:bold; color: #D10404;} '+
-					'#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: -1px 0px 0px 0px;padding-right: 1px;} '+
+					'#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; } '+
 					'#us_loginbox .us_status_small {color: #999; font-size:80%}'+
 					'.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}'+
 					'.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}';
@@ -404,9 +410,20 @@ function us_addButton() {
     var button = createIdElement("span","us_scrobblebutton");
 
 	button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>';//postxanadus
-	
-	//Feather check
-	if (document.getElementById("masthead-nav")) {
+
+	//Design check
+	if (document.getElementsByTagName("ytd-searchbox")[0]) {
+		BFather = document.getElementsByTagName("ytd-searchbox")[0];
+		button.setAttribute("class", "yt-uix-button-group");
+		button.style.marginLeft = "50px";
+		button.style.padding = "6px 0 6px 0";
+		button.style.border = "1px solid var(--yt-searchbox-legacy-button-border-color)";
+		button.innerHTML = '<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="'+us_icon()+'" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>';
+		BFather.insertBefore(button, BFather.lastChild);
+		
+		document.getElementById("us_scrobble_statusbar").style.position = "relative";
+		document.getElementById("us_scrobble_statusbar").style.top = "6px";
+	} else if (document.getElementById("masthead-nav")) {
 		BFather = document.getElementById("masthead-nav");
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById("yt-masthead-content")){
@@ -430,11 +447,20 @@ function us_addButton() {
 		//button.setAttribute("class", "ml");
 		button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>';
 		BFather.insertBefore(button, document.getElementById("button-list").firstChild);
-	} */ else { return; }
+	} */ else {
+		setTimeout(function () {us_addButton()}, 1000);
+		
+		return;
+	}
+
+	head.appendChild(style_el);
+	
 	us_buttonStatus();
 	document.getElementById("us_temp_info").setAttribute("us_video_id", getYouTubeVideoId());
 	addJS_Node (null, null, GM_main);
 	TO3 = setTimeout(function () {us_ajax_scanner()}, 1000);
+	
+	checkFirstRun();
 }
 
 function us_buttonStatus () {
@@ -1130,7 +1156,7 @@ function getYouTubeVideoId () {
 */
 function getTrackInfo(){
 	var feedback;	
-	
+
 	if ((us_getTempData("artist")!=0) || (us_getTempData("track")!=0)) {
 		feedback = "found";
 	} else {
@@ -1148,7 +1174,9 @@ function getTrackInfo(){
 			} 
 		} */ else {
 			//Feather check
-			if (document.getElementById("eow-title")) {
+			if (document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0]) {
+				var titleContentOriginal = document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0].textContent;
+			} else if (document.getElementById("eow-title")) {
 				var titleContentOriginal = document.getElementById("eow-title").textContent;
 			} else if (document.getElementById("watch-headline-title")) {
 				var titleContentOriginal = document.getElementById("watch-headline-title").textContent;
@@ -1156,6 +1184,7 @@ function getTrackInfo(){
 				var titleContentOriginal = document.getElementById("vt").textContent;
 			}
 		}
+
 		//Retrive trackinformation from database
 		if (getDatabaseData()==true) {
 			feedback = "found";
@@ -1274,7 +1303,7 @@ function getAlbumInfo(){
 		method: "GET",
 		url: url,
 		onload: function(response) {
-			console.log(response); //TODO: falls Album not found -> resetten
+		  //console.log(response); //TODO: if Album not found -> reset
 		  if(response.responseText){
 			var json = JSON.parse(response.responseText);
 			var response = response.responseText;
