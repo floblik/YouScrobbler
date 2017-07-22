@@ -184,7 +184,7 @@ function GM_main () {
 			matches = playerNode.getVideoUrl().match(regex);
 			vidId = matches[0].replace(removeRegex, "");
 		}
-		if (state==1 && vidId != document.getElementById("us_temp_info").getAttribute("us_video_id")) { //||((state==1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != -1)&&(document.getElementById("us_temp_info").getAttribute("video_playlist_index") != playlistIndex))
+		if (state==1 && vidId != document.getElementById("us_temp_info").getAttribute("us_video_id")) {
 			TO5 = setTimeout(function () {document.getElementById("us_temp_info").setAttribute("us_reset_now", "1");}, 1);
 		}
 		switch (state) {
@@ -215,12 +215,9 @@ function GM_main () {
             
             playerNode.addEventListener ('onStateChange', 'us_stateChanged');
 			document.getElementById("us_temp_info").setAttribute("us_secs", playerNode.getDuration());
-			//Playlist     console.log(playerNode.getPlaylistIndex());
-			
-            //console.log ('GM: Listener installed just fine.');
         }
         else
-            console.error ("GM: Player node not found!");
+            throw new Error("YouScrobbler: Player node not found!");
     }
 	
 	if (document.getElementById("us_temp_info").getAttribute("us_secs") == 0) {
@@ -409,12 +406,7 @@ function us_addButton() {
 		button.setAttribute("class", "ml");
 		button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>';
 		BFather.insertBefore(button, document.getElementById("se").nextSibling);
-	} /* else if (location.href.indexOf("youtube.com/tv")!=-1) {
-		BFather = document.getElementById("button-list");
-		//button.setAttribute("class", "ml");
-		button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>';
-		BFather.insertBefore(button, document.getElementById("button-list").firstChild);
-	} */ else {
+	} else {
 		setTimeout(function () {us_addButton()}, 1000);
 		
 		return;
@@ -1111,12 +1103,7 @@ function getTrackInfo(){
 			} else if (document.getElementsByClassName("channels-featured-video-details tile")[0]) {
 				titleContentOriginal = document.getElementsByClassName("channels-featured-video-details tile")[0].getElementsByTagName("a")[0].textContent;
 			}
-		} /* else if (location.href.indexOf("youtube.com/tv") != -1) {
-			//Feather check
-			if (document.getElementById("player-video-title")) {
-				var titleContentOriginal = document.getElementById("player-video-title").textContent;
-			} 
-		} */ else {
+		} else {
 			//Feather check
 			if (document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0]) {
 				var titleContentOriginal = document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0].textContent;
