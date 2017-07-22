@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name          YouScrobbler
-// @namespace	  userscripts.org
+// @namespace     userscripts.org
 // @author        http://www.lukash.de
 // @description   Scrobbles the currently watching YouTube video to last.fm.
-// @identifier	  http://userscripts.org/scripts/source/119694.user.js
+// @identifier    http://userscripts.org/scripts/source/119694.user.js
 // @include       http://*.youtube.com/*
 // @include       https://*.youtube.com/*
 // @include       http://youtube.com/*
@@ -12,16 +12,16 @@
 // @grant         GM_getValue
 // @grant         GM_setValue
 // @grant         GM_xmlhttpRequest
-// @downloadURL	  https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
-// @updateURL 	  http://youscrobbler.lukash.de/youscrobbler.meta.js
+// @downloadURL   https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
+// @updateURL     http://youscrobbler.lukash.de/youscrobbler.meta.js
 // @version       1.4.6
 // @noframes
-// @run-at	  	  document-idle
+// @run-at        document-idle
 // ==/UserScript==
 
 /**
-*	You can contact me on http://www.lukash.de/youscrobbler or on http://userscripts.org/scripts/show/119694 if you have got suggestions, bugs or oter questions
-*/
+ * You can contact me on http://www.lukash.de/youscrobbler or on http://userscripts.org/scripts/show/119694 if you have got suggestions, bugs or oter questions
+ */
 
 const VERSION = "1.4.6";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
@@ -39,21 +39,21 @@ var isGM;
 var trackInfoFromDB = false;
 
 /**
-*	--- Content ---
-*	1. Initializing
-*	2. General Functions
-*	3. Appearance
-*	4. Scrobbling and Login
-*	5. Information request
-*	6. Miscellaneous
-*	7. Third party functions
-*	8. Update
-*/
+ * --- Content ---
+ * 1. Initializing
+ * 2. General Functions
+ * 3. Appearance
+ * 4. Scrobbling and Login
+ * 5. Information request
+ * 6. Miscellaneous
+ * 7. Third party functions
+ * 8. Update
+ */
 
 
 /**
-*	--- 1. Initializing ---
-*/
+ * --- 1. Initializing ---
+ */
 function init() {	
 	isGM = typeof GM_getValue != 'undefined' && typeof GM_getValue('a', 'b') != 'undefined';
 
@@ -101,8 +101,8 @@ function us_reset () {
 }
 
 /**
-*	--- 2. General Functions ---
-*/
+ * --- 2. General Functions ---
+ */
 function initPreferences () {
 	if (!us_getValue('us_boxpos')) {
 		us_saveValue('us_boxpos',(screen.availWidth)/1.3+"px-"+70+"px");
@@ -243,9 +243,9 @@ function addJS_Node (text, s_URL, funcToRun, runOnLoad) {
     targ.appendChild (scriptNode);
 }
 /**
-*	Value Saving Method - Switcher
-*	uses Greasemonkey GM_ or localStorage
-*/
+ * Value Saving Method - Switcher
+ * uses Greasemonkey GM_ or localStorage
+ */
 function us_saveValue(name, value) {
 	if (isGM) {
 		GM_setValue(name, value);
@@ -255,9 +255,9 @@ function us_saveValue(name, value) {
 }
 
 /**
-*	Value Getting Method - Switcher
-*	uses Greasemonkey GM_ or localStorage
-*/
+ * Value Getting Method - Switcher
+ * uses Greasemonkey GM_ or localStorage
+ */
 function us_getValue(name, alternative) {
 	if (isGM) {
 		return (GM_getValue(name, alternative));
@@ -267,17 +267,17 @@ function us_getValue(name, alternative) {
 }
 
 /**
-*	Temporary save data
-*	Saved in "us_temp_info" attributes
-*/
+ * Temporary save data
+ * Saved in "us_temp_info" attributes
+ */
 function us_saveTempData(name, value) {
 	document.getElementById("us_temp_info").setAttribute(name, value);
 }
 
 /**
-*	Get temporary saved data
-*	Saved in "us_temp_info" attributes
-*/
+ * Get temporary saved data
+ * Saved in "us_temp_info" attributes
+ */
 function us_getTempData(name) {
 	if (document.getElementById("us_temp_info").getAttribute(name)) {
 		var value = document.getElementById("us_temp_info").getAttribute(name);
@@ -289,12 +289,12 @@ function us_getTempData(name) {
 
 
 /**
-*	--- 3. Appearance ---
-*/
+ * --- 3. Appearance ---
+ */
 
 /**
-*	Add the Scrobble Button to Video and Userpages
-*/
+ * Add the Scrobble Button to Video and Userpages
+ */
 function us_addButton() {
     us_saveValue('us_drag',false);
 	var secs = 0;
@@ -518,8 +518,8 @@ function us_showBox(justLoggedIn) {
 }
 
 /**
-*	inserts the scrobbleform into the window
-*/
+ * inserts the scrobbleform into the window
+ */
 function us_scrobbleform(justLoggedIn) {
 	var messageText = "";
 	var checkedText = "";
@@ -642,8 +642,8 @@ function us_showmoreform() {
 }
 
 /**
-*	Fills window with title and content
-*/
+ * Fills window with title and content
+ */
 function us_boxcontent(title,content) {
 	var loginbox = document.getElementById('us_loginbox');
 	if (!loginbox) { return false; }
@@ -662,8 +662,8 @@ function us_boxcontent(title,content) {
 }
 
 /**
-*	Show the help-window
-*/
+ * Show the help-window
+ */
 function us_help() {
         var cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Website</a>.</p>'+
 					'<h4>Feedback</h4><p class="us_left">Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>'+
@@ -671,8 +671,8 @@ function us_help() {
         us_boxcontent('About - YouScrobbler '+VERSION,cont);
 }
 /**
-*	Show the settings-window
-*/
+ * Show the settings-window
+ */
 function us_settings() {
 	var maxEntries = us_getValue("database.maxEntries", 5000);
 	var cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
@@ -702,9 +702,7 @@ function us_settings() {
 	document.getElementById('us_resetlogin').addEventListener('click', us_resetlogin, false);
 	document.getElementById('us_manualupdate_link').addEventListener('click', function(){document.getElementById("us_manualupdate").innerHTML='<span class="us_status_small">checking</span>';updateCheck(true); }, false);		
 	
-	/**
-		Save settings
-	*/
+	// Save settings
 	document.getElementById('us_settings_color_red').addEventListener('change', function(){
 		us_saveValue("us_color", "red");
 		document.getElementById('us_icon_small').src = us_icon();
@@ -738,8 +736,8 @@ function us_settings() {
 
 
 /**
-*	--- 4. Scrobbling and Login ---
-*/
+ * --- 4. Scrobbling and Login ---
+ */
 
 function isMusicVideo(infoResult, callback){
 	var artist = us_getTempData("artist").replace(' ', '+');
@@ -781,8 +779,8 @@ function isMusicVideo(infoResult, callback){
 }
 
 /**
-* Tries to AutoScrobble video if user is logged in, its a music video and the trackinfo was found
-*/
+ * Tries to AutoScrobble video if user is logged in, its a music video and the trackinfo was found
+ */
 function tryAutoScrobble () {
 	if (us_getValue("us_autoscrobble_active", 0) == 1) {
 		var response = getTrackInfo();
@@ -949,9 +947,9 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 
 
  
-/**	
-*	Feedback of scrobbleing
-*/
+/** 
+ * Feedback of scrobbleing
+ */
 function scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) {
 	var feedback = responseDetails.responseText;
 	us_saveTempData("scrobbled", 1);
@@ -1008,8 +1006,8 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 }
 
 /**
-*	Temporary save track information from the form 
-*/
+ * Temporary save track information from the form 
+ */
 function us_scrobblenp(retry) {
 	var formArtist = document.forms[0].elements[0].value;
 	var formTrack = document.forms[0].elements[1].value;
@@ -1027,8 +1025,8 @@ function us_scrobblenp(retry) {
 }
 
 /**
-*	Abort scrobbling process
-*/
+ * Abort scrobbling process
+ */
 function us_abortScrobbling () {
 	if (TO1Helper) {
 		TO1Helper = false;
@@ -1042,8 +1040,8 @@ function us_abortScrobbling () {
 }
 
 /**
-*	Unset the saved login info + show login form, and maybe show errors
-*/
+ * Unset the saved login info + show login form, and maybe show errors
+ */
 function us_resetlogin(error) {
 	us_saveValue('us_username','');
 	us_saveValue('us_sessionKey','');
@@ -1064,8 +1062,8 @@ function us_resetlogin(error) {
 
 
 /**
-*	--- 5. Information request ---
-*/
+ * --- 5. Information request ---
+ */
 
 /**
  * Check whether user credentials are stored or not.
@@ -1078,9 +1076,9 @@ function isLoggedIn() {
 }
 
 /**
-*	Gets the current YouTube video ID from the browser URL.
-*	adapted from ScrobbleSmurf
-*/
+ * Gets the current YouTube video ID from the browser URL.
+ * adapted from ScrobbleSmurf
+ */
 function getYouTubeVideoId () {
 	var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
 	var removeRegex = /(\?|%3F|&|%26)v=/gi;
@@ -1098,8 +1096,8 @@ function getYouTubeVideoId () {
 }
 
 /**
-* 	Detects the trackinformation from the video title and temporarily saves it
-*/
+ * 	Detects the trackinformation from the video title and temporarily saves it
+ */
 function getTrackInfo(){
 	var feedback;	
 
@@ -1239,8 +1237,8 @@ function getTrackInfo(){
 }
 
 /**
-* 	fetchs full ablum info from last.fm api
-*/
+ * 	fetchs full ablum info from last.fm api
+ */
 function getAlbumInfo(){
 	var artist = decodeURIComponent(us_getTempData("artist"));
 	var albumName = decodeURIComponent(us_getTempData("track"));
@@ -1292,8 +1290,8 @@ function getAlbumInfo(){
 
 
 /**
-*	database trackinformation
-*/
+ * database trackinformation
+ */
 function getDatabaseData () {
 	var id = getYouTubeVideoId();
 	if ((us_getValue("database.id", 0)!=0) && (us_getValue("database.id", 0).search(id) != -1)) {
@@ -1418,12 +1416,12 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 
 
 /**
-*	--- 6. Miscellaneous ---
-*/
+ * --- 6. Miscellaneous ---
+ */
 /**
-*	
-*
-*/
+ * 
+ *
+ */
 function us_ajax_scanner () {
 	var leftToPlay = parseInt(us_getTempData("us_leftToPlay"));
 	var secs = parseInt(us_getTempData("us_secs"));
@@ -1475,8 +1473,8 @@ function us_ajax_scanner () {
 }
 
 /**
-*	Quickchange artist <-> track in scrobble-form
-*/
+ * Quickchange artist <-> track in scrobble-form
+ */
 function us_quickchange() {
 	var artist = document.forms[0].elements[0].value;
 	document.forms[0].elements[0].value = document.forms[0].elements[1].value;
@@ -1484,8 +1482,8 @@ function us_quickchange() {
 }
 
 /**
-*	Checks if its first run or if updated
-*/
+ * Checks if its first run or if updated
+ */
 function checkFirstRun () {
 	var localVersion = us_getValue("us_local_version", 0);
 	if (localVersion == 0) {
@@ -1518,8 +1516,8 @@ function checkFirstRun () {
 
 
 /**
-*	--- 7. Third party functions ---
-*/
+ * --- 7. Third party functions ---
+ */
 
 /**
  * Checks whether a text contains a character.
@@ -1549,15 +1547,14 @@ String.prototype.rtrim = function() {
 
 
 /**
-*	--- 8. Update ---
-*
-*	Edited version of Script Update Checker (http://userscripts.org/scripts/show/20145)
-*/
+ * --- 8. Update ---
+ *
+ * Edited version of Script Update Checker (http://userscripts.org/scripts/show/20145)
+ */
 function updateCheck(forced)
 {
 	var update_interval = 86400000;
-	if ((forced) || ((parseInt(us_getValue('us_last_update', '0')) + update_interval) <= parseInt(((new Date()).getTime())))) // Checks every day (24 h * 60 m * 60 s * 1000 ms)
-	{
+	if ((forced) || ((parseInt(us_getValue('us_last_update', '0')) + update_interval) <= parseInt(((new Date()).getTime())))) { // Checks every day (24 h * 60 m * 60 s * 1000 ms)
 		try
 		{
 			GM_xmlhttpRequest(
