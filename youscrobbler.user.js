@@ -23,11 +23,6 @@
 *	You can contact me on http://www.lukash.de/youscrobbler or on http://userscripts.org/scripts/show/119694 if you have got suggestions, bugs or oter questions
 */
 
-if (window.top != window.self)
-{
-    return;
-}
-
 const VERSION = "1.4.6";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
@@ -1627,6 +1622,9 @@ function updateCheck(forced)
 	}
 }
 
-init();
 
-updateCheck(false);
+if (window.top === window.self) {
+	init();
+
+	updateCheck(false);
+}
