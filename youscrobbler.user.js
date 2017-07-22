@@ -37,11 +37,8 @@ var scrobbleSongUrl = "http://youscrobbler2.lukash.de/scrobblesong/";
 
 var currentURL = document.URL;
 var loadgif = '<div class="us_loadgif"><img alt="loading" src="data:image/gif;base64,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" /></div>';
-var icon;
 var BFather,TO3,TO5;
-var TO2 = 0;
 var TO1Helper = false;
-var creload = 0;
 var isGM;
 
 var trackInfoFromDB = false;
@@ -75,9 +72,6 @@ function init() {
 function updateUrl () {
 	return "http://youscrobbler.lukash.de/currentversion";
 }
-function scriptDownloadUrl () {
-	return "http://youscrobbler.lukash.de/youscrobbler.user.js";
-}
 
 function us_reset () {
 	setTimeout(function () {us_closebox();},0);
@@ -95,7 +89,6 @@ function us_reset () {
 	
 	//save time page was loaded aka playstart time in ctime and gay format
 	var time = new Date();
-	var t = Math.round(time.getTime()/1000);
 	var m = time.getUTCMonth()+1;
 	var d = time.getUTCDate();
 	if (m.toString().length == 1) {
@@ -104,7 +97,6 @@ function us_reset () {
 	if (d.toString().length == 1) {
 	   d='0'+d;
 	}
-	var t2 = time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds();
 	us_saveTempData("us_playstart", time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds());
 	us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
 	
@@ -151,27 +143,7 @@ function initPreferences () {
 	if (us_getValue('us_autocorrect_tracks', "nf") == "nf") {
 		us_saveValue('us_autocorrect_tracks', true);
 	}
-	if (us_getValue('us_color') == 'red') {
-		icon = "data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D";
-	}
-	else {
-		icon = "data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D";
-	}
 }
-
-//gets the array location of the name attribute of an element, returns -1 if not found
-function getAttributeLocation(attribute,element)  {
-	
-		if(element.attributes!==null){
-			for(attribCounter=0;attribCounter<element.attributes.length;attribCounter++)
-			{
-				if(element.attributes[attribCounter].name==attribute)
-					return attribCounter;
-			}
-		}
-		
-		return 0;// -1
-} 
 
 // Creates a <type id="id">
 function createIdElement(type, id) {
@@ -554,8 +526,6 @@ function us_showBox(justLoggedIn) {
 *	inserts the scrobbleform into the window
 */
 function us_scrobbleform(justLoggedIn) {
-    var loginbox = document.getElementById('us_loginbox');
-	
 	var messageText = "";
 	var checkedText = "";
 	var databaseFoundText = "";
@@ -709,7 +679,6 @@ function us_help() {
 *	Show the settings-window
 */
 function us_settings() {
-	var cmodeStatus = "";
 	var maxEntries = us_getValue("database.maxEntries", 5000);
 	var cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
 				'<div class="us_settings_grp_heading">General</div><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
@@ -729,7 +698,7 @@ function us_settings() {
 	if (us_getValue("asFailNotification", 0) || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
 	if (us_getValue("scrobblingNotification")){document.getElementById('us_settings_scrobblingNotification').setAttribute("checked", 'checked');}
 	if (us_getValue("us_autocorrect_tracks")){document.getElementById('us_settings_autoCorrect').setAttribute("checked", 'checked');}
-	document.getElementById("databaseMaxLength"+us_getValue("database.maxEntries", 5000).toString()).selected = true;
+	document.getElementById("databaseMaxLength"+maxEntries.toString()).selected = true;
 	if (document.getElementById("scrobble_at"+us_getValue("scrobble_at", 75).toString())) {
 		document.getElementById(("scrobble_at"+us_getValue("scrobble_at", 75).toString())).selected = true;
 	} else {
@@ -832,7 +801,6 @@ function tryAutoScrobbleCallback(response, musicVideo){
 	if ((isLoggedIn())&&((trackInfoFromDB)||((response=="found")&&(musicVideo)))) {
 		//save time page was loaded aka playstart time in ctime and gay format
 		var time = new Date();
-		var t = Math.round(time.getTime()/1000);
 		var m = time.getUTCMonth()+1;
 		var d = time.getUTCDate();
 		if (m.toString().length == 1) {
@@ -842,7 +810,6 @@ function tryAutoScrobbleCallback(response, musicVideo){
 		   d='0'+d;
 		}
 				
-		var t2 = time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds();
 		us_saveTempData("us_playstart", time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds());
 		us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
 		us_scrobble(decodeURIComponent(us_getTempData("artist")),decodeURIComponent(us_getTempData("track")),"","",0,0,1);
@@ -992,7 +959,6 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 */
 function scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) {
 	var feedback = responseDetails.responseText;
-	var loginbox = document.getElementById('us_loginbox');
 	us_saveTempData("scrobbled", 1);
 	
 	if ((feedback.indexOf('<lfm status="ok"'))!=-1) {
@@ -1114,21 +1080,6 @@ function isLoggedIn() {
 		return false;
 	}
 	return true;
-}
-
-/**
-* Check if a video is a music video. Via link-href due to performance reasons (and not YouTube-Api)
-*/
-function isMusicCategory () {
-	if ((document.getElementById("eow-category"))) {
-		if (document.getElementById("eow-category").getElementsByTagName("a")[0].getAttribute("href") == "/music") {
-			return true;
-		} else {
-			return false;
-		}
-	} else {
-		return false;
-	}
 }
 
 /**
@@ -1535,16 +1486,6 @@ function us_quickchange() {
 	var artist = document.forms[0].elements[0].value;
 	document.forms[0].elements[0].value = document.forms[0].elements[1].value;
 	document.forms[0].elements[1].value = artist;
-}
-
-/**
-*	temporary saves data in forms attributes
-*	used for Quickchange
-*/
-function us_fillSelection (object, content) {
-	if (content != "") {
-		document.forms[0].elements[object].setAttribute("value", content);
-	}
 }
 
 /**
