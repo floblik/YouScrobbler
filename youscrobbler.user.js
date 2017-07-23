@@ -323,71 +323,73 @@ function us_addButton() {
 	let style_el = document.createElement('style');
 	let head = document.getElementsByTagName('head')[0];
 
-	style_el.innerHTML = '.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;' +
-		// by AshKyd
-		'z-index:1000000; position: absolute; top: 70px; width: 300px; margin-left: -150px; }' +
-		'.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }' +
-		'.us_box h4 { margin-left: 5px; margin-bottom:0px}' +
-		'#us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }' +
-		'#us_box_settings { background-image: url(data:image/gif;base64,R0lGODlhDQANAPcAAAAAAHt7e4CAgIGBgYWFhYaGhoqKiouLi4yMjI2NjZOTk5mZmZqampubm5ycnJ6enp+fn6GhoaWlpaampqenp6ioqKmpqaqqqqurq6ysrK2trbCwsLKysrOzs7S0tLa2tre3t76+vr+/v8DAwMXFxcbGxsfHx8jIyMrKysvLy83NzdDQ0NTU1NXV1dfX19nZ2dzc3N3d3d7e3uDg4Ojo6Ovr6+zs7O3t7e/v7/7+/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA0AAAicAP8JtIEihIcQKGwIFJjDhYeHED24yCHQBYYMGDJy8KABg4t/NjKK/ACDRYcNGAhKuCBSBY4XJ1JIQIFhgkgPMXDcqGHiAYYFDyJgECGDRgsTIxwsAPqAgogXM1ZkYBlBwQMPBhKQcFHCQgcIEQ4Y8GCDAAEEICowaPCggFmFHgTIZTBArlwPDEME2Ms3QAiKC21IIBCAgASFAgMCADs=); width: 13px; height: 13px; float: right; margin:1px 3px 0 0; }' +
-		'#us_box_head > ul, #us_box_head li { float:right}' +
-		'#us_box_head ul { list-style-type:none}' +
-		'.us_settings_grp { height:50px; vertical-align:middle; padding-right:3px;padding-left:5px}' +
-		'.us_settings_grp hr { background-color: #EEE; margin: 5px 8px; height: 1px;}' +
-		'.us_settings_grp_left { width:155px}' +
-		'.us_settings_grp_right { width:135px}' +
-		'.us_settings_grp span { vertical-align:middle}' +
-		'.us_settings_grp_heading { color:#777;font-size:100%;font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:4px;}' +
-		'.us_settings_grp_database { cursor: help;}' +
-		'#databaseMaxLength {width: 55px; }' +
-		'#scrobble_at {width: 45px; }' +
-		'#us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }' +
-		'#us_loginbox_form { text-align: right; padding: 5px; }' +
-		'.us_box input[type=text] { height: 16px; border: 1px solid #bbb; margin: 2px 15px 4px 2px; padding: 3px 4px; width: 170px;}' +
-		'.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-image: url(data:image/gif;base64,R0lGODlhAQAQAKIAAH5%2BflRUVFxcXGNjY2tra3Nzc3p6eoKCgiH5BAAAAAAALAAAAAABABAAAAMKeAdmVYSMIUS4CQA7); }' +
-		'.us_box input[type=submit]:hover { background-image: url(data:image/gif;base64,R0lGODlhAQAQAPcAAIaGho6OjpWVlZ2dnaWlpaysrLCwsLS0tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAAQAQAAAIFAAPHDBQoAABAgMGCBAQIACAhwEBADs=);}' +
-		'.us_box input[type=submit]:active { padding: 1px 4px 2px 4px;}' +
-		'.us_hidden { visibility: hidden; overflow: hidden; height: 0px; }' +
-		'#us_hiddenform { margin: 0; pading-right: 10px;}' +
-		'#us_hiddenform input[type=text] {margin-right:15px}' +
-		'#us_quickchange { position:relative; bottom:40px; width:9px; height:15px; float:right; background-image: url(data:image/gif;base64,R0lGODlhCQAPAPcAAAAAAICAgIGBgYODg4SEhIeHh4iIiImJiYqKiouLi4yMjI6Ojo+Pj5CQkJGRkZeXl5iYmJmZmaCgoKKiogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAJAA8AAAhMAP8J/PdgoMEDAQoY/DcggEMBAxckgBAgAgIEAhlM+Bfg3wSMBjsuFChyZMmFJ0MubCCB4z8JDgQqIEAxQgICAx3qXJgggIGRBA0GBAA7); }' +
-		'#us_quickchange:focus { background-color: #FFF; outline:none}' +
-		'.us_clickable_formdesc {}' +
-		'.us_loadgif { text-align: center; padding: 10px 0; }' +
-		'.us_loadgif img { border-radius: 5px; border:3px solid #91998E; }' +
-		'#us_more { font: normal normal bold 12pt/12pt Arial; color: #999; text-decoration: none; margin-right: 3px; }' +
-		'#us_more:focus { background:none; outline:none }' +
-		'.us_submitbuttons { background-color: #EEE; border-top: 1px solid #AAA; padding: 5px; width: 290px; height: 18px; margin-top: 5px; }' +
-		'#scrobbleStatus_parent {float: left; height: 18px; margin-left: 15px; padding-left: 5px; padding-top: 2px; color:#888}' +
-		'#us_autoscrobble {vertical-align:middle;}' +
-		'.us_submitbuttons_box_left {float: left;}' +
-		'.us_error { background-color: #F6D8D8; border: 1px solid #f28494; padding: 5px 3px 5px 3px; width: 90%; margin: 6px auto 10px; }' +
-		'.us_done { background-color: #CCFF99; border: 1px solid #99CC00; padding: 5px 3px 5px 3px; width: 90%; margin: 5px auto; }' +
-		'.us_infobox { z-index:1000000; background-color: #E8E8E8; border-radius: 5px; padding: 10px; position: fixed; right: 16px; bottom: 9px; border: 1px solid #000000; font-size: 10pt; }' +
-		'.us_infobox div { color: #AAAAAA; margin: 1px 5px 0 0; float: left; }' +
-		'.us_infobox div img { float: right; margin: -1px -6px 1px 8px; vertical-align: middle;}' +
-		'.us_infobox .sep { color:#AAA; }' +
-		'.us_trackinfo { color: #47D93D; font-weight: bold; padding-right: 8px; font-size: 11pt; vertical-align: middle;}' +
-		'.us_box .us_center { padding: 10px; text-align: center; }' +
-		'.us_box .us_left { padding: 10px; text-align: left; }' +
-		'#us_submit { float: right; margin-bottom:5px;}' +
-		'us_submitbuttons_box_left {border}' +
-		'#us_scrobblebutton { float:right; cursor: pointer; margin-left:16px;}' +
-		'#us_start_scrobblebutton {padding-left:3px!important}' + // Feather check
-		'#us_icon_small, #us_start_scrobblebutton_text { vertical-align: middle;}}' +
-		'#fullAlbumIcon { float: left; height: 16px; width: 16px; cursor: help;}' +
-		'#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}' +
-		'#us_scrobble_on {font-weight:bold; color: #66CC00;} ' +
-		'#us_scrobble_failed {font-weight:bold; color: #D10404;} ' +
-		'#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; } ' +
-		'#us_loginbox .us_status_small {color: #999; font-size:80%}' +
-		'.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}' +
-		'.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}';
+	style_el.innerHTML = `
+		.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;
+		/* by AshKyd */
+		z-index:1000000; position: absolute; top: 70px; width: 300px; margin-left: -150px; }
+		.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }
+		.us_box h4 { margin-left: 5px; margin-bottom:0px}
+		#us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }
+		#us_box_settings { background-image: url(data:image/gif;base64,R0lGODlhDQANAPcAAAAAAHt7e4CAgIGBgYWFhYaGhoqKiouLi4yMjI2NjZOTk5mZmZqampubm5ycnJ6enp+fn6GhoaWlpaampqenp6ioqKmpqaqqqqurq6ysrK2trbCwsLKysrOzs7S0tLa2tre3t76+vr+/v8DAwMXFxcbGxsfHx8jIyMrKysvLy83NzdDQ0NTU1NXV1dfX19nZ2dzc3N3d3d7e3uDg4Ojo6Ovr6+zs7O3t7e/v7/7+/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA0AAAicAP8JtIEihIcQKGwIFJjDhYeHED24yCHQBYYMGDJy8KABg4t/NjKK/ACDRYcNGAhKuCBSBY4XJ1JIQIFhgkgPMXDcqGHiAYYFDyJgECGDRgsTIxwsAPqAgogXM1ZkYBlBwQMPBhKQcFHCQgcIEQ4Y8GCDAAEEICowaPCggFmFHgTIZTBArlwPDEME2Ms3QAiKC21IIBCAgASFAgMCADs=); width: 13px; height: 13px; float: right; margin:1px 3px 0 0; }
+		#us_box_head > ul, #us_box_head li { float:right}
+		#us_box_head ul { list-style-type:none}
+		.us_settings_grp { height:50px; vertical-align:middle; padding-right:3px;padding-left:5px}
+		.us_settings_grp hr { background-color: #EEE; margin: 5px 8px; height: 1px;}
+		.us_settings_grp_left { width:155px}
+		.us_settings_grp_right { width:135px}
+		.us_settings_grp span { vertical-align:middle}
+		.us_settings_grp_heading { color:#777;font-size:100%;font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:4px;}
+		.us_settings_grp_database { cursor: help;}
+		#databaseMaxLength {width: 55px; }
+		#scrobble_at {width: 45px; }
+		#us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }
+		#us_loginbox_form { text-align: right; padding: 5px; }
+		.us_box input[type=text] { height: 16px; border: 1px solid #bbb; margin: 2px 15px 4px 2px; padding: 3px 4px; width: 170px;}
+		.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-image: url(data:image/gif;base64,R0lGODlhAQAQAKIAAH5%2BflRUVFxcXGNjY2tra3Nzc3p6eoKCgiH5BAAAAAAALAAAAAABABAAAAMKeAdmVYSMIUS4CQA7); }
+		.us_box input[type=submit]:hover { background-image: url(data:image/gif;base64,R0lGODlhAQAQAPcAAIaGho6OjpWVlZ2dnaWlpaysrLCwsLS0tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAAQAQAAAIFAAPHDBQoAABAgMGCBAQIACAhwEBADs=);}
+		.us_box input[type=submit]:active { padding: 1px 4px 2px 4px;}
+		.us_hidden { visibility: hidden; overflow: hidden; height: 0px; }
+		#us_hiddenform { margin: 0; pading-right: 10px;}
+		#us_hiddenform input[type=text] {margin-right:15px}
+		#us_quickchange { position:relative; bottom:40px; width:9px; height:15px; float:right; background-image: url(data:image/gif;base64,R0lGODlhCQAPAPcAAAAAAICAgIGBgYODg4SEhIeHh4iIiImJiYqKiouLi4yMjI6Ojo+Pj5CQkJGRkZeXl5iYmJmZmaCgoKKiogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAJAA8AAAhMAP8J/PdgoMEDAQoY/DcggEMBAxckgBAgAgIEAhlM+Bfg3wSMBjsuFChyZMmFJ0MubCCB4z8JDgQqIEAxQgICAx3qXJgggIGRBA0GBAA7); }
+		#us_quickchange:focus { background-color: #FFF; outline:none}
+		.us_clickable_formdesc {}
+		.us_loadgif { text-align: center; padding: 10px 0; }
+		.us_loadgif img { border-radius: 5px; border:3px solid #91998E; }
+		#us_more { font: normal normal bold 12pt/12pt Arial; color: #999; text-decoration: none; margin-right: 3px; }
+		#us_more:focus { background:none; outline:none }
+		.us_submitbuttons { background-color: #EEE; border-top: 1px solid #AAA; padding: 5px; width: 290px; height: 18px; margin-top: 5px; }
+		#scrobbleStatus_parent {float: left; height: 18px; margin-left: 15px; padding-left: 5px; padding-top: 2px; color:#888}
+		#us_autoscrobble {vertical-align:middle;}
+		.us_submitbuttons_box_left {float: left;}
+		.us_error { background-color: #F6D8D8; border: 1px solid #f28494; padding: 5px 3px 5px 3px; width: 90%; margin: 6px auto 10px; }
+		.us_done { background-color: #CCFF99; border: 1px solid #99CC00; padding: 5px 3px 5px 3px; width: 90%; margin: 5px auto; }
+		.us_infobox { z-index:1000000; background-color: #E8E8E8; border-radius: 5px; padding: 10px; position: fixed; right: 16px; bottom: 9px; border: 1px solid #000000; font-size: 10pt; }
+		.us_infobox div { color: #AAAAAA; margin: 1px 5px 0 0; float: left; }
+		.us_infobox div img { float: right; margin: -1px -6px 1px 8px; vertical-align: middle;}
+		.us_infobox .sep { color:#AAA; }
+		.us_trackinfo { color: #47D93D; font-weight: bold; padding-right: 8px; font-size: 11pt; vertical-align: middle;}
+		.us_box .us_center { padding: 10px; text-align: center; }
+		.us_box .us_left { padding: 10px; text-align: left; }
+		#us_submit { float: right; margin-bottom:5px;}
+		us_submitbuttons_box_left {border}
+		#us_scrobblebutton { float:right; cursor: pointer; margin-left:16px;}
+		#us_start_scrobblebutton {padding-left:3px!important} // Feather check
+		#us_icon_small, #us_start_scrobblebutton_text { vertical-align: middle;}}
+		#fullAlbumIcon { float: left; height: 16px; width: 16px; cursor: help;}
+		#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}
+		#us_scrobble_on {font-weight:bold; color: #66CC00;}
+		#us_scrobble_failed {font-weight:bold; color: #D10404;}
+		#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; }
+		#us_loginbox .us_status_small {color: #999; font-size:80%}
+		.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}
+		.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}
+	`;
 
 	// us_start_scrobblebutton
 	let button = createIdElement('span', 'us_scrobblebutton');
 
-	button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="' + us_icon() + '" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="' + secs + '" us_playstart_s="' + t + '" us_playstart="' + t2 + '"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>';// postxanadus
+	button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>`;// postxanadus
 
 	// Design check
 	if (document.getElementsByTagName('ytd-searchbox')[0]) {
@@ -396,7 +398,7 @@ function us_addButton() {
 		button.style.marginLeft = '50px';
 		button.style.padding = '6px 0 6px 0';
 		button.style.border = '1px solid var(--yt-searchbox-legacy-button-border-color)';
-		button.innerHTML = '<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="' + secs + '" us_playstart_s="' + t + '" us_playstart="' + t2 + '"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="' + us_icon() + '" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>';
+		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
 		BFather.insertBefore(button, BFather.lastChild);
 
 		document.getElementById('us_scrobble_statusbar').style.position = 'relative';
@@ -413,12 +415,12 @@ function us_addButton() {
 		button.style.marginRight = '2px';
 		button.style.borderTopRightRadius = '2px';
 		button.style.borderBottomRightRadius = '2px';
-		button.innerHTML = '<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="' + secs + '" us_playstart_s="' + t + '" us_playstart="' + t2 + '"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="' + us_icon() + '" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>';
+		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('mh')) {
 		BFather = document.getElementById('mh');
 		button.setAttribute('class', 'ml');
-		button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="' + us_icon() + '" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="' + secs + '" us_playstart_s="' + t + '" us_playstart="' + t2 + '"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>';
+		button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>`;
 		BFather.insertBefore(button, document.getElementById('se').nextSibling);
 	} else {
 		setTimeout(function() {
@@ -515,11 +517,14 @@ function us_showBox(justLoggedIn) {
 		loginbox.classList.remove('us_box_hidden');
 	}
 	if (!isLoggedIn()) {
-		let cont = '<div id="us_loginbox_form">' +
-			'<div class="us_error">You are currently not logged in!</div><br />' +
-			'<span>Click Login below to authenticate your account</span><br/><br/>' +
-			'<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/>' +
-			'<br /></div><div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>';
+		let cont = `
+			<div id="us_loginbox_form">
+				<div class="us_error">You are currently not logged in!</div><br />
+				<span>Click Login below to authenticate your account</span><br/><br/>
+				<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br />
+			</div>
+			<div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>
+		`;
 		us_boxcontent('Login to last.fm', cont);
 
 		document.getElementById('us_submit').addEventListener('click', us_authenticate);
@@ -556,7 +561,7 @@ function us_scrobbleform(justLoggedIn) {
 		} else {
 			restTime = us_getTempData('us_secs');
 		}
-		scrobbleStatus = '<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus" style="font-weight:bold">' + restTime + '</span> sec &nbsp;<a href="javascript:;" id="us_abortScrobbling" title="abort scrobbling">x</a></div>';
+		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus" style="font-weight:bold">${restTime}</span> sec &nbsp;<a href="javascript:;" id="us_abortScrobbling" title="abort scrobbling">x</a></div>`;
 	}
 	if (us_getTempData('scrobbled') == 1) {
 		scrobbleStatus = '<div id="scrobbleStatus_parent">scrobbled</div>';
@@ -583,16 +588,28 @@ function us_scrobbleform(justLoggedIn) {
 		databaseFoundText = '<div id="foundInDBIcon" title="Track information retrieved from personal database"></div>';
 	}
 	if (us_getTempData('is_full_album') == 'yes') {
-		databaseFoundText = '<div id="fullAlbumIcon" title="Video was recognized as a full album">Full Album: Track ' + us_getTempData('full_album_track_nr') + ' of ' + us_getTempData('full_album_track_count') + '</div>';
+		databaseFoundText = `<div id="fullAlbumIcon" title="Video was recognized as a full album">Full Album: Track ${us_getTempData('full_album_track_nr')} of ${us_getTempData('full_album_track_count')}</div>`;
 	}
 
-	let cont = '<div id="us_loginbox_form">' + databaseFoundText + messageText + '<form name="us_scrobbleform" onSubmit="return' +
-		' false">Artist: <input type="text" name="artist" value="' + artist + '" /><br />' +
-		'Track: <input type="text" name="track" value="' + track + '" /><br/><a id="us_quickchange" title="Artist <-> Track" href="#"></a><a href="javascript:;" id="us_more" title="more options">+</a>' +
-		'<p id="us_hiddenform" class="us_hidden">Album title: <input type="text" name="album" value="' + album + '" /><br />' +
-		'</p>' +
-		'</form></div><div class="us_submitbuttons"><div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"' + checkedText + '><label for="us_autoscrobble" style="vertical-align:middle;">Auto</label></div>' + scrobbleStatus + '<input id="us_submit" value="Scrobble" type="submit" />' +
-		'</div>';
+	let cont = `
+		<div id="us_loginbox_form">${databaseFoundText}
+			${messageText}
+			<form name="us_scrobbleform" onSubmit="return false">
+				Artist: <input type="text" name="artist" value="${artist}" /><br />
+				Track: <input type="text" name="track" value="${track}" /><br/>
+				<a id="us_quickchange" title="Artist <-> Track" href="#"></a>
+				<a href="javascript:;" id="us_more" title="more options">+</a>
+				<p id="us_hiddenform" class="us_hidden">
+					Album title: <input type="text" name="album" value="${album}" /><br />
+				</p>
+			</form>
+		</div>
+		<div class="us_submitbuttons">
+			<div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"${checkedText}><label for="us_autoscrobble" style="vertical-align:middle;">Auto</label></div>
+			${scrobbleStatus}
+			<input id="us_submit" value="Scrobble" type="submit" />
+		</div>
+	`;
 	us_boxcontent('Scrobble to last.fm - ' + us_getValue('us_username'), cont);
 
 	document.getElementById('us_quickchange').addEventListener('click', us_quickchange);
@@ -670,8 +687,14 @@ function us_boxcontent(title, content) {
 	if (loginbox.classList.contains('us_box_hidden')) {
 		loginbox.style.classList.remove('us_box_hidden');
 	}
-	loginbox.innerHTML = '<h3 id="us_box_head">' + title + '<ul><li><a href="javascript:;" title="Close" id="us_box_close"></a></li><li><a href="javascript:;" title="Settings" id="us_box_settings"></a></li><li><a href="javascript:;" title="Help" id="us_box_help"></a></li></ul></h3>' +
-		'<div>' + content + '</div>';
+	loginbox.innerHTML = `
+		<h3 id="us_box_head">${title}<ul>
+			<li><a href="javascript:;" title="Close" id="us_box_close"></a></li>
+			<li><a href="javascript:;" title="Settings" id="us_box_settings"></a></li>
+			<li><a href="javascript:;" title="Help" id="us_box_help"></a></li>
+		</ul></h3>
+		<div>${content}</div>
+	`;
 	document.getElementById('us_box_close').addEventListener('click', us_closebox);
 	document.getElementById('us_box_settings').addEventListener('click', us_settings);
 	document.getElementById('us_box_help').addEventListener('click', us_help);
@@ -685,9 +708,17 @@ function us_boxcontent(title, content) {
  * Show the help-window
  */
 function us_help() {
-	let cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Website</a>.</p>' +
-		'<h4>Feedback</h4><p class="us_left">Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>' +
-		'<h4>Links</h4><p class="us_left"><a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbles Website</a><br/><a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/><a target="_blank" href="https://github.com/floblik/YouScrobbler" title="GitHub">GitHub repo</a><br/></p>';
+	let cont = `
+		<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Website</a>.</p>
+		<h4>Feedback</h4>
+		<p class="us_left">Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>
+		<h4>Links</h4>
+		<p class="us_left">
+			<a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbles Website</a><br/>
+			<a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/>
+			<a target="_blank" href="https://github.com/floblik/YouScrobbler" title="GitHub">GitHub repo</a><br/>
+		</p>
+	`;
 	us_boxcontent('About - YouScrobbler ' + VERSION, cont);
 }
 /**
@@ -695,17 +726,41 @@ function us_help() {
  */
 function us_settings() {
 	let maxEntries = us_getValue('database.maxEntries', 5000);
-	let cont = '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">' +
-		'<div class="us_settings_grp_heading">General</div><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>' +
-		'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobble notification</label>' +
-		'<br/><hr/><label for="scrobble_at">scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span>' +
-		'<br/><input type="checkbox" id="us_settings_autoCorrect" name="us_settings_autoCorrect"/><label for="us_settings_autoCorrect">last.fm auto correct</label></div><br/><hr/>' +
-		'<div><input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label><input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>' +
-		'</td>' +
-		'<td class="us_settings_grp us_settings_grp_right"><div class="us_settings_grp_heading us_settings_grp_database" title="Your custom edited track information">Database</div><span>Size: ' + ((us_getValue('database.id').split(' ').length) - 1) + ' / <select name="databaseMaxLength" id="databaseMaxLength"><option id="databaseMaxLength500" value="500">500</option><option id="databaseMaxLength5000" value="5000">5000</option><option id="databaseMaxLength-1" value="-1">unlimited</option></select></span>' +
-		'<br/><br/><div class="us_settings_grp_heading">About</div>' +
-		'<span>Version: ' + VERSION + '</span><br/><span id="us_manualupdate"><a href="javascript:;" id="us_manualupdate_link">Check for Update</a></span></td></tr></table> ' +
-		'</form></div><div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>';
+	let cont = `
+		<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr>
+			<td class="us_settings_grp us_settings_grp_left">
+				<div class="us_settings_grp_heading">General</div>
+				<input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label><br/>
+				<input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobble notification</label><br/>
+				<hr/>
+				<label for="scrobble_at">scrobble at </label><select name="scrobble_at" id="scrobble_at">
+					<option id="scrobble_at10" value="10">10</option>
+					<option id="scrobble_at25" value="25">25</option>
+					<option id="scrobble_at50" value="50">50</option>
+					<option id="scrobble_at75" value="75">75</option>
+					<option id="scrobble_at95" value="95">95</option>
+				</select><span>&#37;</span><br/>
+				<input type="checkbox" id="us_settings_autoCorrect" name="us_settings_autoCorrect"/><label for="us_settings_autoCorrect">last.fm auto correct</label><br/>
+				<hr/>
+				<div>
+					<input type="radio" id="us_settings_color_red" name="us_settings_color" value="red" /><label for="us_settings_color_red">Red</label>
+					<input type="radio" id="us_settings_color_black" name="us_settings_color" value="black" /><label for="us_settings_color_black">Black</label>
+				</div>
+			</td>
+			<td class="us_settings_grp us_settings_grp_right">
+				<div class="us_settings_grp_heading us_settings_grp_database" title="Your custom edited track information">Database</div>
+				<span>Size: ${us_getValue('database.id').split(' ').length - 1} / <select name="databaseMaxLength" id="databaseMaxLength">
+					<option id="databaseMaxLength500" value="500">500</option>
+					<option id="databaseMaxLength5000" value="5000">5000</option>
+					<option id="databaseMaxLength-1" value="-1">unlimited</option>
+				</select></span><br/><br/>
+				<div class="us_settings_grp_heading">About</div>
+				<span>Version: ${VERSION}</span><br/>
+				<span id="us_manualupdate"><a href="javascript:;" id="us_manualupdate_link">Check for Update</a></span>
+			</td>
+		</tr></table></form></div>
+		<div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>
+	`;
 
 	us_boxcontent('Settings', cont);
 	let us_settings_color = 'us_settings_color_' + us_getValue('us_color');
@@ -942,12 +997,12 @@ function us_scrobble(artist, track, album, mbid, retry, queued, auto, full_album
 		TO1Helper = true;
 		if (retry == 0) {
 			if (auto == 1 && us_getValue('scrobblingNotification')) {
-				us_infoBox('<div><span class="us_trackinfo"><span id="us_artist_display">' + artist + '</span> <span class="sep"> - </span> <span id="us_track_display">' + track + '</span></span> ' + time_left_to_scrobble + ' s <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAAGnRFWHRTb2Z0d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAAG4SURBVDhPdVNNS0JREL19mAV9LSRo4zqEfoK0FCKiKCyqRQuhFK2HEBRSEPmkTBCjRdHGZRD9idb2uRBavMC30EJwlW4iXnN0roxFA4d7OXPO3LlfSsbnd91z9p4xlq3Zu8Cr35EAhxw0LO+Ml8aTf9WaL0BMYzFZ3jfjdsQ07E0Tc3CcK0DLtlaAWLSmsVLVcZw9QjdhKW6HCwDNw8zloYG2XaT2VfOsWHNYGeYsoYugYBAF+pnrIWShhQdela4kDbRGcU7QZmBUFJgUPHACD7xq296orr8Fi0QOcxKrYHSLAmhfFnDBA69qVTrCvkcIsoPoPwXchBx5THibBShcnAS0OB0thXQBnA06G+Ic4JMFBkUCcOWrl80VKFKEPuYDPALedgG0Q4TeO7aRAL9mLYD3MO8jeHm+SwfY2sJWKaQPcYyTA0hkKim0fk3QV6gPGZiAB155jTeEXkJkx47d0iivVe4dXIA7N34/pEMCbgOt6i39xhS07YeEeG48yKecYKG8GayKrVxBAy08TbOOx/q9/EwXZvkAB3hMGKd5TH4maNnWGfiquY9TI2jN/PnO4JDr/M5K/QDEQYmHdixexAAAAABJRU5ErkJggg==" alt="queued" /></div>');
+				us_infoBox(`<div><span class="us_trackinfo"><span id="us_artist_display">${artist}</span> <span class="sep"> - </span> <span id="us_track_display">${track}</span></span> ${time_left_to_scrobble} s <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAAGnRFWHRTb2Z0d2FyZQBQYWludC5ORVQgdjMuNS4xMDD0cqEAAAG4SURBVDhPdVNNS0JREL19mAV9LSRo4zqEfoK0FCKiKCyqRQuhFK2HEBRSEPmkTBCjRdHGZRD9idb2uRBavMC30EJwlW4iXnN0roxFA4d7OXPO3LlfSsbnd91z9p4xlq3Zu8Cr35EAhxw0LO+Ml8aTf9WaL0BMYzFZ3jfjdsQ07E0Tc3CcK0DLtlaAWLSmsVLVcZw9QjdhKW6HCwDNw8zloYG2XaT2VfOsWHNYGeYsoYugYBAF+pnrIWShhQdela4kDbRGcU7QZmBUFJgUPHACD7xq296orr8Fi0QOcxKrYHSLAmhfFnDBA69qVTrCvkcIsoPoPwXchBx5THibBShcnAS0OB0thXQBnA06G+Ic4JMFBkUCcOWrl80VKFKEPuYDPALedgG0Q4TeO7aRAL9mLYD3MO8jeHm+SwfY2sJWKaQPcYyTA0hkKim0fk3QV6gPGZiAB155jTeEXkJkx47d0iivVe4dXIA7N34/pEMCbgOt6i39xhS07YeEeG48yKecYKG8GayKrVxBAy08TbOOx/q9/EwXZvkAB3hMGKd5TH4maNnWGfiquY9TI2jN/PnO4JDr/M5K/QDEQYmHdixexAAAAABJRU5ErkJggg==" alt="queued" /></div>`);
 				window.setTimeout(function() {
 					us_closeinfobox();
 				}, 5000);
 			} else if (us_getValue('scrobblingNotification')) {
-				us_boxcontent('Queued...', '<div class="us_done">This will be scrobbled in ' + time_left_to_scrobble + ' seconds. </div>');
+				us_boxcontent('Queued...', `<div class="us_done">This will be scrobbled in ${time_left_to_scrobble} seconds. </div>`);
 				window.setTimeout(function() {
 					us_closebox();
 				}, 3000);
@@ -997,13 +1052,13 @@ function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scr
 			document.getElementById('scrobbleStatus_parent').innerHTML = 'scrobbled';
 		}
 		if (queued != 1) {
-			us_boxcontent('OK!', '<div class="us_done"><span class="us_trackinfo"><span id="us_artist_display">' + artist + '</span> <span class="sep">-</span> <span id="us_track_display">' + track + '</span></span> scrobbled.</div>');
+			us_boxcontent('OK!', `<div class="us_done"><span class="us_trackinfo"><span id="us_artist_display">${artist}</span> <span class="sep">-</span> <span id="us_track_display">${track}</span></span> scrobbled.</div>`);
 			window.setTimeout(function() {
 				us_closebox();
 			}, 2000);
 		} else {
 			if (us_getValue('scrobblingNotification', 0)) {
-				us_infoBox('<div><span class="us_trackinfo">' + artist + ' <span class="sep">-</span> ' + track + '</span> scrobbled. <img src="data:image/gif;base64,R0lGODlhEAAQAKIAAO7w7qrZnHXGZnC6WJLJhE%2BpODGCLbrfsyH5BAAAAAAALAAAAAAQABAAAANhCLrcHmKUEZw6g4YtT8PEERBEcBCFtwyh4L5nsQTD8cLCURCKducKkgxQgACBAIIgYFAUXQ3CYNkkjgS8YIZUpdlYyQxlt9jRxBla9WLIKVlq1eJgMI8KBnnUwDdkLYAMCQA7" alt="done" /></div>');
+				us_infoBox(`<div><span class="us_trackinfo">${artist} <span class="sep">-</span> ${track}</span> scrobbled. <img src="data:image/gif;base64,R0lGODlhEAAQAKIAAO7w7qrZnHXGZnC6WJLJhE%2BpODGCLbrfsyH5BAAAAAAALAAAAAAQABAAAANhCLrcHmKUEZw6g4YtT8PEERBEcBCFtwyh4L5nsQTD8cLCURCKducKkgxQgACBAIIgYFAUXQ3CYNkkjgS8YIZUpdlYyQxlt9jRxBla9WLIKVlq1eJgMI8KBnnUwDdkLYAMCQA7" alt="done" /></div>`);
 				window.setTimeout(function() {
 					us_closeinfobox();
 				}, 3000);
@@ -1011,9 +1066,9 @@ function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scr
 		}
 	} else {
 		if (queued != 1) {
-			us_boxcontent('Error', '<div class="us_error">' + feedback + '</div>');
+			us_boxcontent('Error', `<div class="us_error">${feedback}</div>`);
 		} else {
-			us_infoBox('<div class="us_error">Error: ' + feedback + '</div>');
+			us_infoBox(`<div class="us_error">Error: ${feedback}</div>`);
 			window.setTimeout(function() {
 				us_closeinfobox();
 			}, 10000);
@@ -1096,12 +1151,16 @@ function us_resetlogin(error) {
 		resetInfo = '<div class="us_done">Successfully reset the login credentials</div><br />';
 	}
 	if ((error != '[object MouseEvent]') && (error != '[object XPCNativeWrapper [object MouseEvent]]')) {
-		cont = '<p class="us_error">Error: ' + error + '</p>';
+		cont = `<p class="us_error">Error: ${error}</p>`;
 	}
-	cont = cont + '<div id="us_loginbox_form">' +
-		resetInfo +
-		'<span>Click Login below to authenticate your account</span><br/><br/>' +
-		'<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br /></div><div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>';
+	cont += `
+		<div id="us_loginbox_form">
+			${resetInfo}
+			<span>Click Login below to authenticate your account</span><br/><br/>
+			<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br />
+		</div>
+		<div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>
+	`;
 	us_boxcontent('Login to last.fm', cont);
 	document.getElementById('us_submit').addEventListener('click', us_authenticate);
 }
@@ -1532,24 +1591,28 @@ function checkFirstRun() {
 	if (localVersion == 0) {
 		initPreferences();
 		us_showBox();
-		let cont = '<div id="us_loginbox_form">' +
-			'<h4>Welcome to YouScrobbler!</h4><br/>' +
-			'<span>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler">Last.fm Group</a> to stay up to date.</span><br/><br/>' +
-			'<span>Description and documentation can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Homepage</a>.</span><br/><br/>' +
-			'</div><div class="us_submitbuttons"><input id="us_submit" value="Next" type="submit" /></div>';
+		let cont = `
+			<div id="us_loginbox_form">
+				<h4>Welcome to YouScrobbler!</h4><br/>
+				<span>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler">Last.fm Group</a> to stay up to date.</span><br/><br/>
+				<span>Description and documentation can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Homepage</a>.</span><br/><br/>
+			</div>
+			<div class="us_submitbuttons"><input id="us_submit" value="Next" type="submit" /></div>
+		`;
 		us_boxcontent('First Run', cont);
 		document.getElementById('us_submit').addEventListener('click', us_showBox);
 		us_saveValue('us_local_version', VERSION);
 	} else if (localVersion < VERSION) {
 		initPreferences();
 		us_showBox();
-		let cont = '<div id="us_loginbox_form">' +
-			'<div class="us_done">Welcome to YouScrobbler  ' + VERSION + '.</div><br/>' +
-			'<span>Changelog can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Web page</a>.</span><br/>' +
-			'<br/>' +
-			'<br/>' +
-			'<h4>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a> to stay tuned</h4>' +
-			'<br /></div><div class="us_submitbuttons"><input id="us_submit" value="Close" type="submit" /></div>';
+		let cont = `
+			<div id="us_loginbox_form">
+				<div class="us_done">Welcome to YouScrobbler ${VERSION}.</div><br/>
+				<span>Changelog can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Web page</a>.</span><br/><br/><br/>
+				<h4>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a> to stay tuned</h4><br />
+			</div>
+			<div class="us_submitbuttons"><input id="us_submit" value="Close" type="submit" /></div>
+		`;
 		us_boxcontent('Successfully Updated', cont);
 		document.getElementById('us_submit').addEventListener('click', us_closebox);
 		us_saveValue('us_local_version', VERSION);
@@ -1578,12 +1641,15 @@ function updateCheck(forced) {
 						local_version = VERSION;
 						let scriptDownloadUrl = 'http://youscrobbler.lukash.de/youscrobbler_' + remote_version.replace(/\./g, '') + '.user.js';
 						if (remote_version > local_version) {
-							let cont = '<div id="us_loginbox_form"><span>YouScrobbler ' + String(remote_version) + ' is available.</span><br/>' +
-								'<span>Changes are applied after new page load.</span><br/>' +
-								'<br/>' +
-								'Problem updating?<br/>' +
-								'Try via Greasemonkey (Addons/UserScripts)' +
-								'</div><div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>';
+							let cont = `
+								<div id="us_loginbox_form">
+									<span>YouScrobbler ${remote_version} is available.</span><br/>
+									<span>Changes are applied after new page load.</span><br/><br/>
+									Problem updating?<br/>
+									Try via Greasemonkey (Addons/UserScripts)
+								</div>
+								<div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>
+							`;
 							us_boxcontent('Update available', cont);
 							document.getElementById('us_submit').addEventListener('click', function() {
 								window.open(scriptDownloadUrl, '_blank');
@@ -1594,10 +1660,12 @@ function updateCheck(forced) {
 					},
 					onerror: function() {
 						if ((forced)) {
-							let cont = '<div id="us_loginbox_form"><div class="us_error">Checking for an update has failed. Try again later.</div><br/>' +
-								'<br/>' +
-								'<br/>' +
-								'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
+							let cont = `
+								<div id="us_loginbox_form">
+									<div class="us_error">Checking for an update has failed. Try again later.</div><br/><br/><br/>
+								</div>
+								<div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>
+							`;
 							us_showBox();
 							us_boxcontent('Checking for update failed', cont);
 							document.getElementById('us_submit').addEventListener('click', function() {
@@ -1613,18 +1681,20 @@ function updateCheck(forced) {
 				});
 		} catch (err) {
 			if ((forced)) {
-				let cont = '<div id="us_loginbox_form"><div class="us_error">Checking for an Updated has failed. Try again later.<br/>Error:<br/>' +
-					err + '</div><br/>' +
-					'<br/>' +
-					'<br/>' +
-					'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
+				let cont = `
+					<div id="us_loginbox_form"><div class="us_error">Checking for an Updated has failed. Try again later.<br/>
+						Error:<br/>
+						${err}
+					</div></div><br/><br/><br/>
+					<div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>
+				`;
 				us_showBox();
 				us_boxcontent('Checking for update failed', cont);
 				document.getElementById('us_submit').addEventListener('click', function() {
 					updateCheck(true);
 				});
 			} else {
-				us_infoBox('<div class="us_error">Checking for update failed: ' + err + '</div>');
+				us_infoBox(`<div class="us_error">Checking for update failed: ${err}</div>`);
 				window.setTimeout(function() {
 					us_closeinfobox();
 				}, 5000);
