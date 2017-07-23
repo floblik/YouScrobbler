@@ -1,0 +1,47 @@
+{
+	"extends": "eslint:recommended",
+	"rules": {
+		"array-bracket-spacing": "error",
+		"block-spacing": "error",
+		"brace-style": "error",
+		"comma-dangle": "error",
+		"comma-spacing": "error",
+		"comma-style": "error",
+		"curly": "error",
+		"dot-notation": "error",
+		"eol-last": "error",
+		"func-call-spacing": "error",
+		"indent": ["error", "tab"],
+		"key-spacing": "error",
+		"keyword-spacing": "error",
+		"linebreak-style": ["error", "unix"],
+		"max-statements-per-line": ["error", {"max": 1}],
+		"no-alert": "error",
+		"no-array-constructor": "error",
+		"no-console": "error",
+		"no-eval": "error",
+		"no-multiple-empty-lines": "error",
+		"no-multi-spaces": ["error", {"exceptions": {"Property": false}}],
+		"no-trailing-spaces": "error",
+		"no-undef": "warn", // this can be removed once the problems are fixed, so that the rule defaults to error
+		"no-use-before-define": ["error", "nofunc"],
+		"no-whitespace-before-property": "error",
+		"object-curly-newline": ["error", {"multiline": true, "consistent": true}],
+		"one-var-declaration-per-line": "error",
+		"quotes": ["error", "single", {"avoidEscape": true}],
+		"semi": "error",
+		"semi-spacing": "error",
+		"space-before-blocks": "error",
+		"space-before-function-paren": ["error", "never"],
+		"space-in-parens": "error",
+		"space-infix-ops": "error",
+		"spaced-comment": "error",
+		"strict": ["error", "global"],
+		"unicode-bom": "error"
+	},
+	"env": {
+		"browser": true,
+		"es6": true,
+		"greasemonkey": true
+	}
+}
