@@ -46,8 +46,7 @@ var trackInfoFromDB = false;
  * 4. Scrobbling and Login
  * 5. Information request
  * 6. Miscellaneous
- * 7. Third party functions
- * 8. Update
+ * 7. Update
  */
 
 
@@ -841,7 +840,7 @@ function scrobble_statusbar(status) {
 function us_authenticate() {
 	var tokenRegex = /(\?|&)token=[^&\?]*/gi;
 	var currentURL = document.URL.replace(tokenRegex, "");
-	if(!stringContainsChar(currentURL, "?")) {
+	if(currentURL.indexOf("?") === -1) {
 		currentURL = currentURL.replace("&", "?");
 	}
 	var redirectURL = lastFmAuthenticationUrl + "?api_key=" + APIKEY +"&cb=" + currentURL;
@@ -1503,40 +1502,8 @@ function checkFirstRun () {
 }
 
 
-
 /**
- * --- 7. Third party functions ---
- */
-
-/**
- * Checks whether a text contains a character.
- * adapted from ScrobbleSmurf
- */
-function stringContainsChar(text, charac) {
-	for(var i = 0; i < text.length; i++) {
-		if(text[i] == charac) {
-			return true;
-		}
-	}
-	return false;
-}
-
-//
-// http://www.somacon.com/p355.php
-//
-String.prototype.trim = function() {
-	return this.replace(/^\s+|\s+$/g,"");
-}
-String.prototype.ltrim = function() {
-	return this.replace(/^\s+/,"");
-}
-String.prototype.rtrim = function() {
-	return this.replace(/\s+$/,"");
-}
-
-
-/**
- * --- 8. Update ---
+ * --- 7. Update ---
  *
  * Edited version of Script Update Checker (http://userscripts.org/scripts/show/20145)
  */
