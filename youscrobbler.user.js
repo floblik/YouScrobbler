@@ -174,7 +174,7 @@ function GM_main () {
 			playerNode = document.getElementById("movie_player");
 		}
 		//get video ID
-		var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
+		var regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
 		var removeRegex = /(\?|%3F|&|%26)v=/gi;
 		var matches = document.URL.match(regex);
 		var vidId;
@@ -838,7 +838,7 @@ function scrobble_statusbar(status) {
  * adapted from ScrobbleSmurf
  */
 function us_authenticate() {
-	var tokenRegex = /(\?|&)token=[^&\?]*/gi;
+	var tokenRegex = /(\?|&)token=[^&?]*/gi;
 	var currentURL = document.URL.replace(tokenRegex, "");
 	if(currentURL.indexOf("?") === -1) {
 		currentURL = currentURL.replace("&", "?");
@@ -1073,7 +1073,7 @@ function isLoggedIn() {
  * adapted from ScrobbleSmurf
  */
 function getYouTubeVideoId () {
-	var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
+	var regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
 	var removeRegex = /(\?|%3F|&|%26)v=/gi;
 	var matches = document.URL.match(regex);	
 
