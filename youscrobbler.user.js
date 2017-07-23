@@ -741,7 +741,7 @@ function isMusicVideo(infoResult, callback){
 	url: url,
 	onload: function(response) {
 	  if(response.responseText){
-		json = JSON.parse(response.responseText);
+		var json = JSON.parse(response.responseText);
 
 		if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
 			us_saveTempData("track", json["track"]["name"]);
@@ -1239,7 +1239,7 @@ function getAlbumInfo(){
 			var json = JSON.parse(response.responseText);
 			var response = response.responseText;
 			
-			album = json.album;
+			var album = json.album;
 			
 			if(album.artist == artist && album.name == albumName && album.tracks.track.length > 1){
 				us_saveTempData("is_full_album", "yes");
