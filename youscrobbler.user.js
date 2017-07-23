@@ -32,7 +32,7 @@ let scrobbleSongUrl = "http://youscrobbler2.lukash.de/scrobblesong/";
 
 let currentURL = document.URL;
 let loadgif = '<div class="us_loadgif"><img alt="loading" src="data:image/gif;base64,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" /></div>';
-let BFather,TO3,TO5;
+let BFather;
 let TO1Helper = false;
 let isGM;
 
@@ -158,7 +158,7 @@ function us_moveboxd(e) {
 	let el = document.getElementById('us_loginbox');
 	us_saveValue('us_drag',(e.clientX-el.offsetLeft)+"-"+(e.clientY-el.offsetTop));
 } 
-function us_moveboxu(e) {
+function us_moveboxu() {
 	let el = document.getElementById('us_loginbox');
 	us_saveValue('us_boxpos',el.style.left+"-"+el.style.top);
 	us_saveValue('us_drag',false);
@@ -185,7 +185,7 @@ function GM_main () {
 			vidId = matches[0].replace(removeRegex, "");
 		}
 		if (state==1 && vidId != document.getElementById("us_temp_info").getAttribute("us_video_id")) {
-			TO5 = setTimeout(function () {document.getElementById("us_temp_info").setAttribute("us_reset_now", "1");}, 1);
+			setTimeout(function () {document.getElementById("us_temp_info").setAttribute("us_reset_now", "1");}, 1);
 		}
 		switch (state) {
 			case 1:
@@ -203,7 +203,7 @@ function GM_main () {
 		}
     }
 	
-    window.onYouTubePlayerReady = function (playerId) {
+    window.onYouTubePlayerReady = function () {
 		let playerNode;
         if (document.getElementById("c4-player")) {
 			playerNode = document.getElementById("c4-player");
@@ -419,7 +419,7 @@ function us_addButton() {
 	us_buttonStatus();
 	document.getElementById("us_temp_info").setAttribute("us_video_id", getYouTubeVideoId());
 	addJS_Node (null, null, GM_main);
-	TO3 = setTimeout(function () {us_ajax_scanner()}, 1000);
+	setTimeout(function () {us_ajax_scanner()}, 1000);
 	
 	checkFirstRun();
 }
@@ -733,7 +733,7 @@ function us_settings() {
  * --- 4. Scrobbling and Login ---
  */
 
-function isMusicVideo(infoResult, callback){
+function isMusicVideo(infoResult){
 	let artist = us_getTempData("artist").replace(' ', '+');
 	let track = us_getTempData("track").replace(' ', '+');
 	let url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
@@ -1002,7 +1002,7 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 /**
  * Temporary save track information from the form 
  */
-function us_scrobblenp(retry) {
+function us_scrobblenp() {
 	let formArtist = document.forms[0].elements[0].value;
 	let formTrack = document.forms[0].elements[1].value;
 	let formAlbum = document.forms[0].elements[2].value;
@@ -1331,7 +1331,7 @@ function getDatabaseData () {
 	}
 }
 
-function saveDatabaseData(id, artist, track, album, mbid) {
+function saveDatabaseData(id, artist, track, album) {
 	//Edit existing entry
 	if ((us_getValue("database.id", 0)!=0) && (us_getValue("database.id", 0).search(id) != -1)) {
 		let ids = us_getValue("database.id", 0).split(" ");
@@ -1419,9 +1419,9 @@ function us_ajax_scanner () {
 	if (!getYouTubeVideoId()) {
 		us_saveTempData("us_reset_now", "1");
 		
-		TO3 = setTimeout(function () {us_ajax_scanner()}, 5000);
+		setTimeout(function () {us_ajax_scanner()}, 5000);
 	} else {
-		TO3 = setTimeout(function () {us_ajax_scanner()}, 1000);
+		setTimeout(function () {us_ajax_scanner()}, 1000);
 		
 		if (us_getTempData("video_is_playing", 0) == 1 && us_getTempData("us_reset_now")!="1" && leftToPlay >= 1 && !us_getTempData("autoscrobleerror")) {
 			us_saveTempData("us_leftToPlay", parseInt(leftToPlay-1));
