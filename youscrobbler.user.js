@@ -194,6 +194,7 @@ function GM_main () {
 			case 0:
 				document.getElementById("us_temp_info").setAttribute("video_end_reached", "yes");
 				document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");
+			break;
 			default:	
 				document.getElementById("us_temp_info").setAttribute("video_is_playing", "0");
 		}
