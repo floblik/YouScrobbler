@@ -149,7 +149,6 @@ function createIdElement(type, id) {
 }
 
 function us_movebox(e) {
- 	e = (e) ? e : ((window.event) ? window.event : "");
 	if (us_getValue('us_drag')) {
 		let el = document.getElementById('us_loginbox');
 		el.style.left = (150+e.clientX-us_getValue('us_drag').split('-')[0])+"px";
