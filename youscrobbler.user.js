@@ -26,17 +26,17 @@
 const VERSION = "1.4.6";
 const APIKEY = "d2fcec004903116fe399074783ee62c7";
 
-var lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
-var authenticationSessionUrl = "http://youscrobbler2.lukash.de/auth";
-var scrobbleSongUrl = "http://youscrobbler2.lukash.de/scrobblesong/";
+let lastFmAuthenticationUrl = "http://www.last.fm/api/auth";
+let authenticationSessionUrl = "http://youscrobbler2.lukash.de/auth";
+let scrobbleSongUrl = "http://youscrobbler2.lukash.de/scrobblesong/";
 
-var currentURL = document.URL;
-var loadgif = '<div class="us_loadgif"><img alt="loading" src="data:image/gif;base64,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" /></div>';
-var BFather,TO3,TO5;
-var TO1Helper = false;
-var isGM;
+let currentURL = document.URL;
+let loadgif = '<div class="us_loadgif"><img alt="loading" src="data:image/gif;base64,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" /></div>';
+let BFather,TO3,TO5;
+let TO1Helper = false;
+let isGM;
 
-var trackInfoFromDB = false;
+let trackInfoFromDB = false;
 
 /**
  * --- Content ---
@@ -82,9 +82,9 @@ function us_reset () {
 	document.getElementById("us_temp_info").removeAttribute("us_playstart_s");
 	
 	//save time page was loaded aka playstart time in ctime and gay format
-	var time = new Date();
-	var m = time.getUTCMonth()+1;
-	var d = time.getUTCDate();
+	let time = new Date();
+	let m = time.getUTCMonth()+1;
+	let d = time.getUTCDate();
 	if (m.toString().length == 1) {
 	   m='0'+m;
 	}
@@ -141,7 +141,7 @@ function initPreferences () {
 
 // Creates a <type id="id">
 function createIdElement(type, id) {
-	var el = document.createElement(type);
+	let el = document.createElement(type);
 	el.setAttribute('id', id);
 	return el;
 }
@@ -149,17 +149,17 @@ function createIdElement(type, id) {
 function us_movebox(e) {
  	e = (e) ? e : ((window.event) ? window.event : "");
 	if (us_getValue('us_drag')) {
-		var el = document.getElementById('us_loginbox');
+		let el = document.getElementById('us_loginbox');
 		el.style.left = (150+e.clientX-us_getValue('us_drag').split('-')[0])+"px";
 		el.style.top = e.clientY-us_getValue('us_drag').split('-')[1]+"px";
 	}
 } 
 function us_moveboxd(e) {
-	var el = document.getElementById('us_loginbox');
+	let el = document.getElementById('us_loginbox');
 	us_saveValue('us_drag',(e.clientX-el.offsetLeft)+"-"+(e.clientY-el.offsetTop));
 } 
 function us_moveboxu(e) {
-	var el = document.getElementById('us_loginbox');
+	let el = document.getElementById('us_loginbox');
 	us_saveValue('us_boxpos',el.style.left+"-"+el.style.top);
 	us_saveValue('us_drag',false);
 } 
@@ -167,17 +167,17 @@ function us_moveboxu(e) {
 
 function GM_main () {
     window.us_stateChanged = function (state) {
-		var playerNode;
+		let playerNode;
 		if (document.getElementById("c4-player")) {
 			playerNode = document.getElementById("c4-player");
 		} else {
 			playerNode = document.getElementById("movie_player");
 		}
 		//get video ID
-		var regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
-		var removeRegex = /(\?|%3F|&|%26)v=/gi;
-		var matches = document.URL.match(regex);
-		var vidId;
+		let regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
+		let removeRegex = /(\?|%3F|&|%26)v=/gi;
+		let matches = document.URL.match(regex);
+		let vidId;
 		if(matches != null) {
 			vidId = matches[0].replace(removeRegex, "");
 		} else {
@@ -204,7 +204,7 @@ function GM_main () {
     }
 	
     window.onYouTubePlayerReady = function (playerId) {
-		var playerNode;
+		let playerNode;
         if (document.getElementById("c4-player")) {
 			playerNode = document.getElementById("c4-player");
 		} else {
@@ -228,8 +228,8 @@ function GM_main () {
 }
 
 function addJS_Node (text, s_URL, funcToRun, runOnLoad) {
-    var D                                   = document;
-    var scriptNode                          = D.createElement ('script');
+    let D                                   = document;
+    let scriptNode                          = D.createElement ('script');
     if (runOnLoad) {
         scriptNode.addEventListener ("load", runOnLoad, false);
     }
@@ -238,7 +238,7 @@ function addJS_Node (text, s_URL, funcToRun, runOnLoad) {
     if (s_URL)      scriptNode.src          = s_URL;
     if (funcToRun)  scriptNode.textContent  = '(' + funcToRun.toString() + ')()';
 
-    var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+    let targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
     targ.appendChild (scriptNode);
 }
 /**
@@ -279,7 +279,7 @@ function us_saveTempData(name, value) {
  */
 function us_getTempData(name) {
 	if (document.getElementById("us_temp_info").getAttribute(name)) {
-		var value = document.getElementById("us_temp_info").getAttribute(name);
+		let value = document.getElementById("us_temp_info").getAttribute(name);
 		return value;
 	} else {
 		return 0;
@@ -296,21 +296,21 @@ function us_getTempData(name) {
  */
 function us_addButton() {
     us_saveValue('us_drag',false);
-	var secs = 0;
-	var time = new Date();
-	var t = Math.round(time.getTime()/1000);
-	var m = time.getUTCMonth()+1;
-	var d = time.getUTCDate();
+	let secs = 0;
+	let time = new Date();
+	let t = Math.round(time.getTime()/1000);
+	let m = time.getUTCMonth()+1;
+	let d = time.getUTCDate();
 	if (m.toString().length == 1) {
        m='0'+m;
     }
     if (d.toString().length == 1) {
        d='0'+d;
     }
-	var t2 = time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds();
+	let t2 = time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds();
 	
-    var style_el = document.createElement("style");
-    var head = document.getElementsByTagName('head')[0];
+    let style_el = document.createElement("style");
+    let head = document.getElementsByTagName('head')[0];
 
     style_el.innerHTML =	'.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;'+
 					// by AshKyd
@@ -373,7 +373,7 @@ function us_addButton() {
 					'.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}'+
 					'.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}';
 		   //us_start_scrobblebutton
-    var button = createIdElement("span","us_scrobblebutton");
+    let button = createIdElement("span","us_scrobblebutton");
 
 	button.innerHTML = '<img id="us_icon_small" style="margin-bottom: -3px;" src="'+us_icon()+'" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="'+secs+'" us_playstart_s="'+t+'" us_playstart="'+t2+'"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>';//postxanadus
 
@@ -425,7 +425,7 @@ function us_addButton() {
 }
 
 function us_buttonStatus () {
-	var secs = us_getTempData("us_secs");
+	let secs = us_getTempData("us_secs");
 	document.getElementById("us_start_scrobblebutton").style.opacity = 1;
 	
     if (secs > 30) {
@@ -433,7 +433,7 @@ function us_buttonStatus () {
 		document.getElementById('us_scrobblebutton').title = "";
 		document.getElementById("us_start_scrobblebutton").style.opacity = 1;
 		//watched seconds till scrobbling
-		var time_left_to_scrobble;
+		let time_left_to_scrobble;
 		if (us_getTempData("us_leftToPlay", false)==false || us_getTempData("us_leftToPlay") < 0){
 			time_left_to_scrobble = parseInt(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01);
 			us_saveTempData("us_leftToPlay", parseInt(time_left_to_scrobble));
@@ -484,20 +484,20 @@ function us_showBox(justLoggedIn) {
 	}
 	//either create loginbox
 	if (!document.getElementById('us_loginbox')) {
-		var loginbox = createIdElement("div","us_loginbox");
+		let loginbox = createIdElement("div","us_loginbox");
 		loginbox.classList.add('us_box');
 		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
 		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
 		document.body.insertBefore(loginbox, document.body.firstChild);
 	} //or show it
 	else if (document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
-		var loginbox = document.getElementById('us_loginbox');
+		let loginbox = document.getElementById('us_loginbox');
 		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
 		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
 		loginbox.classList.remove('us_box_hidden');
 	}
 	if (!isLoggedIn()) {
-		var cont = '<div id="us_loginbox_form">'+
+		let cont = '<div id="us_loginbox_form">'+
 		'<div class="us_error">You are currently not logged in!</div><br />'+
 		'<span>Click Login below to authenticate your account</span><br/><br/>'+
 		'<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/>'+
@@ -515,22 +515,22 @@ function us_showBox(justLoggedIn) {
  * inserts the scrobbleform into the window
  */
 function us_scrobbleform(justLoggedIn) {
-	var messageText = "";
-	var checkedText = "";
-	var databaseFoundText = "";
-	var scrobbleStatus = "";
-	var feedback = getTrackInfo();
+	let messageText = "";
+	let checkedText = "";
+	let databaseFoundText = "";
+	let scrobbleStatus = "";
+	let feedback = getTrackInfo();
 	
-	var artist = decodeURIComponent(us_getTempData("artist"));
-	var track = decodeURIComponent(us_getTempData("track"));
-	var album = decodeURIComponent(us_getTempData("album"));
+	let artist = decodeURIComponent(us_getTempData("artist"));
+	let track = decodeURIComponent(us_getTempData("track"));
+	let album = decodeURIComponent(us_getTempData("album"));
 	if (artist==0 && track==0) {
 		artist="";
 		track="";
 	}
 	if (album == 0) album="";
 	if (TO1Helper) {
-		var restTime;
+		let restTime;
 		if (us_getTempData("us_lefttoplay")) {
 			restTime = us_getTempData("us_lefttoplay");
 		} else {
@@ -544,7 +544,7 @@ function us_scrobbleform(justLoggedIn) {
 	if (justLoggedIn) {
 		messageText = '<div class="us_done">Successfully logged in</div>';
 	}
-	var asE = us_getTempData("autoscrobbleError");
+	let asE = us_getTempData("autoscrobbleError");
 	if (asE) {
 		if (asE == "failed") {
 			messageText += '<div class="us_error">AutoScrobble failed. Please edit info.</div>';
@@ -566,7 +566,7 @@ function us_scrobbleform(justLoggedIn) {
 		databaseFoundText = '<div id="fullAlbumIcon" title="Video was recognized as a full album">Full Album: Track '+us_getTempData("full_album_track_nr")+' of '+us_getTempData("full_album_track_count")+'</div>';
 	}
 		
-    var cont = '<div id="us_loginbox_form">'+databaseFoundText+messageText+'<form name="us_scrobbleform" onSubmit="return'+
+    let cont = '<div id="us_loginbox_form">'+databaseFoundText+messageText+'<form name="us_scrobbleform" onSubmit="return'+
                          ' false">Artist: <input type="text" name="artist" value="'+artist+'" /><br />' +
                          'Track: <input type="text" name="track" value="'+track+'" /><br/><a id="us_quickchange" title="Artist <-> Track" href="#"></a><a href="javascript:;" id="us_more" title="more options">+</a>'+
                          '<p id="us_hiddenform" class="us_hidden">Album title: <input type="text" name="album" value="'+album+'" /><br />'+
@@ -589,7 +589,7 @@ function us_scrobbleform(justLoggedIn) {
 
 //little box show info-messages
 function us_infoBox(cont) {
-    var inbox;
+    let inbox;
 	if (!document.getElementById('us_infobox')) {
 		inbox = createIdElement("div","us_infobox");
 		inbox.classList.add('us_infobox');
@@ -608,20 +608,20 @@ function us_infoBox(cont) {
 
 //closes the box with fadeout effect
 function us_closebox() {
-	var object = document.getElementById('us_loginbox');
+	let object = document.getElementById('us_loginbox');
 	object.classList.add('us_box_hidden');
 }
 
 //closes the info-box with fadeout effect
 function us_closeinfobox() {
-	var object = document.getElementById('us_infobox');
+	let object = document.getElementById('us_infobox');
 	object.classList.add('us_box_hidden');
 }
 
 //shows the optional data fields
 function us_showmoreform() {
-    var i1 = document.getElementById('us_hiddenform');
-    var a = document.getElementById('us_more');
+    let i1 = document.getElementById('us_hiddenform');
+    let a = document.getElementById('us_more');
 
 	if (i1.classList.contains('us_hidden')) {
 		i1.classList.remove('us_hidden');
@@ -639,7 +639,7 @@ function us_showmoreform() {
  * Fills window with title and content
  */
 function us_boxcontent(title,content) {
-	var loginbox = document.getElementById('us_loginbox');
+	let loginbox = document.getElementById('us_loginbox');
 	if (!loginbox) { return false; }
 	if (loginbox.classList.contains('us_box_hidden')) {
 		loginbox.style.classList.remove('us_box_hidden');
@@ -659,7 +659,7 @@ function us_boxcontent(title,content) {
  * Show the help-window
  */
 function us_help() {
-        var cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Website</a>.</p>'+
+        let cont = 	'<p class="us_left">Documentation, Changelog and more can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbler Website</a>.</p>'+
 					'<h4>Feedback</h4><p class="us_left">Suggestions and other Questions can be posted in the <a target="_blank" href="http://www.last.fm/group/YouScrobbler/forum" title="YouScrobbler Forum">Forum</a>.</p>'+
 					'<h4>Links</h4><p class="us_left"><a target="_blank" href="http://www.lukash.de/youscrobbler" title="YouScrobbler on lukash.de">YouScrobbles Website</a><br/><a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a><br/><a target="_blank" href="https://github.com/floblik/YouScrobbler" title="GitHub">GitHub repo</a><br/></p>';
         us_boxcontent('About - YouScrobbler '+VERSION,cont);
@@ -668,8 +668,8 @@ function us_help() {
  * Show the settings-window
  */
 function us_settings() {
-	var maxEntries = us_getValue("database.maxEntries", 5000);
-	var cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
+	let maxEntries = us_getValue("database.maxEntries", 5000);
+	let cont =  '<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr><td class="us_settings_grp us_settings_grp_left">'+
 				'<div class="us_settings_grp_heading">General</div><input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label>'+
 				'<br/><input type="checkbox" id="us_settings_scrobblingNotification" name="us_settings_scrobblingNotification"/><label for="us_settings_scrobblingNotification">scrobble notification</label>'+
 				'<br/><hr/><label for="scrobble_at">scrobble at </label><select name="scrobble_at" id="scrobble_at"><option id="scrobble_at10" value="10">10</option><option id="scrobble_at25" value="25">25</option><option id="scrobble_at50" value="50">50</option><option id="scrobble_at75" value="75">75</option><option id="scrobble_at95" value="95">95</option></select><span>&#37;</span>'+
@@ -682,7 +682,7 @@ function us_settings() {
 				'</form></div><div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>';
 	
 	us_boxcontent('Settings',cont);
-	var us_settings_color = 'us_settings_color_' + us_getValue('us_color');
+	let us_settings_color = 'us_settings_color_' + us_getValue('us_color');
 	document.getElementById(us_settings_color).setAttribute("checked", 'checked');
 	if (us_getValue("asFailNotification", 0) || us_getValue("asFailNotification")=="yes"){document.getElementById('us_settings_asFailNotification').setAttribute("checked", 'checked');}
 	if (us_getValue("scrobblingNotification")){document.getElementById('us_settings_scrobblingNotification').setAttribute("checked", 'checked');}
@@ -715,14 +715,14 @@ function us_settings() {
 		us_saveValue("scrobblingNotification", document.getElementById("us_settings_scrobblingNotification").checked);
 	}, false);
 	document.getElementById('databaseMaxLength').addEventListener('change', function(){
-		var el = document.getElementById('databaseMaxLength');
-		var text = el.options[el.selectedIndex].value;
+		let el = document.getElementById('databaseMaxLength');
+		let text = el.options[el.selectedIndex].value;
 		us_saveValue("database.maxEntries", text);
 	}, false);	
 
 	document.getElementById('scrobble_at').addEventListener('change', function(){
-		var el = document.getElementById('scrobble_at');
-		var text = el.options[el.selectedIndex].value;
+		let el = document.getElementById('scrobble_at');
+		let text = el.options[el.selectedIndex].value;
 		us_saveValue("scrobble_at", text);
 	});	
 }
@@ -734,16 +734,16 @@ function us_settings() {
  */
 
 function isMusicVideo(infoResult, callback){
-	var artist = us_getTempData("artist").replace(' ', '+');
-	var track = us_getTempData("track").replace(' ', '+');
-	var url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
+	let artist = us_getTempData("artist").replace(' ', '+');
+	let track = us_getTempData("track").replace(' ', '+');
+	let url = "http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=" + APIKEY + "&artist=" + artist + "&track=" + track + "&autocorrect=1&format=json";
 
 	GM_xmlhttpRequest({
 	method: "GET",
 	url: url,
 	onload: function(response) {
 	  if(response.responseText){
-		var json = JSON.parse(response.responseText);
+		let json = JSON.parse(response.responseText);
 
 		if (json["track"] && (json["track"]["name"] != us_getTempData("track") || json["track"]["artist"]["name"] != us_getTempData("artist")) && us_getValue("us_autocorrect_tracks") == "yes" && !json["error"]) {
 			us_saveTempData("track", json["track"]["name"]);
@@ -777,7 +777,7 @@ function isMusicVideo(infoResult, callback){
  */
 function tryAutoScrobble () {
 	if (us_getValue("us_autoscrobble_active", 0) == 1) {
-		var response = getTrackInfo();
+		let response = getTrackInfo();
 		if (us_getTempData("is_full_album") != "yes") {
 			isMusicVideo(response);		
 		}
@@ -787,9 +787,9 @@ function tryAutoScrobble () {
 function tryAutoScrobbleCallback(response, musicVideo){
 	if ((isLoggedIn())&&((trackInfoFromDB)||((response=="found")&&(musicVideo)))) {
 		//save time page was loaded aka playstart time in ctime and gay format
-		var time = new Date();
-		var m = time.getUTCMonth()+1;
-		var d = time.getUTCDate();
+		let time = new Date();
+		let m = time.getUTCMonth()+1;
+		let d = time.getUTCDate();
 		if (m.toString().length == 1) {
 		   m='0'+m;
 		}
@@ -839,12 +839,12 @@ function scrobble_statusbar(status) {
  * adapted from ScrobbleSmurf
  */
 function us_authenticate() {
-	var tokenRegex = /(\?|&)token=[^&?]*/gi;
-	var currentURL = document.URL.replace(tokenRegex, "");
+	let tokenRegex = /(\?|&)token=[^&?]*/gi;
+	let currentURL = document.URL.replace(tokenRegex, "");
 	if(currentURL.indexOf("?") === -1) {
 		currentURL = currentURL.replace("&", "?");
 	}
-	var redirectURL = lastFmAuthenticationUrl + "?api_key=" + APIKEY +"&cb=" + currentURL;
+	let redirectURL = lastFmAuthenticationUrl + "?api_key=" + APIKEY +"&cb=" + currentURL;
 	window.location.href = redirectURL;
 }
 
@@ -853,15 +853,15 @@ function us_authenticate() {
  * adapted from ScrobbleSmurf and edited
  */
 function tryGetAuthToken() {
-	var url = currentURL;
-	var tokenRegex = /(\?|&)token=[^]{32}/gi;
-	var matches = url.match(tokenRegex);
+	let url = currentURL;
+	let tokenRegex = /(\?|&)token=[^]{32}/gi;
+	let matches = url.match(tokenRegex);
 
 	if(matches == null) {
 		return;
 	}
-	var rawToken = matches[0];
-	var token = rawToken.substring(7); //7, based on '?' or '&' and 'token='.
+	let rawToken = matches[0];
+	let token = rawToken.substring(7); //7, based on '?' or '&' and 'token='.
 
 	GM_xmlhttpRequest({
 		method: "GET",
@@ -870,9 +870,9 @@ function tryGetAuthToken() {
 			"Accept": "text/html" 
 		},
 		onload: function(responseDetails) {
-			var feedback = responseDetails.responseText;
+			let feedback = responseDetails.responseText;
 			if ( ((feedback.indexOf("api-error"))==-1) && ((feedback.indexOf("token-error"))==-1) ) {
-				var retrievedData = responseDetails.responseText.split(" - ");
+				let retrievedData = responseDetails.responseText.split(" - ");
 				us_saveValue("us_username", retrievedData[0]);
 				us_saveValue("us_sessionKey", retrievedData[1]);
 				us_showBox(true);
@@ -888,12 +888,12 @@ function tryGetAuthToken() {
  * Srobbles a song using the saved track information
  */
 function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobble) {
-	var secs = us_getTempData("us_secs");
+	let secs = us_getTempData("us_secs");
 	if ((us_getTempData("scrobbled"))==1 && !queued) {
 		us_saveTempData("us_leftToPlay", parseInt(us_getTempData("us_secs")*(us_getValue("scrobble_at"))*0.01));
 		us_saveTempData("scrobbled", 0);
 	}
-	var args = "?artist=" + encodeURIComponent(artist) + "&sk=" + us_getValue("us_sessionKey") + 
+	let args = "?artist=" + encodeURIComponent(artist) + "&sk=" + us_getValue("us_sessionKey") + 
 	"&timestamp=" + us_getTempData("us_playstart_s") + "&track=" + encodeURIComponent(track) + "&duration=" + secs + "&yt_vid_id=" + getYouTubeVideoId();
 	if (album != 0 && album != "") {
 		args += "&album=" + encodeURIComponent(album);
@@ -902,7 +902,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 		mbid==false;
 		args +=  "&mbid=" + encodeURIComponent(mbid);
 	}
-	var time_left_to_scrobble = us_getTempData("us_leftToPlay");
+	let time_left_to_scrobble = us_getTempData("us_leftToPlay");
 	
     if (time_left_to_scrobble > 0) {
 		TO1Helper = true;
@@ -945,7 +945,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
  * Feedback on scrobbling
  */
 function scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) {
-	var feedback = responseDetails.responseText;
+	let feedback = responseDetails.responseText;
 	us_saveTempData("scrobbled", 1);
 	
 	if ((feedback.indexOf('<lfm status="ok"'))!=-1) {
@@ -980,14 +980,14 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
 		
 		us_closebox();
 		
-		var global_album = JSON.parse(us_getTempData("global_album"));
-		var track_num = parseInt(us_getTempData("full_album_track_nr"));
+		let global_album = JSON.parse(us_getTempData("global_album"));
+		let track_num = parseInt(us_getTempData("full_album_track_nr"));
 		
 		us_saveTempData("artist", global_album.tracks.track[track_num].artist.name);
 		us_saveTempData("track", global_album.tracks.track[track_num].name);
 		us_saveTempData("us_secs", global_album.tracks.track[track_num].duration);
 		
-		var album_left_to_play = global_album.tracks.track[track_num].duration - 1;
+		let album_left_to_play = global_album.tracks.track[track_num].duration - 1;
 		us_saveTempData("us_leftToPlay", album_left_to_play);
 		us_saveTempData("us_playstart", time.getUTCFullYear()+'%2d'+m+'%2d'+d+'%20'+time.getUTCHours()+'%3a'+time.getUTCMinutes()+'%3a'+time.getUTCSeconds());
 		us_saveTempData("us_playstart_s", Math.round(time.getTime()/1000));
@@ -1003,9 +1003,9 @@ function scrobbleFeedback (responseDetails, artist, track, queued, full_album_sc
  * Temporary save track information from the form 
  */
 function us_scrobblenp(retry) {
-	var formArtist = document.forms[0].elements[0].value;
-	var formTrack = document.forms[0].elements[1].value;
-	var formAlbum = document.forms[0].elements[2].value;
+	let formArtist = document.forms[0].elements[0].value;
+	let formTrack = document.forms[0].elements[1].value;
+	let formAlbum = document.forms[0].elements[2].value;
 	if ((formArtist!="") && (formTrack!="")) {
 		if (formArtist!=decodeURIComponent(us_getTempData("artist")) || formTrack!=decodeURIComponent(us_getTempData("track")) || formAlbum!=decodeURIComponent(us_getTempData("album"))) {
 			saveDatabaseData(getYouTubeVideoId(), formArtist, formTrack, formAlbum);
@@ -1025,7 +1025,7 @@ function us_abortScrobbling () {
 	if (TO1Helper) {
 		TO1Helper = false;
 		if (document.getElementById("scrobbleStatus_parent")) {
-			var element = document.getElementById("scrobbleStatus_parent");
+			let element = document.getElementById("scrobbleStatus_parent");
 			element.parentNode.removeChild(element);
 		}
 		
@@ -1039,8 +1039,8 @@ function us_abortScrobbling () {
 function us_resetlogin(error) {
 	us_saveValue('us_username','');
 	us_saveValue('us_sessionKey','');
-	var cont = '';
-	var resetInfo = "";
+	let cont = '';
+	let resetInfo = "";
 	if (!error) {
 		resetInfo = '<div class="us_done">Successfully reset the login credentials</div><br />';
 	}
@@ -1074,18 +1074,18 @@ function isLoggedIn() {
  * adapted from ScrobbleSmurf
  */
 function getYouTubeVideoId () {
-	var regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
-	var removeRegex = /(\?|%3F|&|%26)v=/gi;
-	var matches = document.URL.match(regex);	
+	let regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
+	let removeRegex = /(\?|%3F|&|%26)v=/gi;
+	let matches = document.URL.match(regex);	
 
 	if(matches == null) {
 		if (document.getElementById("c4-player")) {
-			var playerNode  = document.getElementById("c4-player");
+			let playerNode  = document.getElementById("c4-player");
 			matches = playerNode.getVideoUrl().match(regex);
 		}
 		return null;
 	}
-	var vidId = matches[0].replace(removeRegex, "");
+	let vidId = matches[0].replace(removeRegex, "");
 	return vidId;
 }
 
@@ -1093,12 +1093,12 @@ function getYouTubeVideoId () {
  * Detects the track information from the video title and temporarily saves it
  */
 function getTrackInfo(){
-	var feedback;	
+	let feedback;	
 
 	if ((us_getTempData("artist")!=0) || (us_getTempData("track")!=0)) {
 		feedback = "found";
 	} else {
-		var titleContentOriginal;
+		let titleContentOriginal;
 		if (location.href.indexOf("youtube.com/user/") != -1) {
 			if (document.getElementById("playnav-curvideo-title")) {
 				titleContentOriginal = document.getElementById("playnav-curvideo-title").getElementsByTagName("a")[0].textContent;
@@ -1125,7 +1125,7 @@ function getTrackInfo(){
 		} else {
 			//New detection of track information
 			//remove (*) and/or [*] to remove unimportant data
-			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, ' ');
+			let titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, ' ');
 			titleContent = titleContent.replace(/ *\[[^)]*\] */g, ' ');
 
 			//remove HD info
@@ -1133,9 +1133,9 @@ function getTrackInfo(){
 			titleContent = titleContent.replace(/\W* HQ( \W*)?/, '');
 			
 			//get remix info
-			var remixInfo = titleContentOriginal.match(/\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\)/i);
+			let remixInfo = titleContentOriginal.match(/\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\)/i);
 
-			var musicInfo = titleContent.split(" - ");
+			let musicInfo = titleContent.split(" - ");
 			if (musicInfo.length == 1) {
 				musicInfo = titleContent.split("-");
 			}
@@ -1150,7 +1150,7 @@ function getTrackInfo(){
 			}
 
 			//format feat. info
-			for (var i=0;i<musicInfo.length;i++) {
+			for (let i=0;i<musicInfo.length;i++) {
 				musicInfo[i] = musicInfo[i].replace(/ feat. /, ' feat. ');
 				musicInfo[i] = musicInfo[i].replace(/ feat /, ' feat. ');
 				musicInfo[i] = musicInfo[i].replace(/ ft. /, ' feat. ');
@@ -1158,7 +1158,7 @@ function getTrackInfo(){
 			}
 			
 			//remove " and ' from musicInfo
-			for (var i=0;i<musicInfo.length;i++) {
+			for (let i=0;i<musicInfo.length;i++) {
 				musicInfo[i] = musicInfo[i].replace(/^\s*"|"\s*$/g, '');
 				musicInfo[i] = musicInfo[i].replace(/^\s*'|'\s*$/g, '');
 			}
@@ -1229,19 +1229,19 @@ function getTrackInfo(){
  * Fetch full album info from last.fm API
  */
 function getAlbumInfo(){
-	var artist = decodeURIComponent(us_getTempData("artist"));
-	var albumName = decodeURIComponent(us_getTempData("track"));
-	var url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist.replace(' ', '+') + "&album=" + albumName.replace(' ', '+') + "&format=json";
+	let artist = decodeURIComponent(us_getTempData("artist"));
+	let albumName = decodeURIComponent(us_getTempData("track"));
+	let url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=" + APIKEY + "&artist=" + artist.replace(' ', '+') + "&album=" + albumName.replace(' ', '+') + "&format=json";
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: url,
 		onload: function(response) {
 		  //console.log(response); //TODO: if Album not found -> reset
 		  if(response.responseText){
-			var json = JSON.parse(response.responseText);
+			let json = JSON.parse(response.responseText);
 			response = response.responseText;
 			
-			var album = json.album;
+			let album = json.album;
 			
 			if(album.artist == artist && album.name == albumName && album.tracks.track.length > 1){
 				us_saveTempData("is_full_album", "yes");
@@ -1249,13 +1249,13 @@ function getAlbumInfo(){
 				us_saveTempData("global_album", JSON.stringify(album));
 				
 				us_saveTempData("full_album_track_nr", 1);
-				var track_num = us_getTempData("full_album_track_nr") - 1;
+				let track_num = us_getTempData("full_album_track_nr") - 1;
 
 				us_saveTempData("full_album_track_count", album.tracks.track.length);
 				
 				us_saveTempData("us_secs", album.tracks.track[track_num].duration);
 				
-				var album_left_to_play = album.tracks.track[track_num].duration - 1;
+				let album_left_to_play = album.tracks.track[track_num].duration - 1;
 				us_saveTempData("us_leftToPlay", album_left_to_play);
 			
 				us_saveTempData("artist", album.tracks.track[track_num].artist.name);
@@ -1282,13 +1282,13 @@ function getAlbumInfo(){
  * database track information
  */
 function getDatabaseData () {
-	var id = getYouTubeVideoId();
+	let id = getYouTubeVideoId();
 	if ((us_getValue("database.id", 0)!=0) && (us_getValue("database.id", 0).search(id) != -1)) {
-		var ids = us_getValue("database.id", 0).split(" ");
-		var artists = us_getValue("database.artist", 0).split(" ");
-		var tracks = us_getValue("database.track", 0).split(" ");
-		var index = 0;
-		for (var i=0;i<ids.length;i++) {
+		let ids = us_getValue("database.id", 0).split(" ");
+		let artists = us_getValue("database.artist", 0).split(" ");
+		let tracks = us_getValue("database.track", 0).split(" ");
+		let index = 0;
+		for (let i=0;i<ids.length;i++) {
 			if (ids[i]==id) {
 				index=i;
 				i=ids.length;
@@ -1311,10 +1311,10 @@ function getDatabaseData () {
 		us_saveValue("database.track", tracks.join(" "));
 		//retrieve Album title
 		if (us_getValue("database_additional.id", 0).search(id) != -1) {
-			var Aids = us_getValue("database_additional.id", 0).split(" ");
-			var albumtitles = us_getValue("database_additional.albumtitle", 0).split(" ");
-			var index = 0;
-			for (var i=0;i<Aids.length;i++) {
+			let Aids = us_getValue("database_additional.id", 0).split(" ");
+			let albumtitles = us_getValue("database_additional.albumtitle", 0).split(" ");
+			let index = 0;
+			for (let i=0;i<Aids.length;i++) {
 				if (Aids[i]==id) {
 					index=i;
 					i=Aids.length;
@@ -1334,11 +1334,11 @@ function getDatabaseData () {
 function saveDatabaseData(id, artist, track, album, mbid) {
 	//Edit existing entry
 	if ((us_getValue("database.id", 0)!=0) && (us_getValue("database.id", 0).search(id) != -1)) {
-		var ids = us_getValue("database.id", 0).split(" ");
-		var artists = us_getValue("database.artist", 0).split(" ");
-		var tracks = us_getValue("database.track", 0).split(" ");				
-		var index = 0;
-		for (var i=0;i<ids.length;i++) {
+		let ids = us_getValue("database.id", 0).split(" ");
+		let artists = us_getValue("database.artist", 0).split(" ");
+		let tracks = us_getValue("database.track", 0).split(" ");				
+		let index = 0;
+		for (let i=0;i<ids.length;i++) {
 			if (ids[i]==id) {
 				index=i;
 				i=ids.length;
@@ -1355,7 +1355,7 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 		us_saveValue("database.track", tracks.join(" "));
 	} else {
 	//New entry
-		var ids = us_getValue("database.id", 0).split(" ");
+		let ids = us_getValue("database.id", 0).split(" ");
 		if ((us_getValue("database.maxEntries", 5000)=="-1")||(ids.length<us_getValue("database.maxEntries", 5000))) {
 			//New Entry
 			us_saveValue("database.id", (us_getValue("database.id", 0)+" "+id));
@@ -1363,8 +1363,8 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 			us_saveValue("database.track", (us_getValue("database.track", 0)+" "+encodeURIComponent(track)));
 		} else {
 			//Already maximum number of entries -> delete oldest and insert new
-			var artists = us_getValue("database.artist", 0).split(" ");
-			var tracks = us_getValue("database.track", 0).split(" ");
+			let artists = us_getValue("database.artist", 0).split(" ");
+			let tracks = us_getValue("database.track", 0).split(" ");
 			ids.splice(ids.length,0,id);
 			ids.splice(0,1);
 			artists.splice(artists.length,0,encodeURIComponent(artist));
@@ -1380,10 +1380,10 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 	//Save additional information about the track (Album title)
 	if (album!=0) {
 		if ((us_getValue("database_additional.id", 0)!=0) && (us_getValue("database_additional.id", 0).search(id) != -1)) {
-			var Aids = us_getValue("database_additional.id", 0).split(" ");
-			var albumtitles = us_getValue("database_additional.albumtitle", 0).split(" ");
-			var index = 0;
-			for (var i=0;i<Aids.length;i++) {
+			let Aids = us_getValue("database_additional.id", 0).split(" ");
+			let albumtitles = us_getValue("database_additional.albumtitle", 0).split(" ");
+			let index = 0;
+			for (let i=0;i<Aids.length;i++) {
 				if (Aids[i]==id) {
 					index=i;
 					i=Aids.length;
@@ -1412,9 +1412,9 @@ function saveDatabaseData(id, artist, track, album, mbid) {
  *
  */
 function us_ajax_scanner () {
-	var leftToPlay = parseInt(us_getTempData("us_leftToPlay"));
-	var secs = parseInt(us_getTempData("us_secs"));
-	var scrobble_at = parseInt(us_getValue("scrobble_at"));
+	let leftToPlay = parseInt(us_getTempData("us_leftToPlay"));
+	let secs = parseInt(us_getTempData("us_secs"));
+	let scrobble_at = parseInt(us_getValue("scrobble_at"));
 	
 	if (!getYouTubeVideoId()) {
 		us_saveTempData("us_reset_now", "1");
@@ -1465,7 +1465,7 @@ function us_ajax_scanner () {
  * Quickchange artist <-> track in scrobble-form
  */
 function us_quickchange() {
-	var artist = document.forms[0].elements[0].value;
+	let artist = document.forms[0].elements[0].value;
 	document.forms[0].elements[0].value = document.forms[0].elements[1].value;
 	document.forms[0].elements[1].value = artist;
 }
@@ -1474,11 +1474,11 @@ function us_quickchange() {
  * Checks if its first run or if updated
  */
 function checkFirstRun () {
-	var localVersion = us_getValue("us_local_version", 0);
+	let localVersion = us_getValue("us_local_version", 0);
 	if (localVersion == 0) {
 		initPreferences();
 		us_showBox();
-		var cont = '<div id="us_loginbox_form">'+
+		let cont = '<div id="us_loginbox_form">'+
 		'<h4>Welcome to YouScrobbler!</h4><br/>'+
 		'<span>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler">Last.fm Group</a> to stay up to date.</span><br/><br/>'+
 		'<span>Description and documentation can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Homepage</a>.</span><br/><br/>'+
@@ -1489,7 +1489,7 @@ function checkFirstRun () {
 	} else if (localVersion < VERSION) {
 		initPreferences();
 		us_showBox();
-		var cont = '<div id="us_loginbox_form">'+
+		let cont = '<div id="us_loginbox_form">'+
 		'<div class="us_done">Welcome to YouScrobbler  '+VERSION+'.</div><br/>'+
 		'<span>Changelog can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Web page</a>.</span><br/>'+
 		'<br/>'+
@@ -1510,7 +1510,7 @@ function checkFirstRun () {
  */
 function updateCheck(forced)
 {
-	var update_interval = 86400000;
+	let update_interval = 86400000;
 	if ((forced) || ((parseInt(us_getValue('us_last_update', '0')) + update_interval) <= parseInt(((new Date()).getTime())))) { // Checks every day (24 h * 60 m * 60 s * 1000 ms)
 		try
 		{
@@ -1520,15 +1520,15 @@ function updateCheck(forced)
 				url: updateUrl(),
 				onload: function(resp)
 				{
-					var local_version, remote_version, response;
+					let local_version, remote_version, response;
 					response=resp.responseText;
 					us_saveValue('us_last_update', new Date().getTime()+'');
 					remote_version=response.split(" ")[0];
 					local_version=VERSION;
-					var scriptDownloadUrl = "http://youscrobbler.lukash.de/youscrobbler_"+remote_version.replace(/\./g, "")+".user.js";
+					let scriptDownloadUrl = "http://youscrobbler.lukash.de/youscrobbler_"+remote_version.replace(/\./g, "")+".user.js";
 					if (remote_version > local_version)
 					{
-						var cont =  '<div id="us_loginbox_form"><span>YouScrobbler '+ String(remote_version) +' is available.</span><br/>'+
+						let cont =  '<div id="us_loginbox_form"><span>YouScrobbler '+ String(remote_version) +' is available.</span><br/>'+
 									'<span>Changes are applied after new page load.</span><br/>'+
 									'<br/>'+
 									'Problem updating?<br/>'+
@@ -1543,7 +1543,7 @@ function updateCheck(forced)
 				},
 				onerror: function () {
 					if ((forced)) {
-						var cont =  '<div id="us_loginbox_form"><div class="us_error">Checking for an update has failed. Try again later.</div><br/>'+
+						let cont =  '<div id="us_loginbox_form"><div class="us_error">Checking for an update has failed. Try again later.</div><br/>'+
 									'<br/>'+
 									'<br/>'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
@@ -1560,7 +1560,7 @@ function updateCheck(forced)
 		catch (err)
 		{
 			if ((forced)) {
-						var cont =  '<div id="us_loginbox_form"><div class="us_error">Checking for an Updated has failed. Try again later.<br/>Error:<br/>'+
+						let cont =  '<div id="us_loginbox_form"><div class="us_error">Checking for an Updated has failed. Try again later.<br/>Error:<br/>'+
 									err+'</div><br/>'+
 									'<br/>'+
 									'<br/>'+
