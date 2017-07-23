@@ -81,21 +81,12 @@ function us_reset() {
 	document.getElementById('us_temp_info').removeAttribute('autoscrobbleerror');
 	document.getElementById('us_temp_info').removeAttribute('scrobbled');
 	document.getElementById('us_temp_info').setAttribute('us_leftToPlay', -1);
-	document.getElementById('us_temp_info').removeAttribute('us_playstart');
 	document.getElementById('us_temp_info').removeAttribute('is_full_album');
 	document.getElementById('us_temp_info').removeAttribute('us_playstart_s');
 
 	// save time page was loaded aka playstart time in ctime and gay format
 	let time = new Date();
-	let m = time.getUTCMonth() + 1;
-	let d = time.getUTCDate();
-	if (m.toString().length == 1) {
-		m = '0' + m;
-	}
-	if (d.toString().length == 1) {
-		d = '0' + d;
-	}
-	us_saveTempData('us_playstart', time.getUTCFullYear() + '%2d' + m + '%2d' + d + '%20' + time.getUTCHours() + '%3a' + time.getUTCMinutes() + '%3a' + time.getUTCSeconds());
+
 	us_saveTempData('us_playstart_s', Math.round(time.getTime() / 1000));
 
 	us_abortScrobbling();
@@ -193,15 +184,15 @@ function GM_main() {
 			}, 1);
 		}
 		switch (state) {
-		case 1:
-			document.getElementById('us_temp_info').setAttribute('video_is_playing', '1');
-			break;
-		case 0:
-			document.getElementById('us_temp_info').setAttribute('video_end_reached', 'yes');
-			document.getElementById('us_temp_info').setAttribute('video_is_playing', '0');
-			break;
-		default:
-			document.getElementById('us_temp_info').setAttribute('video_is_playing', '0');
+			case 1:
+				document.getElementById('us_temp_info').setAttribute('video_is_playing', '1');
+				break;
+			case 0:
+				document.getElementById('us_temp_info').setAttribute('video_end_reached', 'yes');
+				document.getElementById('us_temp_info').setAttribute('video_is_playing', '0');
+				break;
+			default:
+				document.getElementById('us_temp_info').setAttribute('video_is_playing', '0');
 		}
 		if (document.getElementById('us_temp_info').getAttribute('is_full_album') != 'yes') {
 			document.getElementById('us_temp_info').setAttribute('us_secs', playerNode.getDuration());
@@ -216,10 +207,7 @@ function GM_main() {
 			playerNode = document.getElementById('movie_player');
 		}
 		if (playerNode) {
-			// Note, inside onYouTubePlayerReady ONLY, the YouTube API
-			// seems to override addEventListener. Hence the nonstandard
-			// parameters.
-
+			playerNode.removeEventListener('onStateChange', 'us_stateChanged');
 			playerNode.addEventListener('onStateChange', 'us_stateChanged');
 			document.getElementById('us_temp_info').setAttribute('us_secs', playerNode.getDuration());
 		} else {
@@ -310,16 +298,7 @@ function us_addButton() {
 	let secs = 0;
 	let time = new Date();
 	let t = Math.round(time.getTime() / 1000);
-	let m = time.getUTCMonth() + 1;
-	let d = time.getUTCDate();
-	if (m.toString().length == 1) {
-		m = '0' + m;
-	}
-	if (d.toString().length == 1) {
-		d = '0' + d;
-	}
-	let t2 = time.getUTCFullYear() + '%2d' + m + '%2d' + d + '%20' + time.getUTCHours() + '%3a' + time.getUTCMinutes() + '%3a' + time.getUTCSeconds();
-
+	
 	let style_el = document.createElement('style');
 	let head = document.getElementsByTagName('head')[0];
 
@@ -389,7 +368,7 @@ function us_addButton() {
 	// us_start_scrobblebutton
 	let button = createIdElement('span', 'us_scrobblebutton');
 
-	button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>`;// postxanadus
+	button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>`;// postxanadus
 
 	// Design check
 	if (document.getElementsByTagName('ytd-searchbox')[0]) {
@@ -398,7 +377,7 @@ function us_addButton() {
 		button.style.marginLeft = '50px';
 		button.style.padding = '6px 0 6px 0';
 		button.style.border = '1px solid var(--yt-searchbox-legacy-button-border-color)';
-		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
+		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
 		BFather.insertBefore(button, BFather.lastChild);
 
 		document.getElementById('us_scrobble_statusbar').style.position = 'relative';
@@ -415,12 +394,12 @@ function us_addButton() {
 		button.style.marginRight = '2px';
 		button.style.borderTopRightRadius = '2px';
 		button.style.borderBottomRightRadius = '2px';
-		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
+		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('mh')) {
 		BFather = document.getElementById('mh');
 		button.setAttribute('class', 'ml');
-		button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" us_playstart="${t2}"/><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>`;
+		button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>`;
 		BFather.insertBefore(button, document.getElementById('se').nextSibling);
 	} else {
 		setTimeout(function() {
@@ -876,17 +855,8 @@ function tryAutoScrobble() {
 function tryAutoScrobbleCallback(response, musicVideo) {
 	if ((isLoggedIn()) && ((trackInfoFromDB) || ((response == 'found') && (musicVideo)))) {
 		// save time page was loaded aka playstart time in ctime and gay format
-		let time = new Date();
-		let m = time.getUTCMonth() + 1;
-		let d = time.getUTCDate();
-		if (m.toString().length == 1) {
-			m = '0' + m;
-		}
-		if (d.toString().length == 1) {
-			d = '0' + d;
-		}
+		let time = new Date();	
 
-		us_saveTempData('us_playstart', time.getUTCFullYear() + '%2d' + m + '%2d' + d + '%20' + time.getUTCHours() + '%3a' + time.getUTCMinutes() + '%3a' + time.getUTCSeconds());
 		us_saveTempData('us_playstart_s', Math.round(time.getTime() / 1000));
 		us_scrobble(decodeURIComponent(us_getTempData('artist')), decodeURIComponent(us_getTempData('track')), '', '', 0, 0, 1);
 		return;
@@ -1090,13 +1060,14 @@ function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scr
 		us_saveTempData('us_secs', global_album.tracks.track[track_num].duration);
 
 		let album_left_to_play = global_album.tracks.track[track_num].duration - 1;
+		let time = new Date();
+
 		us_saveTempData('us_leftToPlay', album_left_to_play);
-		us_saveTempData('us_playstart', time.getUTCFullYear() + '%2d' + m + '%2d' + d + '%20' + time.getUTCHours() + '%3a' + time.getUTCMinutes() + '%3a' + time.getUTCSeconds());
 		us_saveTempData('us_playstart_s', Math.round(time.getTime() / 1000));
 
 		track_num++;
 		us_saveTempData('full_album_track_nr', track_num);
-
+		
 		us_scrobble(decodeURIComponent(us_getTempData('artist')), decodeURIComponent(us_getTempData('track')), decodeURIComponent(us_getTempData('album')), decodeURIComponent(us_getTempData('mbid')), 0, 1, 1, 1);
 	}
 }
@@ -1182,7 +1153,6 @@ function isLoggedIn() {
 
 /**
  * Gets the current YouTube video ID from the browser URL.
- * adapted from ScrobbleSmurf
  */
 function getYouTubeVideoId() {
 	let regex = /(\?|%3F|&|%26)v=[^?&#]*/gi;
@@ -1190,11 +1160,18 @@ function getYouTubeVideoId() {
 	let matches = document.URL.match(regex);
 
 	if (matches == null) {
+		let playerNode;
+		
 		if (document.getElementById('c4-player')) {
-			let playerNode = document.getElementById('c4-player');
-			matches = playerNode.getVideoUrl().match(regex);
+			playerNode = document.getElementById('c4-player');
+		} else {
+			playerNode = document.getElementById('movie_player');
 		}
-		return null;
+		matches = playerNode.getVideoUrl().match(regex);
+		
+		if (matches == null) {
+			return null;
+		}
 	}
 	let vidId = matches[0].replace(removeRegex, '');
 	return vidId;
@@ -1311,7 +1288,6 @@ function getTrackInfo() {
 			musicInfo[0] = musicInfo[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 			musicInfo[1] = musicInfo[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 
-
 			if (us_getValue('us_autoscrobble_active', 0) == 1) {
 				if ((musicInfo.length != 2)) {
 					feedback = 'bad';
@@ -1330,6 +1306,7 @@ function getTrackInfo() {
 		// Full Album Video
 		if (titleContentOriginal.match(/Full Album/i)) {
 			us_saveTempData('is_full_album', 'yes');
+
 			getAlbumInfo();
 		}
 	}
@@ -1360,18 +1337,18 @@ function getAlbumInfo() {
 					us_saveTempData('global_album', JSON.stringify(album));
 
 					us_saveTempData('full_album_track_nr', 1);
-					let track_num = us_getTempData('full_album_track_nr') - 1;
+					let track_index = 0;
 
 					us_saveTempData('full_album_track_count', album.tracks.track.length);
 
-					us_saveTempData('us_secs', album.tracks.track[track_num].duration);
+					us_saveTempData('us_secs', album.tracks.track[track_index].duration);
 
-					let album_left_to_play = album.tracks.track[track_num].duration - 1;
+					let album_left_to_play = album.tracks.track[track_index].duration - 1;
 					us_saveTempData('us_leftToPlay', album_left_to_play);
 
-					us_saveTempData('artist', album.tracks.track[track_num].artist.name);
-					us_saveTempData('track', album.tracks.track[track_num].name);
-
+					us_saveTempData('artist', album.tracks.track[track_index].artist.name);
+					us_saveTempData('track', album.tracks.track[track_index].name);
+					
 					response = getTrackInfo();
 					isMusicVideo(response);
 				} else {
@@ -1702,7 +1679,6 @@ function updateCheck(forced) {
 		}
 	}
 }
-
 
 if (window.top === window.self) {
 	init();
