@@ -232,7 +232,7 @@ function addJS_Node (text, s_URL, funcToRun, runOnLoad) {
     let D                                   = document;
     let scriptNode                          = D.createElement ('script');
     if (runOnLoad) {
-        scriptNode.addEventListener ("load", runOnLoad, false);
+        scriptNode.addEventListener ("load", runOnLoad);
     }
     scriptNode.type                         = "text/javascript";
     if (text)       scriptNode.textContent  = text;
@@ -505,7 +505,7 @@ function us_showBox(justLoggedIn) {
 		'<br /></div><div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>';
 		us_boxcontent('Login to last.fm',cont);
 		
-		document.getElementById('us_submit').addEventListener('click', us_authenticate, false);
+		document.getElementById('us_submit').addEventListener('click', us_authenticate);
 	} else {
 		us_scrobbleform(justLoggedIn);
 	}
@@ -576,12 +576,12 @@ function us_scrobbleform(justLoggedIn) {
                          '</div>';
     us_boxcontent('Scrobble to last.fm - '+us_getValue('us_username'),cont);
 		
-	document.getElementById('us_quickchange').addEventListener('click', us_quickchange, false);
-    document.getElementById('us_submit').addEventListener('click', us_scrobblenp, false);
-	document.getElementById('us_autoscrobble').addEventListener('click', function(){if (this.checked){us_saveValue("us_autoscrobble_active", 1)} else {us_saveValue("us_autoscrobble_active", 0)}}, false);
-    document.getElementById('us_more').addEventListener('click', us_showmoreform, false);
+	document.getElementById('us_quickchange').addEventListener('click', us_quickchange);
+    document.getElementById('us_submit').addEventListener('click', us_scrobblenp);
+	document.getElementById('us_autoscrobble').addEventListener('click', function(){if (this.checked){us_saveValue("us_autoscrobble_active", 1)} else {us_saveValue("us_autoscrobble_active", 0)}});
+    document.getElementById('us_more').addEventListener('click', us_showmoreform);
 	if (document.getElementById("us_abortScrobbling")) {
-		document.getElementById("us_abortScrobbling").addEventListener('click', us_abortScrobbling, false);
+		document.getElementById("us_abortScrobbling").addEventListener('click', us_abortScrobbling);
 	}
 	if (us_getValue("us_more_options_show_or_hide") == "show") {
 		us_showmoreform();
@@ -600,7 +600,7 @@ function us_infoBox(cont) {
 		inbox = document.getElementById('us_infobox');
 		inbox.classList.remove('us_box_hidden');
 	}
-	inbox.addEventListener("click", us_closeinfobox, false);
+	inbox.addEventListener("click", us_closeinfobox);
 	inbox.style.cursor = "pointer";
 	inbox.title = "Click to Close";
 	inbox.innerHTML = cont;
@@ -647,13 +647,13 @@ function us_boxcontent(title,content) {
 	}
 	loginbox.innerHTML = '<h3 id="us_box_head">'+title+'<ul><li><a href="javascript:;" title="Close" id="us_box_close"></a></li><li><a href="javascript:;" title="Settings" id="us_box_settings"></a></li><li><a href="javascript:;" title="Help" id="us_box_help"></a></li></ul></h3>'+
 	'<div>'+content+'</div>';
-	document.getElementById('us_box_close').addEventListener('click', us_closebox, false);
-	document.getElementById('us_box_settings').addEventListener('click', us_settings, false);
-	document.getElementById('us_box_help').addEventListener('click', us_help, false);
+	document.getElementById('us_box_close').addEventListener('click', us_closebox);
+	document.getElementById('us_box_settings').addEventListener('click', us_settings);
+	document.getElementById('us_box_help').addEventListener('click', us_help);
 
-	document.addEventListener('mousemove', us_movebox, false);
-	document.getElementById('us_box_head').addEventListener('mousedown', us_moveboxd, false);
-	document.getElementById('us_box_head').addEventListener('mouseup', us_moveboxu, false);
+	document.addEventListener('mousemove', us_movebox);
+	document.getElementById('us_box_head').addEventListener('mousedown', us_moveboxd);
+	document.getElementById('us_box_head').addEventListener('mouseup', us_moveboxu);
 }
 
 /**
@@ -694,8 +694,8 @@ function us_settings() {
 	} else {
 		document.getElementById("scrobble_at75").selected = true;
 	}
-	document.getElementById('us_resetlogin').addEventListener('click', us_resetlogin, false);
-	document.getElementById('us_manualupdate_link').addEventListener('click', function(){document.getElementById("us_manualupdate").innerHTML='<span class="us_status_small">checking</span>';updateCheck(true); }, false);		
+	document.getElementById('us_resetlogin').addEventListener('click', us_resetlogin);
+	document.getElementById('us_manualupdate_link').addEventListener('click', function(){document.getElementById("us_manualupdate").innerHTML='<span class="us_status_small">checking</span>';updateCheck(true); });		
 	
 	// Save settings
 	document.getElementById('us_settings_color_red').addEventListener('change', function(){
@@ -705,21 +705,21 @@ function us_settings() {
 	document.getElementById('us_settings_color_black').addEventListener('change', function(){
 		us_saveValue("us_color", "black");
 		document.getElementById('us_icon_small').src = us_icon();
-	}, false);	
+	});	
 	document.getElementById('us_settings_asFailNotification').addEventListener('change', function(){
 		us_saveValue("asFailNotification", document.getElementById("us_settings_asFailNotification").checked);
-	}, false);	
+	});	
 	document.getElementById('us_settings_autoCorrect').addEventListener('change', function(){
 		us_saveValue("us_autocorrect_tracks", document.getElementById("us_settings_autoCorrect").checked);
-	}, false);
+	});
 	document.getElementById('us_settings_scrobblingNotification').addEventListener('change', function(){
 		us_saveValue("scrobblingNotification", document.getElementById("us_settings_scrobblingNotification").checked);
-	}, false);
+	});
 	document.getElementById('databaseMaxLength').addEventListener('change', function(){
 		let el = document.getElementById('databaseMaxLength');
 		let text = el.options[el.selectedIndex].value;
 		us_saveValue("database.maxEntries", text);
-	}, false);	
+	});	
 
 	document.getElementById('scrobble_at').addEventListener('change', function(){
 		let el = document.getElementById('scrobble_at');
@@ -1051,7 +1051,7 @@ function us_resetlogin(error) {
 		'<span>Click Login below to authenticate your account</span><br/><br/>'+
 		'<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br /></div><div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>';
 	us_boxcontent('Login to last.fm',cont);
-	document.getElementById('us_submit').addEventListener('click', us_authenticate, false);
+	document.getElementById('us_submit').addEventListener('click', us_authenticate);
 }
 
 
@@ -1485,7 +1485,7 @@ function checkFirstRun () {
 		'<span>Description and documentation can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Homepage</a>.</span><br/><br/>'+
 		'</div><div class="us_submitbuttons"><input id="us_submit" value="Next" type="submit" /></div>';
 		us_boxcontent('First Run',cont);
-		document.getElementById('us_submit').addEventListener('click', us_showBox, false);
+		document.getElementById('us_submit').addEventListener('click', us_showBox);
 		us_saveValue("us_local_version", VERSION);
 	} else if (localVersion < VERSION) {
 		initPreferences();
@@ -1498,7 +1498,7 @@ function checkFirstRun () {
 		'<h4>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a> to stay tuned</h4>'+
 		'<br /></div><div class="us_submitbuttons"><input id="us_submit" value="Close" type="submit" /></div>';
 		us_boxcontent('Successfully Updated',cont);
-		document.getElementById('us_submit').addEventListener('click', us_closebox, false);
+		document.getElementById('us_submit').addEventListener('click', us_closebox);
 		us_saveValue("us_local_version", VERSION);
 	}
 }
@@ -1536,7 +1536,7 @@ function updateCheck(forced)
 									'Try via Greasemonkey (Addons/UserScripts)'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Install Update" type="submit" /></div>';
 						us_boxcontent('Update available',cont);
-						document.getElementById('us_submit').addEventListener('click', function(){window.open(scriptDownloadUrl, "_blank");}, false);
+						document.getElementById('us_submit').addEventListener('click', function(){window.open(scriptDownloadUrl, "_blank");});
 					}
 					else if (forced) {
 						document.getElementById("us_manualupdate").firstChild.innerHTML = "No Update available";
@@ -1550,7 +1550,7 @@ function updateCheck(forced)
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
 						us_showBox();
 						us_boxcontent('Checking for update failed',cont);
-						document.getElementById('us_submit').addEventListener('click', function(){updateCheck(true);}, false);
+						document.getElementById('us_submit').addEventListener('click', function(){updateCheck(true);});
 					} else {
 						us_infoBox('<div class="us_error">Checking for update failed</div>');
 						window.setTimeout(function() { us_closeinfobox(); }, 5000);
@@ -1568,7 +1568,7 @@ function updateCheck(forced)
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
 						us_showBox();
 						us_boxcontent('Checking for update failed',cont);
-						document.getElementById('us_submit').addEventListener('click', function(){updateCheck(true);}, false);
+						document.getElementById('us_submit').addEventListener('click', function(){updateCheck(true);});
 			} else {
 				us_infoBox('<div class="us_error">Checking for update failed: '+err+'</div>');
 				window.setTimeout(function() { us_closeinfobox(); }, 5000);
