@@ -168,10 +168,11 @@ function us_moveboxu(e) {
 
 function GM_main () {
     window.us_stateChanged = function (state) {
+		var playerNode;
 		if (document.getElementById("c4-player")) {
-			var playerNode  = document.getElementById ("c4-player");
+			playerNode = document.getElementById("c4-player");
 		} else {
-			var playerNode  = document.getElementById ("movie_player");
+			playerNode = document.getElementById("movie_player");
 		}
 		//get video ID
 		var regex = /(\?|%3F|&|%26)v=[^\?&#]*/gi;
@@ -203,10 +204,11 @@ function GM_main () {
     }
 	
     window.onYouTubePlayerReady = function (playerId) {
+		var playerNode;
         if (document.getElementById("c4-player")) {
-			var playerNode  = document.getElementById ("c4-player");
+			playerNode = document.getElementById("c4-player");
 		} else {
-			var playerNode  = document.getElementById ("movie_player");
+			playerNode = document.getElementById("movie_player");
 		}
         if (playerNode) {
 				//Note, inside onYouTubePlayerReady ONLY, the YouTube API
@@ -1010,7 +1012,7 @@ function us_scrobblenp(retry) {
 		}
 		us_saveTempData("artist", encodeURIComponent(formArtist));
 		us_saveTempData("track", encodeURIComponent(formTrack));
-		if (!formAlbum) { var formAlbum = ''; } else {us_saveTempData("album", encodeURIComponent(formAlbum));}
+		if (!formAlbum) { formAlbum = ''; } else {us_saveTempData("album", encodeURIComponent(formAlbum));}
 		
 		us_scrobble(decodeURIComponent(us_getTempData("artist")),decodeURIComponent(us_getTempData("track")),formAlbum,"",0,0,0);
 	} //empty input
@@ -1106,13 +1108,13 @@ function getTrackInfo(){
 		} else {
 			//Feather check
 			if (document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0]) {
-				var titleContentOriginal = document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0].textContent;
+				titleContentOriginal = document.getElementsByClassName("title style-scope ytd-video-primary-info-renderer")[0].textContent;
 			} else if (document.getElementById("eow-title")) {
-				var titleContentOriginal = document.getElementById("eow-title").textContent;
+				titleContentOriginal = document.getElementById("eow-title").textContent;
 			} else if (document.getElementById("watch-headline-title")) {
-				var titleContentOriginal = document.getElementById("watch-headline-title").textContent;
+				titleContentOriginal = document.getElementById("watch-headline-title").textContent;
 			} else if (document.getElementById("vt")) {
-				var titleContentOriginal = document.getElementById("vt").textContent;
+				titleContentOriginal = document.getElementById("vt").textContent;
 			}
 		}
 
@@ -1237,7 +1239,7 @@ function getAlbumInfo(){
 		  //console.log(response); //TODO: if Album not found -> reset
 		  if(response.responseText){
 			var json = JSON.parse(response.responseText);
-			var response = response.responseText;
+			response = response.responseText;
 			
 			var album = json.album;
 			
@@ -1259,7 +1261,7 @@ function getAlbumInfo(){
 				us_saveTempData("artist", album.tracks.track[track_num].artist.name);
 				us_saveTempData("track", album.tracks.track[track_num].name);	
 				
-				var response = getTrackInfo();		
+				response = getTrackInfo();		
 				isMusicVideo(response);	
 			} else {
 				us_saveTempData("is_full_album", 0);
