@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /**
- * You can contact me on http://www.lukash.de/youscrobbler or on http://userscripts.org/scripts/show/119694 if you have got suggestions, bugs or oter questions
+ * You can contact me on http://www.lukash.de/youscrobbler or on http://userscripts.org/scripts/show/119694 if you have got suggestions, bugs or other questions
  */
 
 const VERSION = "1.4.6";
@@ -540,7 +540,7 @@ function us_scrobbleform(justLoggedIn) {
 		scrobbleStatus = '<div id="scrobbleStatus_parent">scrobbled</div>';
 	}
 	if (justLoggedIn) {
-		messageText = '<div class="us_done">Succesfully logged in</div>';
+		messageText = '<div class="us_done">Successfully logged in</div>';
 	}
 	var asE = us_getTempData("autoscrobbleError");
 	if (asE) {
@@ -551,14 +551,14 @@ function us_scrobbleform(justLoggedIn) {
 			messageText += '<div class="us_error">Track not found on <span style="font-style:italic">Last.fm</span></div>';
 		}
 		if (asE == "bad") {
-			messageText += '<div class="us_error">Videotitle is not in a valid format to be scrobbled.</div>';
+			messageText += '<div class="us_error">Video title is not in a valid format to be scrobbled.</div>';
 		}
 	}
 	if (us_getValue("us_autoscrobble_active", 0) == 1) {
 		checkedText = " checked";
 	}
 	if (((feedback == "found")&&(trackInfoFromDB))) {
-		databaseFoundText = '<div id="foundInDBIcon" title="Trackinformation retrived from personal database"></div>';
+		databaseFoundText = '<div id="foundInDBIcon" title="Track information retrieved from personal database"></div>';
 	}
 	if (us_getTempData("is_full_album") == "yes") {
 		databaseFoundText = '<div id="fullAlbumIcon" title="Video was recognized as a full album">Full Album: Track '+us_getTempData("full_album_track_nr")+' of '+us_getTempData("full_album_track_count")+'</div>';
@@ -567,7 +567,7 @@ function us_scrobbleform(justLoggedIn) {
     var cont = '<div id="us_loginbox_form">'+databaseFoundText+messageText+'<form name="us_scrobbleform" onSubmit="return'+
                          ' false">Artist: <input type="text" name="artist" value="'+artist+'" /><br />' +
                          'Track: <input type="text" name="track" value="'+track+'" /><br/><a id="us_quickchange" title="Artist <-> Track" href="#"></a><a href="javascript:;" id="us_more" title="more options">+</a>'+
-                         '<p id="us_hiddenform" class="us_hidden">Albumtitle: <input type="text" name="album" value="'+album+'" /><br />'+
+                         '<p id="us_hiddenform" class="us_hidden">Album title: <input type="text" name="album" value="'+album+'" /><br />'+
                          '</p>'+
                          '</form></div><div class="us_submitbuttons"><div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"'+checkedText+'><label for="us_autoscrobble" style="vertical-align:middle;">Auto</label></div>'+scrobbleStatus+'<input id="us_submit" value="Scrobble" type="submit" />'+
                          '</div>';
@@ -616,7 +616,7 @@ function us_closeinfobox() {
 	object.classList.add('us_box_hidden');
 }
 
-//shows the optional datafiels
+//shows the optional data fields
 function us_showmoreform() {
     var i1 = document.getElementById('us_hiddenform');
     var a = document.getElementById('us_more');
@@ -929,7 +929,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 					url: scrobbleSongUrl + args,
 					onload: function(responseDetails) { scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) },
 					onerror: function() {
-						us_infoBox('<div class="us_error">Servererror</div>');
+						us_infoBox('<div class="us_error">Server error</div>');
 						window.setTimeout(function() { us_closeinfobox(); }, 10000);
 					}
 				});}
@@ -940,7 +940,7 @@ function us_scrobble(artist,track,album,mbid,retry,queued,auto,full_album_scrobb
 
  
 /** 
- * Feedback of scrobbleing
+ * Feedback on scrobbling
  */
 function scrobbleFeedback (responseDetails, artist, track, queued, full_album_scrobble) {
 	var feedback = responseDetails.responseText;
@@ -1040,7 +1040,7 @@ function us_resetlogin(error) {
 	var cont = '';
 	var resetInfo = "";
 	if (!error) {
-		resetInfo = '<div class="us_done">Succesfully reseted login-data</div><br />';
+		resetInfo = '<div class="us_done">Successfully reset the login credentials</div><br />';
 	}
 	if ((error != '[object MouseEvent]') && (error != '[object XPCNativeWrapper [object MouseEvent]]')) { cont = '<p class="us_error">Error: '+error+'</p>'; }
 	cont = cont+'<div id="us_loginbox_form">'+
@@ -1088,7 +1088,7 @@ function getYouTubeVideoId () {
 }
 
 /**
- * 	Detects the trackinformation from the video title and temporarily saves it
+ * Detects the track information from the video title and temporarily saves it
  */
 function getTrackInfo(){
 	var feedback;	
@@ -1116,12 +1116,12 @@ function getTrackInfo(){
 			}
 		}
 
-		//Retrive trackinformation from database
+		//Retrieve track information from database
 		if (getDatabaseData()==true) {
 			feedback = "found";
 			trackInfoFromDB = true;
 		} else {
-			//New detection of trackinformation
+			//New detection of track information
 			//remove (*) and/or [*] to remove unimportant data
 			var titleContent = titleContentOriginal.replace(/ *\([^)]*\) */g, ' ');
 			titleContent = titleContent.replace(/ *\[[^)]*\] */g, ' ');
@@ -1224,7 +1224,7 @@ function getTrackInfo(){
 }
 
 /**
- * 	fetchs full ablum info from last.fm api
+ * Fetch full album info from last.fm API
  */
 function getAlbumInfo(){
 	var artist = decodeURIComponent(us_getTempData("artist"));
@@ -1277,7 +1277,7 @@ function getAlbumInfo(){
 
 
 /**
- * database trackinformation
+ * database track information
  */
 function getDatabaseData () {
 	var id = getYouTubeVideoId();
@@ -1307,7 +1307,7 @@ function getDatabaseData () {
 		us_saveValue("database.id", ids.join(" "));
 		us_saveValue("database.artist", artists.join(" "));
 		us_saveValue("database.track", tracks.join(" "));
-		//retrive Album title
+		//retrieve Album title
 		if (us_getValue("database_additional.id", 0).search(id) != -1) {
 			var Aids = us_getValue("database_additional.id", 0).split(" ");
 			var albumtitles = us_getValue("database_additional.albumtitle", 0).split(" ");
@@ -1375,7 +1375,7 @@ function saveDatabaseData(id, artist, track, album, mbid) {
 		}
 	}
 	
-	//Save additional information about the track (Albumtitle)
+	//Save additional information about the track (Album title)
 	if (album!=0) {
 		if ((us_getValue("database_additional.id", 0)!=0) && (us_getValue("database_additional.id", 0).search(id) != -1)) {
 			var Aids = us_getValue("database_additional.id", 0).split(" ");
@@ -1489,12 +1489,12 @@ function checkFirstRun () {
 		us_showBox();
 		var cont = '<div id="us_loginbox_form">'+
 		'<div class="us_done">Welcome to YouScrobbler  '+VERSION+'.</div><br/>'+
-		'<span>Changelog can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Webpage</a>.</span><br/>'+
+		'<span>Changelog can be found on the <a target="_blank" href="http://www.lukash.de/youscrobbler">Web page</a>.</span><br/>'+
 		'<br/>'+
 		'<br/>'+
 		'<h4>Join the <a target="_blank" href="http://www.last.fm/group/YouScrobbler" title="Last.fm Group">Last.fm Group</a> to stay tuned</h4>'+
 		'<br /></div><div class="us_submitbuttons"><input id="us_submit" value="Close" type="submit" /></div>';
-		us_boxcontent('Succesfully Updated',cont);
+		us_boxcontent('Successfully Updated',cont);
 		document.getElementById('us_submit').addEventListener('click', us_closebox, false);
 		us_saveValue("us_local_version", VERSION);
 	}
@@ -1578,10 +1578,10 @@ function updateCheck(forced)
 									'<br/>'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
 						us_showBox();
-						us_boxcontent('Updatecheck failed',cont);
+						us_boxcontent('Checking for update failed',cont);
 						document.getElementById('us_submit').addEventListener('click', function(){updateCheck(true);}, false);
 					} else {
-						us_infoBox('<div class="us_error">Updatecheck failed</div>');
+						us_infoBox('<div class="us_error">Checking for update failed</div>');
 						window.setTimeout(function() { us_closeinfobox(); }, 5000);
 					}
 				}
@@ -1596,10 +1596,10 @@ function updateCheck(forced)
 									'<br/>'+
 									'</div><div class="us_submitbuttons"><input id="us_submit" value="Check again" type="submit" /></div>';
 						us_showBox();
-						us_boxcontent('Updatecheck failed',cont);
+						us_boxcontent('Checking for update failed',cont);
 						document.getElementById('us_submit').addEventListener('click', function(){updateCheck(true);}, false);
 			} else {
-				us_infoBox('<div class="us_error">Updatecheck failed: '+err+'</div>');
+				us_infoBox('<div class="us_error">Checking for update failed: '+err+'</div>');
 				window.setTimeout(function() { us_closeinfobox(); }, 5000);
 			}
 		}
