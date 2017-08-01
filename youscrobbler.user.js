@@ -303,6 +303,7 @@ function us_addButton() {
 	let head = document.getElementsByTagName('head')[0];
 
 	style_el.innerHTML = `
+		#us_loginbox_form table { text-align: left; table-layout: fixed; }
 		#us_loginbox button { background: transparent; border: none; margin: 0; padding: 0; }
 		.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;
 		/* by AshKyd */
@@ -321,7 +322,9 @@ function us_addButton() {
 		.us_settings_grp_heading { color:#777;font-size:100%;font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:4px;}
 		.us_settings_grp_database { cursor: help;}
 		#databaseMaxLength {width: 55px; }
+		#scrobbleStatus { font-weight: bold; }
 		#scrobble_at {width: 45px; }
+		#us_resetlogin { float: left; }
 		#us_loginbox #us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }
 		#us_loginbox_form { text-align: right; padding: 5px; }
 		.us_box input[type=text] { height: 16px; border: 1px solid #bbb; margin: 2px 15px 4px 2px; padding: 3px 4px; width: 170px;}
@@ -369,8 +372,6 @@ function us_addButton() {
 	// us_start_scrobblebutton
 	let button = createIdElement('span', 'us_scrobblebutton');
 
-	button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>`;// postxanadus
-
 	// Design check
 	if (document.getElementsByTagName('ytd-searchbox')[0]) {
 		BFather = document.getElementsByTagName('ytd-searchbox')[0];
@@ -378,13 +379,26 @@ function us_addButton() {
 		button.style.marginLeft = '50px';
 		button.style.padding = '6px 0 6px 0';
 		button.style.border = '1px solid var(--yt-searchbox-legacy-button-border-color)';
-		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}"/>
+			<a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
+				<img id="us_icon_small" src="${us_icon()}" alt="icon"/>
+				<span id="us_start_scrobblebutton_text">Scrobble</span>
+			</a>
+			<div id="us_scrobble_statusbar"></div>
+		`;
 		BFather.insertBefore(button, BFather.lastChild);
 
 		document.getElementById('us_scrobble_statusbar').style.position = 'relative';
 		document.getElementById('us_scrobble_statusbar').style.top = '6px';
 	} else if (document.getElementById('masthead-nav')) {
 		BFather = document.getElementById('masthead-nav');
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
+			<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" />
+			<a class="start" id="us_start_scrobblebutton"><span id="us_start_scrobblebutton_text">Scrobble</span></a>
+			<span class="masthead-link-separator">|</span>
+		`; // postxanadus
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('yt-masthead-content')) {
 		BFather = document.getElementById('yt-masthead-content');
@@ -395,12 +409,23 @@ function us_addButton() {
 		button.style.marginRight = '2px';
 		button.style.borderTopRightRadius = '2px';
 		button.style.borderBottomRightRadius = '2px';
-		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
+			<a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
+				<img id="us_icon_small" src="${us_icon()}" alt="icon"/>
+				<span id="us_start_scrobblebutton_text">Scrobble</span>
+			</a>
+			<div id="us_scrobble_statusbar"></div>
+		`;
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('mh')) {
 		BFather = document.getElementById('mh');
 		button.setAttribute('class', 'ml');
-		button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>`;
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
+			<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" />
+			<a class="start" id="us_start_scrobblebutton">Scrobble</a>
+		`;
 		BFather.insertBefore(button, document.getElementById('se').nextSibling);
 	} else {
 		setTimeout(function() {
@@ -501,7 +526,7 @@ function us_showBox(justLoggedIn) {
 			<div id="us_loginbox_form">
 				<div class="us_error">You are currently not logged in!</div><br />
 				<span>Click Login below to authenticate your account</span><br/><br/>
-				<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br />
+				<em>Note: You will leave this site and be redirected here after having logged in to Last.fm.</em><br/><br />
 			</div>
 			<div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>
 		`;
@@ -541,7 +566,7 @@ function us_scrobbleform(justLoggedIn) {
 		} else {
 			restTime = us_getTempData('us_secs');
 		}
-		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus" style="font-weight:bold">${restTime}</span> sec &nbsp;<button type="button" id="us_abortScrobbling" title="abort scrobbling">x</button></div>`;
+		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus">${restTime}</span> sec &nbsp;<button type="button" id="us_abortScrobbling" title="abort scrobbling">x</button></div>`;
 	}
 	if (us_getTempData('scrobbled') == 1) {
 		scrobbleStatus = '<div id="scrobbleStatus_parent">scrobbled</div>';
@@ -555,7 +580,7 @@ function us_scrobbleform(justLoggedIn) {
 			messageText += '<div class="us_error">AutoScrobble failed. Please edit info.</div>';
 		}
 		if (asE == 'noMusic') {
-			messageText += '<div class="us_error">Track not found on <span style="font-style:italic">Last.fm</span></div>';
+			messageText += '<div class="us_error">Track not found on Last.fm.</div>';
 		}
 		if (asE == 'bad') {
 			messageText += '<div class="us_error">Video title is not in a valid format to be scrobbled.</div>';
@@ -585,7 +610,7 @@ function us_scrobbleform(justLoggedIn) {
 			</form>
 		</div>
 		<div class="us_submitbuttons">
-			<div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"${checkedText}><label for="us_autoscrobble" style="vertical-align:middle;">Auto</label></div>
+			<div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"${checkedText}><label for="us_autoscrobble">Auto</label></div>
 			${scrobbleStatus}
 			<input id="us_submit" value="Scrobble" type="submit" />
 		</div>
@@ -707,7 +732,7 @@ function us_help() {
 function us_settings() {
 	let maxEntries = us_getValue('database.maxEntries', 5000);
 	let cont = `
-		<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr>
+		<div id="us_loginbox_form"><form name="us_settings_form" onSubmit="return false"><table><tr>
 			<td class="us_settings_grp us_settings_grp_left">
 				<div class="us_settings_grp_heading">General</div>
 				<input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label><br/>
@@ -739,7 +764,7 @@ function us_settings() {
 				<span id="us_manualupdate"><button type="button" id="us_manualupdate_link">Check for Update</button></span>
 			</td>
 		</tr></table></form></div>
-		<div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>
+		<div class="us_submitbuttons"><input type="submit" id="us_resetlogin" value="Reset Login"/></div>
 	`;
 
 	us_boxcontent('Settings', cont);
@@ -1129,7 +1154,7 @@ function us_resetlogin(error) {
 		<div id="us_loginbox_form">
 			${resetInfo}
 			<span>Click Login below to authenticate your account</span><br/><br/>
-			<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br />
+			<em>Note: You will leave this site and be redirected here after having logged in to Last.fm.</em><br/><br />
 		</div>
 		<div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>
 	`;
