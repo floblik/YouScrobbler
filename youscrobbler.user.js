@@ -692,7 +692,7 @@ function us_boxcontent(title, content) {
 		return false;
 	}
 	if (loginbox.classList.contains('us_box_hidden')) {
-		loginbox.style.classList.remove('us_box_hidden');
+		loginbox.classList.remove('us_box_hidden');
 	}
 	loginbox.innerHTML = `
 		<h3 id="us_box_head">${title}<ul>
