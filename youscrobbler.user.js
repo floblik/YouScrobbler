@@ -408,8 +408,9 @@ function us_addButton() {
 		#us_submit { float: right; margin-bottom:5px;}
 		us_submitbuttons_box_left {border}
 		#us_scrobblebutton { float:right; cursor: pointer; margin-left:16px;}
-		#us_start_scrobblebutton {padding-left:3px!important} // Feather check
-		#us_icon_small, #us_start_scrobblebutton_text { vertical-align: middle;}}
+		#us_start_scrobblebutton {padding-left:3px!important} /* Feather check */
+		#us_start_scrobblebutton_text { vertical-align: middle; background-repeat: no-repeat; background-position: left center; padding-left: calc(16px + 0.5em); display: inline-block; height: 16px; line-height: 16px; background-image: url(data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D); }
+		#us_start_scrobblebutton_text.black_icon { background-image: url(data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D); }
 		#fullAlbumIcon { float: left; height: 16px; width: 16px; cursor: help;}
 		#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}
 		#us_scrobble_on {font-weight:bold; color: #66CC00;}
@@ -435,7 +436,6 @@ function us_addButton() {
 		button.innerHTML = `
 			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}"/>
 			<a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
-				<img id="us_icon_small" src="${us_icon()}" alt="icon"/>
 				<span id="us_start_scrobblebutton_text">Scrobble</span>
 			</a>
 			<div id="us_scrobble_statusbar" class="us_status_hidden"></div>
@@ -448,7 +448,6 @@ function us_addButton() {
 		BFather = document.getElementById('masthead-nav');
 		button.innerHTML = `
 			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
-			<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" />
 			<a class="start" id="us_start_scrobblebutton"><span id="us_start_scrobblebutton_text">Scrobble</span></a>
 			<span class="masthead-link-separator">|</span>
 		`; // postxanadus
@@ -465,7 +464,6 @@ function us_addButton() {
 		button.innerHTML = `
 			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
 			<a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
-				<img id="us_icon_small" src="${us_icon()}" alt="icon"/>
 				<span id="us_start_scrobblebutton_text">Scrobble</span>
 			</a>
 			<div id="us_scrobble_statusbar" class="us_status_hidden"></div>
@@ -476,8 +474,7 @@ function us_addButton() {
 		button.setAttribute('class', 'ml');
 		button.innerHTML = `
 			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
-			<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" />
-			<a class="start" id="us_start_scrobblebutton">Scrobble</a>
+			<a class="start" id="us_start_scrobblebutton"><span id="us_start_scrobblebutton_text"> Scrobble</span></a>
 		`;
 		BFather.insertBefore(button, document.getElementById('se').nextSibling);
 	} else {
@@ -486,6 +483,10 @@ function us_addButton() {
 		}, 1000);
 
 		return;
+	}
+
+	if (us_getValue('us_color') === 'black') {
+		document.getElementById('us_start_scrobblebutton_text').classList.add('black_icon');
 	}
 
 	head.appendChild(style_el);
@@ -539,13 +540,6 @@ function us_buttonStatus() {
 }
 
 
-function us_icon() {
-	if (us_getValue('us_color') == 'red') {
-		return 'data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D';
-	} else {
-		return 'data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D';
-	}
-}
 function us_toggleBox() {
 	if (!document.getElementById('us_loginbox') || document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
 		us_showBox(false);
@@ -870,11 +864,11 @@ function us_settings() {
 	// Save settings
 	document.getElementById('us_settings_color_red').addEventListener('change', function() {
 		us_saveValue('us_color', 'red');
-		document.getElementById('us_icon_small').src = us_icon();
+		document.getElementById('us_start_scrobblebutton_text').classList.remove('black_icon');
 	});
 	document.getElementById('us_settings_color_black').addEventListener('change', function() {
 		us_saveValue('us_color', 'black');
-		document.getElementById('us_icon_small').src = us_icon();
+		document.getElementById('us_start_scrobblebutton_text').classList.add('black_icon');
 	});
 	document.getElementById('us_settings_asFailNotification').addEventListener('change', function() {
 		us_saveValue('asFailNotification', document.getElementById('us_settings_asFailNotification').checked);
