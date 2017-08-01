@@ -298,7 +298,7 @@ function us_addButton() {
 	let secs = 0;
 	let time = new Date();
 	let t = Math.round(time.getTime() / 1000);
-	
+
 	let style_el = document.createElement('style');
 	let head = document.getElementsByTagName('head')[0];
 
@@ -881,7 +881,7 @@ function tryAutoScrobble() {
 function tryAutoScrobbleCallback(response, musicVideo) {
 	if ((isLoggedIn()) && ((trackInfoFromDB) || ((response == 'found') && (musicVideo)))) {
 		// save time page was loaded aka playstart time in ctime and gay format
-		let time = new Date();	
+		let time = new Date();
 
 		us_saveTempData('us_playstart_s', Math.round(time.getTime() / 1000));
 		us_scrobble(decodeURIComponent(us_getTempData('artist')), decodeURIComponent(us_getTempData('track')), '', '', 0, 0, 1);
@@ -1093,7 +1093,7 @@ function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scr
 
 		track_num++;
 		us_saveTempData('full_album_track_nr', track_num);
-		
+
 		us_scrobble(decodeURIComponent(us_getTempData('artist')), decodeURIComponent(us_getTempData('track')), decodeURIComponent(us_getTempData('album')), decodeURIComponent(us_getTempData('mbid')), 0, 1, 1, 1);
 	}
 }
@@ -1187,14 +1187,14 @@ function getYouTubeVideoId() {
 
 	if (matches == null) {
 		let playerNode;
-		
+
 		if (document.getElementById('c4-player')) {
 			playerNode = document.getElementById('c4-player');
 		} else {
 			playerNode = document.getElementById('movie_player');
 		}
 		matches = playerNode.getVideoUrl().match(regex);
-		
+
 		if (matches == null) {
 			return null;
 		}
@@ -1374,7 +1374,7 @@ function getAlbumInfo() {
 
 					us_saveTempData('artist', album.tracks.track[track_index].artist.name);
 					us_saveTempData('track', album.tracks.track[track_index].name);
-					
+
 					response = getTrackInfo();
 					isMusicVideo(response);
 				} else {

@@ -11,7 +11,7 @@
 		"dot-notation": "error",
 		"eol-last": "error",
 		"func-call-spacing": "error",
-		"indent": ["error", "tab"],
+		"indent": ["error", "tab", {"SwitchCase": 1}],
 		"key-spacing": "error",
 		"keyword-spacing": "error",
 		"linebreak-style": ["error", "unix"],
@@ -23,7 +23,7 @@
 		"no-multiple-empty-lines": "error",
 		"no-multi-spaces": ["error", {"exceptions": {"Property": false}}],
 		"no-trailing-spaces": "error",
-		"no-undef": "warn", // this can be removed once the problems are fixed, so that the rule defaults to error
+		"no-undef": "error",
 		"no-use-before-define": ["error", "nofunc"],
 		"no-whitespace-before-property": "error",
 		"object-curly-newline": ["error", {"multiline": true, "consistent": true}],
