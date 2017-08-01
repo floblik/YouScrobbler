@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL   https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL     https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
-// @version       1.4.6
+// @version       1.4.7
 // @noframes
 // @run-at        document-idle
 // ==/UserScript==
@@ -25,7 +25,7 @@
 
 'use strict';
 
-const VERSION = '1.4.6';
+const VERSION = '1.4.7';
 const APIKEY = 'd2fcec004903116fe399074783ee62c7';
 
 let lastFmAuthenticationUrl = 'http://www.last.fm/api/auth';
@@ -98,8 +98,8 @@ function us_reset() {
  * --- 2. General Functions ---
  */
 function initPreferences() {
-	if (!us_getValue('us_boxpos')) {
-		us_saveValue('us_boxpos', (screen.availWidth) / 1.3 + 'px-' + 70 + 'px');
+	if (!us_getValue('us_boxPosition')) {
+		us_saveValue('us_boxPosition', (screen.availWidth / 1.3) + ';' + 70);
 	}
 	if ((!us_getValue('us_color')) || (us_getValue('us_color') == 'r')) {
 		us_saveValue('us_color', 'red');
@@ -141,23 +141,75 @@ function createIdElement(type, id) {
 	return el;
 }
 
-function us_movebox(e) {
-	if (us_getValue('us_drag')) {
-		let el = document.getElementById('us_loginbox');
-		el.style.left = (150 + e.clientX - us_getValue('us_drag').split('-')[0]) + 'px';
-		el.style.top = e.clientY - us_getValue('us_drag').split('-')[1] + 'px';
+/**
+ * Makes an element draggable.
+ *
+ * Based on https://gist.github.com/remarkablemark/5002d27442600510d454a5aeba370579
+ *
+ * @param {HTMLElement} element - The element that will be dragged.
+ * @param {HTMLElement} handle - The element that will facilitate the dragging.
+ * @param {Number} initialPositionX - Initial x position of the element.
+ * @param {Number} initialPositionY - Initial y position of the element.
+ * @param {Function} persistPosition - Function called after position is changed.
+ */
+function us_draggable(element, handle, initialPositionX, initialPositionY, persistPosition) {
+	let isMouseDown = false;
+
+	// initial mouse X and Y for `mousedown`
+	let mouseX;
+	let mouseY;
+	// element X and Y before and after move
+	let elementX = initialPositionX;
+	let elementY = initialPositionY;
+
+	// mouse button down over the handle
+	handle.addEventListener('mousedown', onMouseDown);
+
+	/**
+	 * Listens to `mousedown` event.
+	 *
+	 * @param {Object} event - The event.
+	 */
+	function onMouseDown(event) {
+		mouseX = event.clientX;
+		mouseY = event.clientY;
+		isMouseDown = true;
+		event.preventDefault();
+	}
+
+	// mouse button released
+	document.addEventListener('mouseup', onMouseUp);
+
+	/**
+	 * Listens to `mouseup` event.
+	 */
+	function onMouseUp() {
+		isMouseDown = false;
+		elementX = parseInt(element.style.left) || 0;
+		elementY = parseInt(element.style.top) || 0;
+		persistPosition(elementX, elementY);
+	}
+
+	// need to attach to the entire document
+	// in order to take full width and height
+	// this ensures the element keeps up with the mouse
+	document.addEventListener('mousemove', onMouseMove);
+
+	/**
+	 * Listens to `mousemove` event.
+	 *
+	 * @param {Object} event - The event.
+	 */
+	function onMouseMove(event) {
+		if (!isMouseDown) {
+			return;
+		}
+		let deltaX = event.clientX - mouseX;
+		let deltaY = event.clientY - mouseY;
+		element.style.left = elementX + deltaX + 'px';
+		element.style.top = elementY + deltaY + 'px';
 	}
 }
-function us_moveboxd(e) {
-	let el = document.getElementById('us_loginbox');
-	us_saveValue('us_drag', (e.clientX - el.offsetLeft) + '-' + (e.clientY - el.offsetTop));
-}
-function us_moveboxu() {
-	let el = document.getElementById('us_loginbox');
-	us_saveValue('us_boxpos', el.style.left + '-' + el.style.top);
-	us_saveValue('us_drag', false);
-}
-
 
 function GM_main() {
 	window.us_stateChanged = function(state) {
@@ -294,7 +346,6 @@ function us_getTempData(name) {
  * Add the Scrobble Button to Video and Userpages
  */
 function us_addButton() {
-	us_saveValue('us_drag', false);
 	let secs = 0;
 	let time = new Date();
 	let t = Math.round(time.getTime() / 1000);
@@ -307,7 +358,7 @@ function us_addButton() {
 		#us_loginbox button { background: transparent; border: none; margin: 0; padding: 0; }
 		.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;
 		/* by AshKyd */
-		z-index:1000000; position: absolute; top: 70px; width: 300px; margin-left: -150px; }
+		z-index:1000000; position: absolute; width: 300px; }
 		.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }
 		.us_box h4 { margin-left: 5px; margin-bottom:0px}
 		#us_loginbox #us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }
@@ -507,20 +558,34 @@ function us_toggleBox() {
 // Contains either login form, or scrobble form
 function us_showBox(justLoggedIn) {
 	// check if scrobblerbox was dropped out of possible screen width and if reset
-	if (us_getValue('us_boxpos').split('-')[0].split('px')[0] > screen.availWidth || us_getValue('us_boxpos').split('-')[0].split('px')[0] < 130) {
-		us_saveValue('us_boxpos', (screen.availWidth) / 1.3 + 'px-' + 75 + 'px');
+	let boxPosition = us_getValue('us_boxPosition').split(';');
+	let boxPositionX = parseInt(boxPosition[0]);
+	let boxPositionY = parseInt(boxPosition[1]);
+
+	let boxPositionChanged = false;
+	if (boxPositionX > screen.availWidth || boxPositionX < 0) {
+		boxPositionX = screen.availWidth / 1.3;
+		boxPositionChanged = true;
 	}
+	if (boxPositionY > screen.availHeight || boxPositionY < 50) {
+		boxPositionY = 75;
+		boxPositionChanged = true;
+	}
+	if (boxPositionChanged) {
+		us_saveValue('us_boxPosition', boxPositionX + ';' + boxPositionY);
+	}
+
 	// either create loginbox or show it
 	if (!document.getElementById('us_loginbox')) {
 		let loginbox = createIdElement('div', 'us_loginbox');
 		loginbox.classList.add('us_box');
-		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
-		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
+		loginbox.style.left = boxPositionX + 'px';
+		loginbox.style.top = boxPositionY + 'px';
 		document.body.insertBefore(loginbox, document.body.firstChild);
 	} else if (document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
 		let loginbox = document.getElementById('us_loginbox');
-		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
-		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
+		loginbox.style.left = boxPositionX + 'px';
+		loginbox.style.top = boxPositionY + 'px';
 		loginbox.classList.remove('us_box_hidden');
 	}
 	if (!isLoggedIn()) {
@@ -706,9 +771,18 @@ function us_boxcontent(title, content) {
 	document.getElementById('us_box_settings').addEventListener('click', us_settings);
 	document.getElementById('us_box_help').addEventListener('click', us_help);
 
-	document.addEventListener('mousemove', us_movebox);
-	document.getElementById('us_box_head').addEventListener('mousedown', us_moveboxd);
-	document.getElementById('us_box_head').addEventListener('mouseup', us_moveboxu);
+	let position = us_getValue('us_boxPosition').split(';');
+	let initialPositionX = parseInt(position[0]);
+	let initialPositionY = parseInt(position[1]);
+	us_draggable(
+		loginbox,
+		document.getElementById('us_box_head'),
+		initialPositionX,
+		initialPositionY,
+		function persistPosition(elementX, elementY) {
+			us_saveValue('us_boxPosition', elementX + ';' + elementY);
+		}
+	);
 }
 
 /**
