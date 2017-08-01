@@ -355,7 +355,7 @@ function us_addButton() {
 
 	style_el.innerHTML = `
 		#us_loginbox_form table { text-align: left; table-layout: fixed; }
-		#us_loginbox button { background: transparent; border: none; margin: 0; padding: 0; }
+		#us_loginbox button { background: transparent; border: none; margin: 0; padding: 0; cursor: pointer; }
 		.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;
 		/* by AshKyd */
 		z-index:1000000; position: absolute; width: 300px; }
@@ -379,8 +379,8 @@ function us_addButton() {
 		#us_loginbox #us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }
 		#us_loginbox_form { text-align: right; padding: 5px; }
 		.us_box input[type=text] { height: 16px; border: 1px solid #bbb; margin: 2px 15px 4px 2px; padding: 3px 4px; width: 170px;}
-		.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-image: url(data:image/gif;base64,R0lGODlhAQAQAKIAAH5%2BflRUVFxcXGNjY2tra3Nzc3p6eoKCgiH5BAAAAAAALAAAAAABABAAAAMKeAdmVYSMIUS4CQA7); }
-		.us_box input[type=submit]:hover { background-image: url(data:image/gif;base64,R0lGODlhAQAQAPcAAIaGho6OjpWVlZ2dnaWlpaysrLCwsLS0tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAAQAQAAAIFAAPHDBQoAABAgMGCBAQIACAhwEBADs=);}
+		.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-color: #6b6b6b; background-image: linear-gradient(to bottom, #828282 0%, #6b6b6b 50%, #545454 100%); }
+		.us_box input[type=submit]:hover { background-color: #9d9d9d; background-image: linear-gradient(to bottom, #b4b4b4 0%, #9d9d9d 50%, #868686 100%);}
 		.us_box input[type=submit]:active { padding: 1px 4px 2px 4px;}
 		.us_hidden { visibility: hidden; overflow: hidden; height: 0px; }
 		#us_hiddenform { margin: 0; pading-right: 10px;}
@@ -627,7 +627,7 @@ function us_scrobbleform(justLoggedIn) {
 		} else {
 			restTime = us_getTempData('us_secs');
 		}
-		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus">${restTime}</span> sec &nbsp;<button type="button" id="us_abortScrobbling" title="abort scrobbling">x</button></div>`;
+		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus">${restTime}</span> sec &nbsp;<button type="button" id="us_abortScrobbling" title="abort scrobbling">×</button></div>`;
 	}
 	if (us_getTempData('scrobbled') == 1) {
 		scrobbleStatus = '<div id="scrobbleStatus_parent">scrobbled</div>';
@@ -663,7 +663,7 @@ function us_scrobbleform(justLoggedIn) {
 			<form name="us_scrobbleform" onSubmit="return false">
 				Artist: <input type="text" name="artist" value="${artist}" /><br />
 				Track: <input type="text" name="track" value="${track}" /><br/>
-				<button id="us_quickchange" title="Artist <-> Track"></button>
+				<button id="us_quickchange" title="Artist ↔ Track"></button>
 				<button type="button" id="us_more" title="more options">+</button>
 				<p id="us_hiddenform" class="us_hidden">
 					Album title: <input type="text" name="album" value="${album}" /><br />
@@ -1038,7 +1038,7 @@ function tryGetAuthToken() {
 }
 
 /**
- * Srobbles a song using the saved track information
+ * Scrobbles a song using the saved track information
  */
 function us_scrobble(artist, track, album, mbid, retry, queued, auto, full_album_scrobble) {
 	let secs = us_getTempData('us_secs');
@@ -1646,7 +1646,7 @@ function us_ajax_scanner() {
 }
 
 /**
- * Quickchange artist <-> track in scrobble-form
+ * Quickchange artist ↔ track in scrobble-form
  */
 function us_quickchange() {
 	let artist = document.forms[0].elements[0].value;
