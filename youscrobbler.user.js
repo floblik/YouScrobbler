@@ -363,7 +363,9 @@ function us_addButton() {
 		#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}
 		#us_scrobble_on {font-weight:bold; color: #66CC00;}
 		#us_scrobble_failed {font-weight:bold; color: #D10404;}
-		#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; }
+		#us_scrobble_statusbar {background-color: #66CC00; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; }
+		.us_status_failed { background-color: #CC181E; }
+		.us_status_hidden { display: none; }
 		#us_loginbox .us_status_small {color: #999; font-size:80%}
 		.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}
 		.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}
@@ -385,7 +387,7 @@ function us_addButton() {
 				<img id="us_icon_small" src="${us_icon()}" alt="icon"/>
 				<span id="us_start_scrobblebutton_text">Scrobble</span>
 			</a>
-			<div id="us_scrobble_statusbar"></div>
+			<div id="us_scrobble_statusbar" class="us_status_hidden"></div>
 		`;
 		BFather.insertBefore(button, BFather.lastChild);
 
@@ -415,7 +417,7 @@ function us_addButton() {
 				<img id="us_icon_small" src="${us_icon()}" alt="icon"/>
 				<span id="us_start_scrobblebutton_text">Scrobble</span>
 			</a>
-			<div id="us_scrobble_statusbar"></div>
+			<div id="us_scrobble_statusbar" class="us_status_hidden"></div>
 		`;
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('mh')) {
@@ -902,17 +904,15 @@ function tryAutoScrobbleCallback(response, musicVideo) {
 }
 
 function scrobble_statusbar(status) {
+	let statusBar = document.getElementById('us_scrobble_statusbar');
 	if (status == 'scrobble') {
-		document.getElementById('us_scrobble_statusbar').style.backgroundColor = '#66CC00';
-		document.getElementById('us_scrobble_statusbar').style.display = 'block';
-
+		statusBar.classList.remove('us_status_hidden');
+		statusBar.classList.remove('us_status_failed');
 	} else if (status == 'failed') {
-		document.getElementById('us_scrobble_statusbar').style.width = '100%';
-		document.getElementById('us_scrobble_statusbar').style.display = 'block';
-		document.getElementById('us_scrobble_statusbar').style.backgroundColor = '#CC181E';
+		statusBar.classList.remove('us_status_hidden');
+		statusBar.classList.add('us_status_failed');
 	} else if (status == 'hide') {
-		document.getElementById('us_scrobble_statusbar').style.display = 'none';
-		document.getElementById('us_scrobble_statusbar').style.width = '0';
+		statusBar.classList.add('us_status_hidden');
 	}
 
 }
