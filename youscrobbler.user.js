@@ -13,7 +13,7 @@
 // @grant         GM_setValue
 // @grant         GM_xmlhttpRequest
 // @downloadURL   https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
-// @updateURL     http://youscrobbler.lukash.de/youscrobbler.meta.js
+// @updateURL     https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @version       1.4.6
 // @noframes
 // @run-at        document-idle
