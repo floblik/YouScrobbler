@@ -361,9 +361,10 @@ function us_addButton() {
 		z-index:1000000; position: absolute; width: 300px; }
 		.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }
 		.us_box h4 { margin-left: 5px; margin-bottom:0px}
-		#us_loginbox #us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }
-		#us_loginbox #us_box_settings { background-image: url(data:image/gif;base64,R0lGODlhDQANAPcAAAAAAHt7e4CAgIGBgYWFhYaGhoqKiouLi4yMjI2NjZOTk5mZmZqampubm5ycnJ6enp+fn6GhoaWlpaampqenp6ioqKmpqaqqqqurq6ysrK2trbCwsLKysrOzs7S0tLa2tre3t76+vr+/v8DAwMXFxcbGxsfHx8jIyMrKysvLy83NzdDQ0NTU1NXV1dfX19nZ2dzc3N3d3d7e3uDg4Ojo6Ovr6+zs7O3t7e/v7/7+/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA0AAAicAP8JtIEihIcQKGwIFJjDhYeHED24yCHQBYYMGDJy8KABg4t/NjKK/ACDRYcNGAhKuCBSBY4XJ1JIQIFhgkgPMXDcqGHiAYYFDyJgECGDRgsTIxwsAPqAgogXM1ZkYBlBwQMPBhKQcFHCQgcIEQ4Y8GCDAAEEICowaPCggFmFHgTIZTBArlwPDEME2Ms3QAiKC21IIBCAgASFAgMCADs=); width: 13px; height: 13px; float: right; margin:1px 3px 0 0; }
-		#us_box_head > ul, #us_box_head li { float:right}
+		#us_loginbox .round_button { border-radius: 50%; width: 14px; height: 14px; padding: 3px; float: right; margin:1px 3px 0 0; background-image: linear-gradient(to bottom, #b4b4b4 0%, #9d9d9d 50%, #868686 100%); background-color: #9d9d9d; }
+		#us_loginbox .round_button:hover { background-image: linear-gradient(to bottom, #828282 0%, #6b6b6b 50%, #545454 100%); background-color: #3e3e3e; }
+		#us_loginbox .round_button svg { display: block; width: 8px; height: 8px; }
+		#us_box_head > ul, #us_box_head li { float:right; }
 		#us_box_head ul { list-style-type:none}
 		.us_settings_grp { height:50px; vertical-align:middle; padding-right:3px;padding-left:5px}
 		.us_settings_grp hr { background-color: #EEE; margin: 5px 8px; height: 1px;}
@@ -376,7 +377,6 @@ function us_addButton() {
 		#scrobbleStatus { font-weight: bold; }
 		#scrobble_at {width: 45px; }
 		#us_resetlogin { float: left; }
-		#us_loginbox #us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }
 		#us_loginbox_form { text-align: right; padding: 5px; }
 		.us_box input[type=text] { height: 16px; border: 1px solid #bbb; margin: 2px 15px 4px 2px; padding: 3px 4px; width: 170px;}
 		.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-color: #6b6b6b; background-image: linear-gradient(to bottom, #828282 0%, #6b6b6b 50%, #545454 100%); }
@@ -755,9 +755,9 @@ function us_boxcontent(title, content) {
 	}
 	loginbox.innerHTML = `
 		<h3 id="us_box_head">${title}<ul>
-			<li><button type="button" title="Close" id="us_box_close"></button></li>
-			<li><button type="button" title="Settings" id="us_box_settings"></button></li>
-			<li><button type="button" title="Help" id="us_box_help"></button></li>
+			<li><button type="button" title="Close" id="us_box_close" class="round_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.4,2.4 21.6,21.6 M2.4,21.6 21.6,2.4" style="fill:none;stroke-width:5;stroke:#fff"/></svg></button></li>
+			<li><button type="button" title="Settings" id="us_box_settings" class="round_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 479.8 479.8" fill="#fff"><path d="m479.3 116.6c-0.4-4.3-3.2-7.9-7.2-9.4-4-1.5-8.5-0.5-11.6 2.6l-62.2 62-69-21.8-21.9-68.7 62.2-62c3-3 4-7.5 2.6-11.6-1.5-4-5.1-6.8-9.4-7.2C324.9-2.7 287.9 10.7 261.2 37.4 224.5 73.9 214.8 127.3 231.9 172.8c-1.9 1.6-3.7 3.3-5.5 5.1L18.5 373.2c-0.1 0.1-0.1 0.1-0.2 0.2-24.4 24.3-24.4 64 0 88.3 24.4 24.3 64 24 88.3-0.3 0.1-0.1 0.2-0.2 0.3-0.3L301.3 252.5c1.8-1.8 3.4-3.6 4.9-5.5 45.7 17.2 99.3 7.5 136-29.1 26.8-26.7 40.4-63.6 37-101.3zM75.3 435.4c-9 9-23.6 9-32.6 0-9-9-9-23.5 0-32.5 9-9 23.6-9 32.6 0 8.9 9 8.9 23.5 0 32.5z"/></svg></button></li>
+			<li><button type="button" title="Help" id="us_box_help" class="round_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff"><path d="m10.1 23.9h4v-4h-4zm2-24c-4.4 0-8 3.6-8 8h4c0-2.2 1.8-4 4-4 2.2 0 4 1.8 4 4 0 4-6 3.5-6 10h4c0-4.5 6-5 6-10 0-4.4-3.6-8-8-8z"/></svg></button></li>
 		</ul></h3>
 		<div>${content}</div>
 	`;
