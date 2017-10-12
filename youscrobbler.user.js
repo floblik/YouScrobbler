@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL   https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL     https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
-// @version       1.4.6
+// @version       1.4.7
 // @noframes
 // @run-at        document-idle
 // ==/UserScript==
@@ -25,7 +25,7 @@
 
 'use strict';
 
-const VERSION = '1.4.6';
+const VERSION = '1.4.7';
 const APIKEY = 'd2fcec004903116fe399074783ee62c7';
 
 let lastFmAuthenticationUrl = 'http://www.last.fm/api/auth';
@@ -98,8 +98,8 @@ function us_reset() {
  * --- 2. General Functions ---
  */
 function initPreferences() {
-	if (!us_getValue('us_boxpos')) {
-		us_saveValue('us_boxpos', (screen.availWidth) / 1.3 + 'px-' + 70 + 'px');
+	if (!us_getValue('us_boxPosition')) {
+		us_saveValue('us_boxPosition', (screen.availWidth / 1.3) + ';' + 70);
 	}
 	if ((!us_getValue('us_color')) || (us_getValue('us_color') == 'r')) {
 		us_saveValue('us_color', 'red');
@@ -141,23 +141,75 @@ function createIdElement(type, id) {
 	return el;
 }
 
-function us_movebox(e) {
-	if (us_getValue('us_drag')) {
-		let el = document.getElementById('us_loginbox');
-		el.style.left = (150 + e.clientX - us_getValue('us_drag').split('-')[0]) + 'px';
-		el.style.top = e.clientY - us_getValue('us_drag').split('-')[1] + 'px';
+/**
+ * Makes an element draggable.
+ *
+ * Based on https://gist.github.com/remarkablemark/5002d27442600510d454a5aeba370579
+ *
+ * @param {HTMLElement} element - The element that will be dragged.
+ * @param {HTMLElement} handle - The element that will facilitate the dragging.
+ * @param {Number} initialPositionX - Initial x position of the element.
+ * @param {Number} initialPositionY - Initial y position of the element.
+ * @param {Function} persistPosition - Function called after position is changed.
+ */
+function us_draggable(element, handle, initialPositionX, initialPositionY, persistPosition) {
+	let isMouseDown = false;
+
+	// initial mouse X and Y for `mousedown`
+	let mouseX;
+	let mouseY;
+	// element X and Y before and after move
+	let elementX = initialPositionX;
+	let elementY = initialPositionY;
+
+	// mouse button down over the handle
+	handle.addEventListener('mousedown', onMouseDown);
+
+	/**
+	 * Listens to `mousedown` event.
+	 *
+	 * @param {Object} event - The event.
+	 */
+	function onMouseDown(event) {
+		mouseX = event.clientX;
+		mouseY = event.clientY;
+		isMouseDown = true;
+		event.preventDefault();
+	}
+
+	// mouse button released
+	document.addEventListener('mouseup', onMouseUp);
+
+	/**
+	 * Listens to `mouseup` event.
+	 */
+	function onMouseUp() {
+		isMouseDown = false;
+		elementX = parseInt(element.style.left) || 0;
+		elementY = parseInt(element.style.top) || 0;
+		persistPosition(elementX, elementY);
+	}
+
+	// need to attach to the entire document
+	// in order to take full width and height
+	// this ensures the element keeps up with the mouse
+	document.addEventListener('mousemove', onMouseMove);
+
+	/**
+	 * Listens to `mousemove` event.
+	 *
+	 * @param {Object} event - The event.
+	 */
+	function onMouseMove(event) {
+		if (!isMouseDown) {
+			return;
+		}
+		let deltaX = event.clientX - mouseX;
+		let deltaY = event.clientY - mouseY;
+		element.style.left = elementX + deltaX + 'px';
+		element.style.top = elementY + deltaY + 'px';
 	}
 }
-function us_moveboxd(e) {
-	let el = document.getElementById('us_loginbox');
-	us_saveValue('us_drag', (e.clientX - el.offsetLeft) + '-' + (e.clientY - el.offsetTop));
-}
-function us_moveboxu() {
-	let el = document.getElementById('us_loginbox');
-	us_saveValue('us_boxpos', el.style.left + '-' + el.style.top);
-	us_saveValue('us_drag', false);
-}
-
 
 function GM_main() {
 	window.us_stateChanged = function(state) {
@@ -294,23 +346,25 @@ function us_getTempData(name) {
  * Add the Scrobble Button to Video and Userpages
  */
 function us_addButton() {
-	us_saveValue('us_drag', false);
 	let secs = 0;
 	let time = new Date();
 	let t = Math.round(time.getTime() / 1000);
-	
+
 	let style_el = document.createElement('style');
 	let head = document.getElementsByTagName('head')[0];
 
 	style_el.innerHTML = `
+		#us_loginbox_form table { text-align: left; table-layout: fixed; }
+		#us_loginbox button { background: transparent; border: none; margin: 0; padding: 0; cursor: pointer; }
 		.us_box { border-radius: 5px; border: 5px solid #333; background: #fff;
 		/* by AshKyd */
-		z-index:1000000; position: absolute; top: 70px; width: 300px; margin-left: -150px; }
+		z-index:1000000; position: absolute; width: 300px; }
 		.us_box h3 { cursor: move; padding: 4px 8px 4px 10px; margin: 0px; border-bottom: 1px solid #AAA; background-color: #EEE; }
 		.us_box h4 { margin-left: 5px; margin-bottom:0px}
-		#us_box_close { background-image: url(data:image/gif;base64,R0lGODlhDQANALMPAKurq7S0tOzs7MrKytfX14qKir6%2BvqWlpf7%2B%2Fnt7e5OTk56enpmZmYWFhYCAgP%2F%2F%2FyH5BAEAAA8ALAAAAAANAA0AAARd8EkxTDBDSIlI%2BGBAIBIBAMeJnsQjnEugMEqwnNRxGF0xGroBYEEcCTrEG2OpKBwFhdlyoWgae9VYoRDojQDbgKBBDhTIAHJDE3C43%2B8Ax5Co2xO8jevQSDQOGhIRADs%3D); width: 13px; height: 13px; float: right; margin-top: 1px; }
-		#us_box_settings { background-image: url(data:image/gif;base64,R0lGODlhDQANAPcAAAAAAHt7e4CAgIGBgYWFhYaGhoqKiouLi4yMjI2NjZOTk5mZmZqampubm5ycnJ6enp+fn6GhoaWlpaampqenp6ioqKmpqaqqqqurq6ysrK2trbCwsLKysrOzs7S0tLa2tre3t76+vr+/v8DAwMXFxcbGxsfHx8jIyMrKysvLy83NzdDQ0NTU1NXV1dfX19nZ2dzc3N3d3d7e3uDg4Ojo6Ovr6+zs7O3t7e/v7/7+/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAANAA0AAAicAP8JtIEihIcQKGwIFJjDhYeHED24yCHQBYYMGDJy8KABg4t/NjKK/ACDRYcNGAhKuCBSBY4XJ1JIQIFhgkgPMXDcqGHiAYYFDyJgECGDRgsTIxwsAPqAgogXM1ZkYBlBwQMPBhKQcFHCQgcIEQ4Y8GCDAAEEICowaPCggFmFHgTIZTBArlwPDEME2Ms3QAiKC21IIBCAgASFAgMCADs=); width: 13px; height: 13px; float: right; margin:1px 3px 0 0; }
-		#us_box_head > ul, #us_box_head li { float:right}
+		#us_loginbox .round_button { border-radius: 50%; width: 14px; height: 14px; padding: 3px; float: right; margin:1px 3px 0 0; background-image: linear-gradient(to bottom, #b4b4b4 0%, #9d9d9d 50%, #868686 100%); background-color: #9d9d9d; }
+		#us_loginbox .round_button:hover { background-image: linear-gradient(to bottom, #828282 0%, #6b6b6b 50%, #545454 100%); background-color: #3e3e3e; }
+		#us_loginbox .round_button svg { display: block; width: 8px; height: 8px; }
+		#us_box_head > ul, #us_box_head li { float:right; }
 		#us_box_head ul { list-style-type:none}
 		.us_settings_grp { height:50px; vertical-align:middle; padding-right:3px;padding-left:5px}
 		.us_settings_grp hr { background-color: #EEE; margin: 5px 8px; height: 1px;}
@@ -320,23 +374,24 @@ function us_addButton() {
 		.us_settings_grp_heading { color:#777;font-size:100%;font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:4px;}
 		.us_settings_grp_database { cursor: help;}
 		#databaseMaxLength {width: 55px; }
+		#scrobbleStatus { font-weight: bold; }
 		#scrobble_at {width: 45px; }
-		#us_box_help { background-image: url(data:image/gif;base64,R0lGODlhDQANAKIAALKysomJisfHx%2F%2F%2F%2F5WWlujo6H5%2BfqOjoyH5BAAAAAAALAAAAAANAA0AAANCOFoi0EXJAqoFUbnDexUD1UWFx3QNkXJCRxBBkBLc%2B8ZMYNN37Os0wA8wEPowvySuaGg6nUQF4AmVLA4BQ%2BCQGSQAADs%3D); width: 13px; height: 13px; float: right; margin: 1px 3px 0 0; }
+		#us_resetlogin { float: left; }
 		#us_loginbox_form { text-align: right; padding: 5px; }
 		.us_box input[type=text] { height: 16px; border: 1px solid #bbb; margin: 2px 15px 4px 2px; padding: 3px 4px; width: 170px;}
-		.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-image: url(data:image/gif;base64,R0lGODlhAQAQAKIAAH5%2BflRUVFxcXGNjY2tra3Nzc3p6eoKCgiH5BAAAAAAALAAAAAABABAAAAMKeAdmVYSMIUS4CQA7); }
-		.us_box input[type=submit]:hover { background-image: url(data:image/gif;base64,R0lGODlhAQAQAPcAAIaGho6OjpWVlZ2dnaWlpaysrLCwsLS0tAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAAQAQAAAIFAAPHDBQoAABAgMGCBAQIACAhwEBADs=);}
+		.us_box input[type=submit] { cursor:pointer; margin: 0 0 0 5px; padding: 0 4px 3px 4px; border-radius: 2px; font-size: 11px; font-weight: bold; color: white; height: 18px; border: 1px solid #3e3e3e; background-color: #6b6b6b; background-image: linear-gradient(to bottom, #828282 0%, #6b6b6b 50%, #545454 100%); }
+		.us_box input[type=submit]:hover { background-color: #9d9d9d; background-image: linear-gradient(to bottom, #b4b4b4 0%, #9d9d9d 50%, #868686 100%);}
 		.us_box input[type=submit]:active { padding: 1px 4px 2px 4px;}
 		.us_hidden { visibility: hidden; overflow: hidden; height: 0px; }
 		#us_hiddenform { margin: 0; pading-right: 10px;}
 		#us_hiddenform input[type=text] {margin-right:15px}
-		#us_quickchange { position:relative; bottom:40px; width:9px; height:15px; float:right; background-image: url(data:image/gif;base64,R0lGODlhCQAPAPcAAAAAAICAgIGBgYODg4SEhIeHh4iIiImJiYqKiouLi4yMjI6Ojo+Pj5CQkJGRkZeXl5iYmJmZmaCgoKKiogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAJAA8AAAhMAP8J/PdgoMEDAQoY/DcggEMBAxckgBAgAgIEAhlM+Bfg3wSMBjsuFChyZMmFJ0MubCCB4z8JDgQqIEAxQgICAx3qXJgggIGRBA0GBAA7); }
-		#us_quickchange:focus { background-color: #FFF; outline:none}
+		#us_loginbox #us_quickchange { position:relative; bottom:40px; width:9px; height:15px; float:right; background-image: url(data:image/gif;base64,R0lGODlhCQAPAPcAAAAAAICAgIGBgYODg4SEhIeHh4iIiImJiYqKiouLi4yMjI6Ojo+Pj5CQkJGRkZeXl5iYmJmZmaCgoKKiogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAJAA8AAAhMAP8J/PdgoMEDAQoY/DcggEMBAxckgBAgAgIEAhlM+Bfg3wSMBjsuFChyZMmFJ0MubCCB4z8JDgQqIEAxQgICAx3qXJgggIGRBA0GBAA7); }
+		#us_loginbox #us_quickchange:focus { background-color: #FFF; outline:none}
 		.us_clickable_formdesc {}
 		.us_loadgif { text-align: center; padding: 10px 0; }
 		.us_loadgif img { border-radius: 5px; border:3px solid #91998E; }
-		#us_more { font: normal normal bold 12pt/12pt Arial; color: #999; text-decoration: none; margin-right: 3px; }
-		#us_more:focus { background:none; outline:none }
+		#us_loginbox #us_more { font: normal normal bold 12pt/12pt Arial; color: #999; text-decoration: none; margin-right: 3px; }
+		#us_loginbox #us_more:focus { background:none; outline:none }
 		.us_submitbuttons { background-color: #EEE; border-top: 1px solid #AAA; padding: 5px; width: 290px; height: 18px; margin-top: 5px; }
 		#scrobbleStatus_parent {float: left; height: 18px; margin-left: 15px; padding-left: 5px; padding-top: 2px; color:#888}
 		#us_autoscrobble {vertical-align:middle;}
@@ -353,13 +408,16 @@ function us_addButton() {
 		#us_submit { float: right; margin-bottom:5px;}
 		us_submitbuttons_box_left {border}
 		#us_scrobblebutton { float:right; cursor: pointer; margin-left:16px;}
-		#us_start_scrobblebutton {padding-left:3px!important} // Feather check
-		#us_icon_small, #us_start_scrobblebutton_text { vertical-align: middle;}}
+		#us_start_scrobblebutton {padding-left:3px!important} /* Feather check */
+		#us_start_scrobblebutton_text { vertical-align: middle; background-repeat: no-repeat; background-position: left center; padding-left: calc(16px + 0.5em); display: inline-block; height: 16px; line-height: 16px; background-image: url(data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D); }
+		#us_start_scrobblebutton_text.black_icon { background-image: url(data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D); }
 		#fullAlbumIcon { float: left; height: 16px; width: 16px; cursor: help;}
 		#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}
 		#us_scrobble_on {font-weight:bold; color: #66CC00;}
 		#us_scrobble_failed {font-weight:bold; color: #D10404;}
-		#us_scrobble_statusbar {background-color: #66CC00; display: none; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; }
+		#us_scrobble_statusbar {background-color: #66CC00; height: 2px; width: 0; opacity: 0.8; margin: 0px; padding-right: 1px; }
+		.us_status_failed { background-color: #CC181E; }
+		.us_status_hidden { display: none; }
 		#us_loginbox .us_status_small {color: #999; font-size:80%}
 		.us_box, .us_infobox {visibility: visible; opacity: 1; transition: opacity 0.5s;}
 		.us_box_hidden {visibility: hidden; opacity: 0; transition: visibility 0s 0.5s, opacity 0.5s;}
@@ -368,8 +426,6 @@ function us_addButton() {
 	// us_start_scrobblebutton
 	let button = createIdElement('span', 'us_scrobblebutton');
 
-	button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton"> <span id="us_start_scrobblebutton_text">Scrobble</span></a><span class="masthead-link-separator">|</span>`;// postxanadus
-
 	// Design check
 	if (document.getElementsByTagName('ytd-searchbox')[0]) {
 		BFather = document.getElementsByTagName('ytd-searchbox')[0];
@@ -377,13 +433,24 @@ function us_addButton() {
 		button.style.marginLeft = '50px';
 		button.style.padding = '6px 0 6px 0';
 		button.style.border = '1px solid var(--yt-searchbox-legacy-button-border-color)';
-		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}"/>
+			<a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
+				<span id="us_start_scrobblebutton_text">Scrobble</span>
+			</a>
+			<div id="us_scrobble_statusbar" class="us_status_hidden"></div>
+		`;
 		BFather.insertBefore(button, BFather.lastChild);
 
 		document.getElementById('us_scrobble_statusbar').style.position = 'relative';
 		document.getElementById('us_scrobble_statusbar').style.top = '6px';
 	} else if (document.getElementById('masthead-nav')) {
 		BFather = document.getElementById('masthead-nav');
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
+			<a class="start" id="us_start_scrobblebutton"><span id="us_start_scrobblebutton_text">Scrobble</span></a>
+			<span class="masthead-link-separator">|</span>
+		`; // postxanadus
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('yt-masthead-content')) {
 		BFather = document.getElementById('yt-masthead-content');
@@ -394,12 +461,21 @@ function us_addButton() {
 		button.style.marginRight = '2px';
 		button.style.borderTopRightRadius = '2px';
 		button.style.borderBottomRightRadius = '2px';
-		button.innerHTML = `<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton"><img id="us_icon_small" src="${us_icon()}" alt="icon"/> <span id="us_start_scrobblebutton_text">Scrobble</span></a><div id="us_scrobble_statusbar"></div>`;
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
+			<a style="border-radius:2px; 2px; 2px; 2px;padding-left:6px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
+				<span id="us_start_scrobblebutton_text">Scrobble</span>
+			</a>
+			<div id="us_scrobble_statusbar" class="us_status_hidden"></div>
+		`;
 		BFather.insertBefore(button, BFather.firstChild);
 	} else if (document.getElementById('mh')) {
 		BFather = document.getElementById('mh');
 		button.setAttribute('class', 'ml');
-		button.innerHTML = `<img id="us_icon_small" style="margin-bottom: -3px;" src="${us_icon()}" alt="icon" /><input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" /><input id="us_resetCore" type="button" style="display:none"/><a class="start" id="us_start_scrobblebutton">Scrobble</a>`;
+		button.innerHTML = `
+			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}" />
+			<a class="start" id="us_start_scrobblebutton"><span id="us_start_scrobblebutton_text"> Scrobble</span></a>
+		`;
 		BFather.insertBefore(button, document.getElementById('se').nextSibling);
 	} else {
 		setTimeout(function() {
@@ -407,6 +483,10 @@ function us_addButton() {
 		}, 1000);
 
 		return;
+	}
+
+	if (us_getValue('us_color') === 'black') {
+		document.getElementById('us_start_scrobblebutton_text').classList.add('black_icon');
 	}
 
 	head.appendChild(style_el);
@@ -460,13 +540,6 @@ function us_buttonStatus() {
 }
 
 
-function us_icon() {
-	if (us_getValue('us_color') == 'red') {
-		return 'data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D';
-	} else {
-		return 'data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D';
-	}
-}
 function us_toggleBox() {
 	if (!document.getElementById('us_loginbox') || document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
 		us_showBox(false);
@@ -479,20 +552,34 @@ function us_toggleBox() {
 // Contains either login form, or scrobble form
 function us_showBox(justLoggedIn) {
 	// check if scrobblerbox was dropped out of possible screen width and if reset
-	if (us_getValue('us_boxpos').split('-')[0].split('px')[0] > screen.availWidth || us_getValue('us_boxpos').split('-')[0].split('px')[0] < 130) {
-		us_saveValue('us_boxpos', (screen.availWidth) / 1.3 + 'px-' + 75 + 'px');
+	let boxPosition = us_getValue('us_boxPosition').split(';');
+	let boxPositionX = parseInt(boxPosition[0]);
+	let boxPositionY = parseInt(boxPosition[1]);
+
+	let boxPositionChanged = false;
+	if (boxPositionX > screen.availWidth || boxPositionX < 0) {
+		boxPositionX = screen.availWidth / 1.3;
+		boxPositionChanged = true;
 	}
+	if (boxPositionY > screen.availHeight || boxPositionY < 50) {
+		boxPositionY = 75;
+		boxPositionChanged = true;
+	}
+	if (boxPositionChanged) {
+		us_saveValue('us_boxPosition', boxPositionX + ';' + boxPositionY);
+	}
+
 	// either create loginbox or show it
 	if (!document.getElementById('us_loginbox')) {
 		let loginbox = createIdElement('div', 'us_loginbox');
 		loginbox.classList.add('us_box');
-		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
-		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
+		loginbox.style.left = boxPositionX + 'px';
+		loginbox.style.top = boxPositionY + 'px';
 		document.body.insertBefore(loginbox, document.body.firstChild);
 	} else if (document.getElementById('us_loginbox').classList.contains('us_box_hidden')) {
 		let loginbox = document.getElementById('us_loginbox');
-		loginbox.style.left = us_getValue('us_boxpos').split('-')[0];
-		loginbox.style.top = us_getValue('us_boxpos').split('-')[1];
+		loginbox.style.left = boxPositionX + 'px';
+		loginbox.style.top = boxPositionY + 'px';
 		loginbox.classList.remove('us_box_hidden');
 	}
 	if (!isLoggedIn()) {
@@ -500,7 +587,7 @@ function us_showBox(justLoggedIn) {
 			<div id="us_loginbox_form">
 				<div class="us_error">You are currently not logged in!</div><br />
 				<span>Click Login below to authenticate your account</span><br/><br/>
-				<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br />
+				<em>Note: You will leave this site and be redirected here after having logged in to Last.fm.</em><br/><br />
 			</div>
 			<div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>
 		`;
@@ -540,7 +627,7 @@ function us_scrobbleform(justLoggedIn) {
 		} else {
 			restTime = us_getTempData('us_secs');
 		}
-		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus" style="font-weight:bold">${restTime}</span> sec &nbsp;<a href="javascript:;" id="us_abortScrobbling" title="abort scrobbling">x</a></div>`;
+		scrobbleStatus = `<div id="scrobbleStatus_parent"> scrobble in <span id="scrobbleStatus">${restTime}</span> sec &nbsp;<button type="button" id="us_abortScrobbling" title="abort scrobbling">×</button></div>`;
 	}
 	if (us_getTempData('scrobbled') == 1) {
 		scrobbleStatus = '<div id="scrobbleStatus_parent">scrobbled</div>';
@@ -554,7 +641,7 @@ function us_scrobbleform(justLoggedIn) {
 			messageText += '<div class="us_error">AutoScrobble failed. Please edit info.</div>';
 		}
 		if (asE == 'noMusic') {
-			messageText += '<div class="us_error">Track not found on <span style="font-style:italic">Last.fm</span></div>';
+			messageText += '<div class="us_error">Track not found on Last.fm.</div>';
 		}
 		if (asE == 'bad') {
 			messageText += '<div class="us_error">Video title is not in a valid format to be scrobbled.</div>';
@@ -576,15 +663,15 @@ function us_scrobbleform(justLoggedIn) {
 			<form name="us_scrobbleform" onSubmit="return false">
 				Artist: <input type="text" name="artist" value="${artist}" /><br />
 				Track: <input type="text" name="track" value="${track}" /><br/>
-				<a id="us_quickchange" title="Artist <-> Track" href="#"></a>
-				<a href="javascript:;" id="us_more" title="more options">+</a>
+				<button id="us_quickchange" title="Artist ↔ Track"></button>
+				<button type="button" id="us_more" title="more options">+</button>
 				<p id="us_hiddenform" class="us_hidden">
 					Album title: <input type="text" name="album" value="${album}" /><br />
 				</p>
 			</form>
 		</div>
 		<div class="us_submitbuttons">
-			<div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"${checkedText}><label for="us_autoscrobble" style="vertical-align:middle;">Auto</label></div>
+			<div class="us_submitbuttons_box_left" title="Activate automatic scrobbling?"><input id="us_autoscrobble" name="us_autoscrobble" type="checkbox"${checkedText}><label for="us_autoscrobble">Auto</label></div>
 			${scrobbleStatus}
 			<input id="us_submit" value="Scrobble" type="submit" />
 		</div>
@@ -664,13 +751,13 @@ function us_boxcontent(title, content) {
 		return false;
 	}
 	if (loginbox.classList.contains('us_box_hidden')) {
-		loginbox.style.classList.remove('us_box_hidden');
+		loginbox.classList.remove('us_box_hidden');
 	}
 	loginbox.innerHTML = `
 		<h3 id="us_box_head">${title}<ul>
-			<li><a href="javascript:;" title="Close" id="us_box_close"></a></li>
-			<li><a href="javascript:;" title="Settings" id="us_box_settings"></a></li>
-			<li><a href="javascript:;" title="Help" id="us_box_help"></a></li>
+			<li><button type="button" title="Close" id="us_box_close" class="round_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.4,2.4 21.6,21.6 M2.4,21.6 21.6,2.4" style="fill:none;stroke-width:5;stroke:#fff"/></svg></button></li>
+			<li><button type="button" title="Settings" id="us_box_settings" class="round_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 479.8 479.8" fill="#fff"><path d="m479.3 116.6c-0.4-4.3-3.2-7.9-7.2-9.4-4-1.5-8.5-0.5-11.6 2.6l-62.2 62-69-21.8-21.9-68.7 62.2-62c3-3 4-7.5 2.6-11.6-1.5-4-5.1-6.8-9.4-7.2C324.9-2.7 287.9 10.7 261.2 37.4 224.5 73.9 214.8 127.3 231.9 172.8c-1.9 1.6-3.7 3.3-5.5 5.1L18.5 373.2c-0.1 0.1-0.1 0.1-0.2 0.2-24.4 24.3-24.4 64 0 88.3 24.4 24.3 64 24 88.3-0.3 0.1-0.1 0.2-0.2 0.3-0.3L301.3 252.5c1.8-1.8 3.4-3.6 4.9-5.5 45.7 17.2 99.3 7.5 136-29.1 26.8-26.7 40.4-63.6 37-101.3zM75.3 435.4c-9 9-23.6 9-32.6 0-9-9-9-23.5 0-32.5 9-9 23.6-9 32.6 0 8.9 9 8.9 23.5 0 32.5z"/></svg></button></li>
+			<li><button type="button" title="Help" id="us_box_help" class="round_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff"><path d="m10.1 23.9h4v-4h-4zm2-24c-4.4 0-8 3.6-8 8h4c0-2.2 1.8-4 4-4 2.2 0 4 1.8 4 4 0 4-6 3.5-6 10h4c0-4.5 6-5 6-10 0-4.4-3.6-8-8-8z"/></svg></button></li>
 		</ul></h3>
 		<div>${content}</div>
 	`;
@@ -678,9 +765,18 @@ function us_boxcontent(title, content) {
 	document.getElementById('us_box_settings').addEventListener('click', us_settings);
 	document.getElementById('us_box_help').addEventListener('click', us_help);
 
-	document.addEventListener('mousemove', us_movebox);
-	document.getElementById('us_box_head').addEventListener('mousedown', us_moveboxd);
-	document.getElementById('us_box_head').addEventListener('mouseup', us_moveboxu);
+	let position = us_getValue('us_boxPosition').split(';');
+	let initialPositionX = parseInt(position[0]);
+	let initialPositionY = parseInt(position[1]);
+	us_draggable(
+		loginbox,
+		document.getElementById('us_box_head'),
+		initialPositionX,
+		initialPositionY,
+		function persistPosition(elementX, elementY) {
+			us_saveValue('us_boxPosition', elementX + ';' + elementY);
+		}
+	);
 }
 
 /**
@@ -706,7 +802,7 @@ function us_help() {
 function us_settings() {
 	let maxEntries = us_getValue('database.maxEntries', 5000);
 	let cont = `
-		<div id="us_loginbox_form" style="text-align:left"><form name="us_settings_form" onSubmit="return false"><table style="table-layout:fixed"><tr>
+		<div id="us_loginbox_form"><form name="us_settings_form" onSubmit="return false"><table><tr>
 			<td class="us_settings_grp us_settings_grp_left">
 				<div class="us_settings_grp_heading">General</div>
 				<input type="checkbox" id="us_settings_asFailNotification" name="us_settings_asFailNotification"/><label for="us_settings_asFailNotification">error notification</label><br/>
@@ -735,10 +831,10 @@ function us_settings() {
 				</select></span><br/><br/>
 				<div class="us_settings_grp_heading">About</div>
 				<span>Version: ${VERSION}</span><br/>
-				<span id="us_manualupdate"><a href="javascript:;" id="us_manualupdate_link">Check for Update</a></span>
+				<span id="us_manualupdate"><button type="button" id="us_manualupdate_link">Check for Update</button></span>
 			</td>
 		</tr></table></form></div>
-		<div class="us_submitbuttons" style="text-align:right"><input type="submit" id="us_resetlogin" value="Reset Login" style="float:left"/></div>
+		<div class="us_submitbuttons"><input type="submit" id="us_resetlogin" value="Reset Login"/></div>
 	`;
 
 	us_boxcontent('Settings', cont);
@@ -768,11 +864,11 @@ function us_settings() {
 	// Save settings
 	document.getElementById('us_settings_color_red').addEventListener('change', function() {
 		us_saveValue('us_color', 'red');
-		document.getElementById('us_icon_small').src = us_icon();
+		document.getElementById('us_start_scrobblebutton_text').classList.remove('black_icon');
 	});
 	document.getElementById('us_settings_color_black').addEventListener('change', function() {
 		us_saveValue('us_color', 'black');
-		document.getElementById('us_icon_small').src = us_icon();
+		document.getElementById('us_start_scrobblebutton_text').classList.add('black_icon');
 	});
 	document.getElementById('us_settings_asFailNotification').addEventListener('change', function() {
 		us_saveValue('asFailNotification', document.getElementById('us_settings_asFailNotification').checked);
@@ -855,7 +951,7 @@ function tryAutoScrobble() {
 function tryAutoScrobbleCallback(response, musicVideo) {
 	if ((isLoggedIn()) && ((trackInfoFromDB) || ((response == 'found') && (musicVideo)))) {
 		// save time page was loaded aka playstart time in ctime and gay format
-		let time = new Date();	
+		let time = new Date();
 
 		us_saveTempData('us_playstart_s', Math.round(time.getTime() / 1000));
 		us_scrobble(decodeURIComponent(us_getTempData('artist')), decodeURIComponent(us_getTempData('track')), '', '', 0, 0, 1);
@@ -876,17 +972,15 @@ function tryAutoScrobbleCallback(response, musicVideo) {
 }
 
 function scrobble_statusbar(status) {
+	let statusBar = document.getElementById('us_scrobble_statusbar');
 	if (status == 'scrobble') {
-		document.getElementById('us_scrobble_statusbar').style.backgroundColor = '#66CC00';
-		document.getElementById('us_scrobble_statusbar').style.display = 'block';
-
+		statusBar.classList.remove('us_status_hidden');
+		statusBar.classList.remove('us_status_failed');
 	} else if (status == 'failed') {
-		document.getElementById('us_scrobble_statusbar').style.width = '100%';
-		document.getElementById('us_scrobble_statusbar').style.display = 'block';
-		document.getElementById('us_scrobble_statusbar').style.backgroundColor = '#CC181E';
+		statusBar.classList.remove('us_status_hidden');
+		statusBar.classList.add('us_status_failed');
 	} else if (status == 'hide') {
-		document.getElementById('us_scrobble_statusbar').style.display = 'none';
-		document.getElementById('us_scrobble_statusbar').style.width = '0';
+		statusBar.classList.add('us_status_hidden');
 	}
 
 }
@@ -944,7 +1038,7 @@ function tryGetAuthToken() {
 }
 
 /**
- * Srobbles a song using the saved track information
+ * Scrobbles a song using the saved track information
  */
 function us_scrobble(artist, track, album, mbid, retry, queued, auto, full_album_scrobble) {
 	let secs = us_getTempData('us_secs');
@@ -1067,7 +1161,7 @@ function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scr
 
 		track_num++;
 		us_saveTempData('full_album_track_nr', track_num);
-		
+
 		us_scrobble(decodeURIComponent(us_getTempData('artist')), decodeURIComponent(us_getTempData('track')), decodeURIComponent(us_getTempData('album')), decodeURIComponent(us_getTempData('mbid')), 0, 1, 1, 1);
 	}
 }
@@ -1128,7 +1222,7 @@ function us_resetlogin(error) {
 		<div id="us_loginbox_form">
 			${resetInfo}
 			<span>Click Login below to authenticate your account</span><br/><br/>
-			<span style="font-style:italic;">Note: You will leave this site and be redirected here after having logged in to Last.FM </span><br/><br />
+			<em>Note: You will leave this site and be redirected here after having logged in to Last.fm.</em><br/><br />
 		</div>
 		<div class="us_submitbuttons"><input id="us_submit" value="Authenticate" type="submit" /></div>
 	`;
@@ -1161,14 +1255,14 @@ function getYouTubeVideoId() {
 
 	if (matches == null) {
 		let playerNode;
-		
+
 		if (document.getElementById('c4-player')) {
 			playerNode = document.getElementById('c4-player');
 		} else {
 			playerNode = document.getElementById('movie_player');
 		}
 		matches = playerNode.getVideoUrl().match(regex);
-		
+
 		if (matches == null) {
 			return null;
 		}
@@ -1348,7 +1442,7 @@ function getAlbumInfo() {
 
 					us_saveTempData('artist', album.tracks.track[track_index].artist.name);
 					us_saveTempData('track', album.tracks.track[track_index].name);
-					
+
 					response = getTrackInfo();
 					isMusicVideo(response);
 				} else {
@@ -1552,7 +1646,7 @@ function us_ajax_scanner() {
 }
 
 /**
- * Quickchange artist <-> track in scrobble-form
+ * Quickchange artist ↔ track in scrobble-form
  */
 function us_quickchange() {
 	let artist = document.forms[0].elements[0].value;
