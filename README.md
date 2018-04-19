@@ -11,18 +11,18 @@ Userscript for Firefox and Chrome for scrobbling to last.fm on YouTube - <a href
 <h2>Installation</h2>
 Mozilla Firefox:
 
-   Install the addon Tampermonkey
-   Download YouScrobbler on the website or via GitHub and install in Tampermonkey.
+   Install the addon Violentmonkey
+   Download YouScrobbler on the website or via GitHub and install in Violentmonkey.
    
-   https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/
+   https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/
     
 
 Google Chrome:
 
-  Install the addon Tampermonkey
-  Download YouScrobbler on the website or via GitHub and install in Tampermonkey.
+  Install the addon Violentmonkey
+  Download YouScrobbler on the website or via GitHub and install in Violentmonkey.
   
-  https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo
+  https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag
   
 
 <h2>Features</h2>
