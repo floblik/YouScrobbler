@@ -14,7 +14,7 @@
 // @grant         GM_xmlhttpRequest
 // @downloadURL   https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
 // @updateURL     https://raw.githubusercontent.com/floblik/YouScrobbler/master/youscrobbler.user.js
-// @version       1.4.7
+// @version       1.4.8
 // @noframes
 // @run-at        document-idle
 // ==/UserScript==
@@ -25,7 +25,7 @@
 
 'use strict';
 
-const VERSION = '1.4.7';
+const VERSION = '1.4.8';
 const APIKEY = 'd2fcec004903116fe399074783ee62c7';
 
 let lastFmAuthenticationUrl = 'http://www.last.fm/api/auth';
@@ -56,7 +56,13 @@ let trackInfoFromDB = false;
  * --- 1. Initializing ---
  */
 function init() {
-	isGM = typeof GM_getValue != 'undefined' && typeof GM_getValue('a', 'b') != 'undefined';
+	isGM = typeof GM_getValue != 'undefined' && typeof GM_getValue('a', 'b') != 'undefined'; //is Greasemonkey or Tampermonkey
+
+    var isGM2 = 'undefined' === typeof GM_info.scriptHandler; //is Greasemonkey
+
+    if (isGM2) {
+        alert("-YouScrobbler Alert- \n \n   YouScrobbler doesnt work with Greasemonkey. Please switch to Tampermonkey. \n\n https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/ \n ");
+    }
 
 	if (!isLoggedIn()) {
 		tryGetAuthToken();
@@ -365,7 +371,7 @@ function us_addButton() {
 		#us_loginbox .round_button:hover { background-image: linear-gradient(to bottom, #828282 0%, #6b6b6b 50%, #545454 100%); background-color: #3e3e3e; }
 		#us_loginbox .round_button svg { display: block; width: 8px; height: 8px; }
 		#us_box_head > ul, #us_box_head li { float:right; }
-		#us_box_head ul { list-style-type:none}
+		#us_box_head ul { list-style-type:none; margin: 0;}
 		.us_settings_grp { height:50px; vertical-align:middle; padding-right:3px;padding-left:5px}
 		.us_settings_grp hr { background-color: #EEE; margin: 5px 8px; height: 1px;}
 		.us_settings_grp_left { width:155px}
@@ -409,8 +415,8 @@ function us_addButton() {
 		us_submitbuttons_box_left {border}
 		#us_scrobblebutton { float:right; cursor: pointer; margin-left:16px;}
 		#us_start_scrobblebutton {padding-left:3px!important} /* Feather check */
-		#us_start_scrobblebutton_text { vertical-align: middle; background-repeat: no-repeat; background-position: left center; padding-left: calc(16px + 0.5em); display: inline-block; height: 16px; line-height: 16px; background-image: url(data:image/gif;base64,R0lGODlhEAAQAKIAAPNHLdYzINJbTN2rp%2FHSztCBerIRC%2Ff39yH5BAAAAAAALAAAAAAQABAAAANQSAXczoW8Sau9LwShA9AC52nFYR6ccKLgMWxmMBxwoc2dWsy2YQSGmc93IAQIppdPOMT9SgOfKioLFIHWqK9kIhhUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D); }
-		#us_start_scrobblebutton_text.black_icon { background-image: url(data:image/gif;base64,R0lGODlhEAAQAKIAACUlJVVVVT4%2BPvLy8pubm1RUVHFxccnJySH5BAAAAAAALAAAAAAQABAAAANQeBbczua8Sau9T4iiRdAF52nGYA5ccaLgQGymQAywoc2dasw2AAiAmc83OAgOppdPOMT9SgSfKioTFIHWqK9kOgBUK%2BDwN%2F5pyui0eq1dNxMAOw%3D%3D); }
+		#us_start_scrobblebutton_text { vertical-align: middle; background-repeat: no-repeat; background-position: left center; padding-left: calc(16px + 0.5em); display: inline-block; height: 16px; line-height: 16px; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAAA00lEQVQ4T61RsQ3CMBB0i6hS0rEAFTMgGjZgEzqmSZEuQ1BGKAVdFkCiQBSukPl76ayPHZAMFCf/392frbe7993sfDy0j+0qlEBmTjJbuSmxAM9fA8L/Ai7rpaLf72INpJrVNYCNLCV470egGec7TQNoGJo6G0APnjU1XBgDrIGwRuocaqu5ArVDQQMFApz8tRpxogf4Ung+BtiXocfJXUEDpwF2BzTyFvB8BbUsAEh/AUPg7UItGBgDCApTPGH5LKAUCLimZAmcLGMhxTcht6GpNy9dy3EY/mhSLAAAAABJRU5ErkJggg==); }
+		#us_start_scrobblebutton_text.black_icon { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAAA1ElEQVQ4T62RwQkDIRBFhRy3gTRgG1axthGwjNRgIyGHvQZJNx4TyGa+8GWim+BCDg9n5s98ZTQppSmEsHjv1z3IzF1mj0aSi/DQ4iAv4QaDLXGY/xk45wrzPNcYtJrWiwETWcqac/6AzTi/acWADTHGbgA56oyp4cJqoBuIbqTOIWttAbFBwAYKBDX569KIEzngS9Hz00C/DDlO7goaasVA74CNvAV1voJaZwDaX8AQ6nqhGhpWA0Jhq050vTPYCwzObXGQp3A1soyDBCcljLLEGKc3e8wU7uW1aewAAAAASUVORK5CYII=); }
 		#fullAlbumIcon { float: left; height: 16px; width: 16px; cursor: help;}
 		#foundInDBIcon { float: left; height: 16px; width: 16px; cursor: help; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjM2qefiJQAAAR9JREFUOE+tk92KglAYRXuYeTUfIZUi8e9GykASQUEQBNFuvSgotETssfbMPuAZBmOcmIR99a21ksDF4h1PGIY4Ho/wfR/n8/nXkSFLR/6267qoqgp1XWPuIUOWjgw4joOyLHE6neZ8wZClIwO2baMoClyv19kAGbJ0ZMCyLOR5jtvtNhsgQ5aODJimiSzL0Pf9bIAMWToyYBgG0jQV1b+MLB0Z2Gw2iOP4pdGRgfV6jSiKXhodGVitVjgcDmJJkuDxeDwdbyNHRwZ0XUcQBGJt20JRFFwul8kfytvI0ZEBTdOw3+/Fuq4TgaZpJgHeRo6ODGy3W+x2O7FhGETgfr9PAryNnKqq34Ev8sPzPCyXS/GRUH423shwP97gP1/0J3OEY6rxN9R9AAAAAElFTkSuQmCC);}
 		#us_scrobble_on {font-weight:bold; color: #66CC00;}
@@ -432,7 +438,8 @@ function us_addButton() {
 		button.setAttribute('class', 'yt-uix-button-group');
 		button.style.marginLeft = '50px';
 		button.style.padding = '6px 0 6px 0';
-		button.style.border = '1px solid var(--yt-searchbox-legacy-button-border-color)';
+		button.style.border = '1px solid var(--ytd-searchbox-legacy-border-color)';
+        button.style.background = 'var(--ytd-searchbox-legacy-border-color)';
 		button.innerHTML = `
 			<input id="us_temp_info" video_is_playing="1" type="hidden" us_secs="${secs}" us_playstart_s="${t}"/>
 			<a style="border-radius:2px; 2px; 2px; 2px;padding-right:6px;padding-left:8px!important" class="yt-uix-button yt-uix-sessionlink start yt-uix-button-default" id="us_start_scrobblebutton">
@@ -987,7 +994,7 @@ function scrobble_statusbar(status) {
 
 
 /**
- * Redirects the user to Last FM to authenticate. When they allow they will 
+ * Redirects the user to Last FM to authenticate. When they allow they will
  * be directed back and an authentication token will be added to the URL.
  * adapted from ScrobbleSmurf
  */
@@ -1103,7 +1110,7 @@ function us_scrobble(artist, track, album, mbid, retry, queued, auto, full_album
 }
 
 
-/** 
+/**
  * Feedback on scrobbling
  */
 function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scrobble) {
@@ -1167,7 +1174,7 @@ function scrobbleFeedback(responseDetails, artist, track, queued, full_album_scr
 }
 
 /**
- * Temporary save track information from the form 
+ * Temporary save track information from the form
  */
 function us_scrobblenp() {
 	let formArtist = document.forms[0].elements[0].value;
@@ -1588,7 +1595,7 @@ function saveDatabaseData(id, artist, track, album) {
  * --- 6. Miscellaneous ---
  */
 /**
- * 
+ *
  *
  */
 function us_ajax_scanner() {
