@@ -1,6 +1,8 @@
 # YouScrobbler
 Userscript for Firefox and Chrome for scrobbling to last.fm on YouTube - <a href="http://www.lukash.de/youscrobbler">YouScrobbler Homepage</a>
 
+<b>UPDATE 2018: Endpoint on server taken offline
+NOT WORKING CURRENTLY - Feel free to adapt the code</b>
 
 <h2>Key Features:</h2>
 
@@ -45,5 +47,5 @@ Whenever you edit the automatic detected trackinfromation or enter ones by yours
 
 
 
-
+server shutdown - 2018
 initial release – 11/2011
